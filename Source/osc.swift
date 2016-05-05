@@ -1,6 +1,6 @@
 //
 //  osc.swift
-//  testapp
+//  OSCCore
 //
 //  Created by Gábor Sebestyén on 23/04/16.
 //  Copyright © 2016 Gábor Sebestyén. All rights reserved.
@@ -19,16 +19,16 @@ extension String : OSCValue {
         let fullSize =  paddedSize(bytes.count+1)
         let padding = fullSize - bytes.count
         if padding > 0 {
-            bytes += [Byte](count: padding, repeatedValue: 0)
+            bytes += [Byte](repeating: 0,  count: padding)
         }
         return bytes
     }
     
     var oscType : TypeTagValues { return .STRING_TYPE_TAG }
  
-    init?<S : CollectionType where S.Generator.Element == Byte, S.SubSequence.Generator.Element == S.Generator.Element>(data: S) {
+    init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
         guard
-            let termIndex = data.indexOf(0)
+            let termIndex = data.index(of:0)
         else {
             return nil
         }
@@ -48,7 +48,7 @@ extension Float32 : OSCValue {
     var oscType : TypeTagValues { return .FLOAT_TYPE_TAG }
     
     // custom init
-    init?<S : CollectionType where S.Generator.Element == Byte, S.SubSequence.Generator.Element == S.Generator.Element>(data: S) {
+    init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
         guard
             let binary : [Byte] = [Byte](data)
             where binary.count == sizeof(self.dynamicType)
@@ -66,7 +66,7 @@ extension Float32 : OSCValue {
 
 
 extension HasByteSwapping {
-    init?<S : CollectionType where S.Generator.Element == Byte, S.SubSequence.Generator.Element == S.Generator.Element>(data: S) {
+    init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
         guard
             let binary : [Byte] = [Byte](data)
             where binary.count == sizeof(Self)
@@ -128,7 +128,7 @@ class OSCMessage {
     }
 
     // convert message into OSC message
-    static func convert( address: String, _ args: [OSCValue]) -> [Byte] {
+    static func convert(_ address: String, _ args: [OSCValue]) -> [Byte] {
         // align type letters to one string, starting with a comma character
         let osc_type_tags : String = String(args.map{$0.oscType.rawValue })
         
@@ -160,7 +160,7 @@ class OSCMessage {
         
         guard
             data[index] == commabuf[0],
-            let _type_tags = String(data: data.suffixFrom(index+1))
+            let _type_tags = String(data: data.suffix(from:index+1))
         else {
             return (address: address, args:[])
         }
@@ -175,7 +175,7 @@ class OSCMessage {
                 switch type {
                 case .STRING_TYPE_TAG:
                     guard
-                        let val = String(data: data.suffixFrom(index))
+                        let val = String(data: data.suffix(from:index))
                     else {
                         return nil
                     }

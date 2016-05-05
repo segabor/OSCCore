@@ -1,6 +1,6 @@
 //
 //  defs.swift
-//  testapp
+//  OSCCore
 //
 //  Created by Gábor Sebestyén on 23/04/16.
 //  Copyright © 2016 Gábor Sebestyén. All rights reserved.
@@ -46,5 +46,5 @@ protocol OSCValue {
     // returns OSC type
     var oscType  : TypeTagValues { get }
     // construct value from OSC packet
-    init?<S : CollectionType where S.Generator.Element == Byte, S.SubSequence.Generator.Element == S.Generator.Element>(data: S)
+    init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S)
 }

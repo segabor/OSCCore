@@ -1,6 +1,6 @@
 //
 //  util.swift
-//  testapp
+//  OSCCore
 //
 //  Created by Gábor Sebestyén on 22/04/16.
 //  Copyright © 2016 Gábor Sebestyén. All rights reserved.
@@ -15,14 +15,14 @@
  */
 
 
-func binarytotype <T> (value: [Byte], _: T.Type) -> T
+func binarytotype <T> (_ value: [Byte], _: T.Type) -> T
 {
     return value.withUnsafeBufferPointer {
-        return UnsafePointer<T>($0.baseAddress).memory
+        return UnsafePointer<T>($0.baseAddress)!.pointee
     }
 }
 
-func typetobinary <T> (value: T) -> [Byte]
+func typetobinary <T> (_ value: T) -> [Byte]
 {
     var mv : T = value
     return withUnsafePointer(&mv)
@@ -36,7 +36,7 @@ func typetobinary <T> (value: T) -> [Byte]
 /*
  * round up number to the nearest multiple of 4
  */
-func paddedSize(size: Int) -> Int {
+func paddedSize(_ size: Int) -> Int {
     return (size + 3) & ~0x03
 }
 
