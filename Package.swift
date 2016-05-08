@@ -1,7 +1,6 @@
 import PackageDescription
 
 let package = Package(
-    name: "OSCCore",
-    dependencies: []
+    name: "OSCCore"
 )
 
