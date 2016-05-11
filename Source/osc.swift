@@ -106,6 +106,17 @@ extension Int : OSCValue {
     }
     
     var oscType : TypeTagValues { return .INT32_TYPE_TAG }
+
+    init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
+        guard
+            let binary : [Byte] = [Byte](data)
+            where binary.count == sizeof(Int32.self)
+        else {
+            return nil
+        }
+
+        self = Int( binarytotype(binary, Int32.self).byteSwapped )
+    }
 }
 
 
