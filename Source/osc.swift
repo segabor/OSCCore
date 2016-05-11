@@ -133,6 +133,10 @@ class OSCMessage {
     init(address: String, args: OSCValue...) {
         data = OSCMessage.convert(address, args)
     }
+
+    init(address: String) {
+        data = OSCMessage.convert(address, [])
+    }
     
     init(data: [Byte]) {
         self.data = data
