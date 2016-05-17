@@ -1,45 +1,49 @@
 @testable import OSCCore
 import XCTest
 
-typealias Message = (address: String, args: [OSCValue])
+
+
+// compare two OSC value arrays
+func ==(lhs: [OSCValue], rhs: [OSCValue]) -> Bool {
+    if lhs.count == rhs.count {
+        
+        for pair in zip(lhs,rhs) {
+            if pair.0.isEqualTo(pair.1) == false {
+                return false
+            }
+        }
+        return true
+    }
+
+    return false
+}
+
+// compare two OSC messages parsed from byte stream
+func ==(lhs: ParsedMessage, rhs: ParsedMessage) -> Bool {
+    return lhs.address == rhs.address && lhs.args == rhs.args
+}
+
 
 class OSCMessageTests : XCTestCase {
-    func testEmptyMessage() {
+    func testNoArgMessage() {
+        // msg packet := "hello".osc + "," + osc
         let msg = OSCMessage(address: "hello")
-        // packet := "hello".osc + "," + osc
-        let packet : [Byte] = [0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00]
-        let value = msg.data
 
-        XCTAssertNotNil(value)
-        XCTAssertEqual(packet, value)
-        
+        let expected_pkt : [Byte] = [0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00]
+        let converted_pkt = msg.data
+
+        // check conversion is correct
+        XCTAssertEqual(expected_pkt, converted_pkt)
+
+        // check the opposite - restore messages from byte stream
         guard
-            let parsed : Message = msg.parse(),
-            let parsed2 : Message = OSCMessage(data: packet).parse()
+            let parsed : ParsedMessage = msg.parse(),
+            let parsed2 : ParsedMessage = OSCMessage(data: expected_pkt).parse()
         else {
             XCTFail("Failed to restore message from packet")
             return
         }
 
-        assertOSCMessagesEqual(parsed, parsed2)
-    }
-
-    // helper method to compare OSC messages
-    private func assertOSCMessagesEqual(_ msg: Message, _ otherMsg: Message) {
-        XCTAssertEqual(msg.address, otherMsg.address)
-        assertOSCValuesEqual(msg.args, otherMsg.args)
-    }
-    
-    // helper method to compare two OSCValue arrays
-    private func assertOSCValuesEqual(_ obj: [OSCValue], _ other: [OSCValue]) {
-        XCTAssertEqual(obj.count, other.count)
-        
-        for ix in (0..<obj.count) {
-            let obj1 = obj[ix]
-            let obj2 = other[ix]
-            
-            XCTAssertEqual(obj1.oscType, obj2.oscType)
-            XCTAssertEqual(obj1.oscValue, obj2.oscValue)
-        }
+        XCTAssertTrue(parsed == parsed2)
     }
 }

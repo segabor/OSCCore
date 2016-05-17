@@ -8,6 +8,7 @@
 
 typealias Byte = UInt8
 
+typealias ParsedMessage = (address: String, args: [OSCValue])
 
 
 /*
@@ -47,4 +48,19 @@ protocol OSCValue {
     var oscType  : TypeTagValues { get }
     // construct value from OSC packet
     init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S)
+
+    // Custom equality check
+    func isEqualTo(_ other: OSCValue) -> Bool
+}
+
+// Workaround for Equatable adoption
+//
+extension OSCValue where Self : Equatable {
+    // otherObject could also be 'Any'
+    func isEqualTo(_ other: OSCValue) -> Bool {
+        if let otherAsSelf = other as? Self {
+            return otherAsSelf == self
+        }
+        return false
+    }
 }
