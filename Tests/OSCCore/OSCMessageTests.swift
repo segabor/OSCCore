@@ -81,9 +81,9 @@ class OSCMessageTests : XCTestCase {
         guard
             let parsed : ParsedMessage = msg.parse(),
             let parsed2 : ParsedMessage = OSCMessage(data: expected_pkt).parse()
-            else {
-                XCTFail("Failed to restore message from packet")
-                return
+        else {
+            XCTFail("Failed to restore message from packet")
+            return
         }
         
         XCTAssertTrue(parsed == parsed2)
