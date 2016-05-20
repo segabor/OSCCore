@@ -127,7 +127,7 @@ extension Int : OSCValue {
 /* OSC Message structure */
 /*************************/
 
-class OSCMessage {
+public class OSCMessage {
     let data : [Byte]
     
     init(address: String, args: OSCValue...) {
