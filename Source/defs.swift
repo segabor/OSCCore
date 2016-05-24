@@ -6,7 +6,7 @@
 //  Copyright © 2016 Gábor Sebestyén. All rights reserved.
 //
 
-typealias Byte = UInt8
+public typealias Byte = UInt8
 
 typealias ParsedMessage = (address: String, args: [OSCValue])
 
@@ -16,7 +16,7 @@ typealias ParsedMessage = (address: String, args: [OSCValue])
  *
  * Enum borrowed from https://github.com/mkalten/reacTIVision/blob/master/ext/oscpack/osc/OscTypes.h
  */
-enum TypeTagValues : Character {
+public enum TypeTagValues : Character {
     case TRUE_TYPE_TAG = "T"
     case FALSE_TYPE_TAG = "F"
     case NIL_TYPE_TAG = "N"
@@ -41,7 +41,7 @@ enum TypeTagValues : Character {
 /*
  * Enable conversion between Swift types and OSC packets
  */
-protocol OSCValue {
+public protocol OSCValue {
     // convert value to OSC packet
     var oscValue : [Byte] { get }
     // returns OSC type
@@ -57,7 +57,7 @@ protocol OSCValue {
 //
 extension OSCValue where Self : Equatable {
     // otherObject could also be 'Any'
-    func isEqualTo(_ other: OSCValue) -> Bool {
+    public func isEqualTo(_ other: OSCValue) -> Bool {
         if let otherAsSelf = other as? Self {
             return otherAsSelf == self
         }

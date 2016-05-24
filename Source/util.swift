@@ -46,7 +46,7 @@ func paddedSize(_ size: Int) -> Int {
  * Mark integer types supporting bytes swapping with a designated interface
  */
 
-protocol HasByteSwapping {
+public protocol HasByteSwapping {
     /// byte order if necessary.
     var bigEndian: Self { get }
     

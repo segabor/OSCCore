@@ -14,7 +14,7 @@ import Foundation
 /******************************/
 
 extension String : OSCValue {
-    var oscValue : [Byte] {
+    public var oscValue : [Byte] {
         var bytes = self.utf8.map({ Byte( $0 ) })
         let fullSize =  paddedSize(bytes.count+1)
         let padding = fullSize - bytes.count
@@ -24,9 +24,9 @@ extension String : OSCValue {
         return bytes
     }
     
-    var oscType : TypeTagValues { return .STRING_TYPE_TAG }
+    public var oscType : TypeTagValues { return .STRING_TYPE_TAG }
  
-    init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
+    public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
         guard
             let termIndex = data.index(of:0)
         else {
@@ -40,15 +40,15 @@ extension String : OSCValue {
 
 
 extension Float32 : OSCValue {
-    var oscValue : [Byte] {
+    public var oscValue : [Byte] {
         let z = CFConvertFloat32HostToSwapped(self).v
         return [Byte](typetobinary(z).prefix(4))
     }
     
-    var oscType : TypeTagValues { return .FLOAT_TYPE_TAG }
+    public var oscType : TypeTagValues { return .FLOAT_TYPE_TAG }
     
     // custom init
-    init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
+    public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
         guard
             let binary : [Byte] = [Byte](data)
             where binary.count == sizeof(self.dynamicType)
@@ -66,7 +66,7 @@ extension Float32 : OSCValue {
 
 
 extension HasByteSwapping {
-    init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
+    public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
         guard
             let binary : [Byte] = [Byte](data)
             where binary.count == sizeof(Self)
@@ -82,32 +82,32 @@ extension HasByteSwapping {
 
 
 extension Int64 : OSCValue {
-    var oscValue : [Byte] {
+    public var oscValue : [Byte] {
         let z = self.bigEndian
         return [Byte](typetobinary(z).prefix(sizeof(self.dynamicType)))
     }
     
-    var oscType : TypeTagValues { return .INT64_TYPE_TAG }
+    public var oscType : TypeTagValues { return .INT64_TYPE_TAG }
 }
 
 extension Int32 : OSCValue {
-    var oscValue : [Byte] {
+    public var oscValue : [Byte] {
         let z = self.bigEndian
         return [Byte](typetobinary(z).prefix(sizeof(self.dynamicType)))
     }
     
-    var oscType : TypeTagValues { return .INT32_TYPE_TAG }
+    public var oscType : TypeTagValues { return .INT32_TYPE_TAG }
 }
 
 // default Integers is converted to 32-bin integer for the sake of convenience
 extension Int : OSCValue {
-    var oscValue : [Byte] {
+    public var oscValue : [Byte] {
         return Int32(self).oscValue
     }
     
-    var oscType : TypeTagValues { return .INT32_TYPE_TAG }
+    public var oscType : TypeTagValues { return .INT32_TYPE_TAG }
 
-    init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
+    public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
         guard
             let binary : [Byte] = [Byte](data)
             where binary.count == sizeof(Int32.self)
@@ -130,15 +130,15 @@ extension Int : OSCValue {
 public class OSCMessage {
     let data : [Byte]
     
-    init(address: String, args: OSCValue...) {
+    public init(address: String, args: OSCValue...) {
         data = OSCMessage.convert(address, args)
     }
 
-    init(address: String) {
+    public init(address: String) {
         data = OSCMessage.convert(address, [])
     }
     
-    init(data: [Byte]) {
+    public init(data: [Byte]) {
         self.data = data
     }
 
