@@ -33,7 +33,7 @@ extension String : OSCValue {
             return nil
         }
 
-        self.init(bytes: data[data.startIndex..<termIndex], encoding: NSUTF8StringEncoding)
+        self.init(bytes: data[data.startIndex..<termIndex], encoding: String.Encoding.utf8)
     }
 }
 
