@@ -128,7 +128,7 @@ extension Int : OSCValue {
 /*************************/
 
 public class OSCMessage {
-    let data : [Byte]
+    public let data : [Byte]
     
     public init(address: String, args: OSCValue...) {
         data = OSCMessage.convert(address, args)
