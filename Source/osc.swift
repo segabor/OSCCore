@@ -69,7 +69,7 @@ extension HasByteSwapping {
     public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
         guard
             let binary : [Byte] = [Byte](data)
-            where binary.count == sizeof(Self)
+            where binary.count == sizeof(Self.self)
         else {
             return nil
         }

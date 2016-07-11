@@ -27,7 +27,7 @@ func typetobinary <T> (_ value: T) -> [Byte]
     var mv : T = value
     return withUnsafePointer(&mv)
     {
-        Array(UnsafeBufferPointer(start: UnsafePointer<Byte>($0), count: sizeof(T)))
+        Array(UnsafeBufferPointer(start: UnsafePointer<Byte>($0), count: sizeof(T.self)))
     }
 }
 
