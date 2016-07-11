@@ -8,7 +8,7 @@
 
 public typealias Byte = UInt8
 
-typealias ParsedMessage = (address: String, args: [OSCValue])
+public typealias ParsedMessage = (address: String, args: [OSCValue])
 
 
 /*

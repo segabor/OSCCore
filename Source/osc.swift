@@ -159,7 +159,7 @@ public class OSCMessage {
     /*
      * Get OSC message from packet stream
      */
-    func parse() -> ParsedMessage? {
+    public func parse() -> ParsedMessage? {
         let commabuf = [Byte](",".utf8)
         var index = data.startIndex
         
