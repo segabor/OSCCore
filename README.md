@@ -13,13 +13,13 @@ Currently only OSX is supported but Linux support is on the way (see Issue #1).
 
 - [x] Type conversion (Convert numeric and String types to OSC packets and back)
 - [x] Build OSC messages
-- [ ] Networking
+- [x] Networking
 - [ ] Linux support
 
 ## Requirements
 
-Latest Swift 3 snapshot is required to build and test the module.
+Swift 3 is required to build and test the module.
 
 ## Usage
 
-TBD
+See projects in Examples folder.
