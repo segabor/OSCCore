@@ -13,6 +13,8 @@ Currently only OSX is supported but Linux support is on the way (see Issue #1).
 
 - [x] Type conversion (Convert numeric and String types to OSC packets and back)
 - [x] Build OSC messages
+- [ ] Handle OSC bundles
+- [ ] Dispatch OSC messages
 - [x] Networking
 - [ ] Linux support
 
