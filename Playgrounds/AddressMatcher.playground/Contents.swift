@@ -149,6 +149,7 @@ func matches(address: String, pattern: String) -> Bool {
                 return false
             }
             
+            // step back
             remainder = pattern.index(after:remainder)
 
             
@@ -184,6 +185,8 @@ func matches(address: String, pattern: String) -> Bool {
                     if si == address.endIndex && remainder < pattern.endIndex {
                         return false
                     }
+                    // step back
+                    si = address.index(before: si)
                 } else { // skip to next comma
                     si = place
                     while pi < pattern.endIndex && pattern[pi] != "," && pattern[pi] != "}" {
@@ -236,6 +239,6 @@ print(matches(address:"ablak", pattern:"ab*"))
 // true
 print(matches(address:"ablak", pattern:"a{blak,jto}"))
 
-// crash!
+// false
 print(matches(address:"ablak", pattern:"a{blak|jto}"))
 
