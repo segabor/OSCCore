@@ -6,7 +6,7 @@ import Cocoa
 /*
  */
 func matches(address: String, pattern: String) -> Bool {
-    var negate = false
+    // var negate = false
     // var match = false
     
     var si = address.startIndex
@@ -154,24 +154,55 @@ func matches(address: String, pattern: String) -> Bool {
             
             var char = pattern[pi]
             pi = pattern.index(after:pi)
+
             while pi < pattern.endIndex {
                 if char == "," {
-                    // TBD
+                    if matches(address: address.substring(from: si), pattern: pattern.substring(from: remainder)) {
+                        return true
+                    } else {
+                        // backtrack on test string
+                        si = place
+                        // continue testing,
+                        // skip comma
+                        if pi == pattern.endIndex {
+                            return false
+                        } else {
+                            pi = pattern.index(after: pi)
+                        }
+                    }
                 } else if char == "}" {
-                    // TBD
+                    // continue normal pattern matching
+                    
+                    if pi == pattern.endIndex && si == address.endIndex {
+                        return true
+                    }
+
+                    si = address.index(before: si) // str is incremented again below
+                    break
                 } else if char == address[si] {
-                    // TBD
+                    si = address.index(after: si)
+                    if si == address.endIndex && remainder < pattern.endIndex {
+                        return false
+                    }
                 } else { // skip to next comma
-                    // TBD
+                    si = place
+                    while pi < pattern.endIndex && pattern[pi] != "," && pattern[pi] != "}" {
+                        pi = pattern.index(after: pi)
+                    }
+                    if pi < pattern.endIndex {
+                        if pattern[pi] == "," {
+                            pi = pattern.index(after: pi)
+                        } else if pattern[pi] == "}" {
+                            return false
+                        }
+                    }
                 }
-                
+
                 // end of while
                 char = pattern[pi]
                 pi = pattern.index(after:pi)
             }
 
-            
-            
             
             break
         default:
@@ -181,8 +212,30 @@ func matches(address: String, pattern: String) -> Bool {
 
             break
         }
+
+        si = address.index(after:si)
         
     }
     
-    return false
+    return si == address.endIndex
 }
+
+
+// true
+print(matches(address:"ablak", pattern:"ablak"))
+
+// false
+print(matches(address:"ablak", pattern:"abrak"))
+
+// true
+print(matches(address:"ablak", pattern:"ab?ak"))
+
+// true
+print(matches(address:"ablak", pattern:"ab*"))
+
+// true
+print(matches(address:"ablak", pattern:"a{blak,jto}"))
+
+// crash!
+print(matches(address:"ablak", pattern:"a{blak|jto}"))
+
