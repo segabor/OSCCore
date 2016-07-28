@@ -6,6 +6,9 @@
 //  Copyright © 2016 Gábor Sebestyén. All rights reserved.
 //
 
+#if os(Linux)
+import Glibc
+#endif
 import Foundation
 
 
@@ -33,7 +36,12 @@ extension String : OSCValue {
             return nil
         }
 
+#if os(OSX)
         self.init(bytes: data[data.startIndex..<termIndex], encoding: String.Encoding.utf8)
+#endif
+#if os(Linux)
+        self.init(bytes: data[data.startIndex..<termIndex], encoding: NSUTF8StringEncoding)
+#endif
     }
 }
 
@@ -41,7 +49,12 @@ extension String : OSCValue {
 
 extension Float32 : OSCValue {
     public var oscValue : [Byte] {
+#if os(OSX)
         let z = CFConvertFloat32HostToSwapped(self).v
+#endif
+#if os(Linux)
+        let z = htonl(self.bitPattern)
+#endif
         return [Byte](typetobinary(z).prefix(4))
     }
     
@@ -55,8 +68,12 @@ extension Float32 : OSCValue {
         else {
             return nil
         }
-
+#if os(OSX)
         self = CFConvertFloatSwappedToHost(binarytotype(binary, CFSwappedFloat32.self))
+#endif
+#if os(Linux)
+        self = Float(bitPattern: ntohl(binarytotype(binary, UInt32.self)))
+#endif
     }
 }
 

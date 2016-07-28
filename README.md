@@ -16,7 +16,7 @@ Currently only OSX is supported but Linux support is on the way (see Issue #1).
 - [ ] Handle OSC bundles
 - [ ] Dispatch OSC messages
 - [x] Networking
-- [ ] Linux support
+- [x] Linux support
 
 ## Requirements
 

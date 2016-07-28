@@ -65,3 +65,18 @@ class ValueConversionTests : XCTestCase {
     }
 }
 
+#if os(Linux)
+extension ValueConversionTests {
+    static var allTests: [(String, (ValueConversionTests) -> () throws -> Void)] {
+        return [
+            ("testEmptyStringConversion", testEmptyStringConversion),
+            ("testBasicStringConversion", testBasicStringConversion),
+            ("testInt32Conversion", testInt32Conversion),
+            ("testInt64Conversion", testInt64Conversion),
+            ("testIntConversion", testIntConversion),
+            ("testFloat32Conversion", testFloat32Conversion)
+        ]
+    }
+}
+#endif
+

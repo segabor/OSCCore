@@ -89,3 +89,16 @@ class OSCMessageTests : XCTestCase {
         XCTAssertTrue(parsed == parsed2)
     }
 }
+
+#if os(Linux)
+extension OSCMessageTests {
+    static var allTests: [(String, (OSCMessageTests) -> () throws -> Void)] {
+        return [
+            ("testNoArgMessage", testNoArgMessage),
+            ("testSingleArgMessage", testSingleArgMessage),
+            ("testMultipleArgsMessage", testMultipleArgsMessage)
+
+        ]
+    }
+}
+#endif
