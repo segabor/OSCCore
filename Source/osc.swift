@@ -36,12 +36,7 @@ extension String : OSCValue {
             return nil
         }
 
-#if os(OSX)
         self.init(bytes: data[data.startIndex..<termIndex], encoding: String.Encoding.utf8)
-#endif
-#if os(Linux)
-        self.init(bytes: data[data.startIndex..<termIndex], encoding: NSUTF8StringEncoding)
-#endif
     }
 }
 
@@ -62,10 +57,8 @@ extension Float32 : OSCValue {
     
     // custom init
     public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
-        guard
-            let binary : [Byte] = [Byte](data)
-            where binary.count == sizeof(self.dynamicType)
-        else {
+        let binary : [Byte] = [Byte](data)
+        if binary.count != sizeof(self.dynamicType) {
             return nil
         }
 #if os(OSX)
@@ -84,10 +77,8 @@ extension Float32 : OSCValue {
 
 extension HasByteSwapping {
     public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
-        guard
-            let binary : [Byte] = [Byte](data)
-            where binary.count == sizeof(Self.self)
-        else {
+        let binary : [Byte] = [Byte](data)
+        if binary.count != sizeof(Self.self) {
             return nil
         }
         
@@ -125,10 +116,8 @@ extension Int : OSCValue {
     public var oscType : TypeTagValues { return .INT32_TYPE_TAG }
 
     public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
-        guard
-            let binary : [Byte] = [Byte](data)
-            where binary.count == sizeof(Int32.self)
-        else {
+        let binary : [Byte] = [Byte](data)
+        if binary.count != sizeof(Int32.self) {
             return nil
         }
 
@@ -165,7 +154,7 @@ public class OSCMessage {
         let osc_type_tags : String = String(args.map{$0.oscType.rawValue })
         
         // convert values to packets and collect them into a byte array
-        let osc_args : [Byte] = args.map{$0.oscValue}.reduce([Byte](), combine: +)
+        let osc_args : [Byte] = args.map{$0.oscValue}.reduce([Byte](), +)
 
         // OSC Message := Address Pattern + Type Tag String + Arguments
         return address.oscValue
