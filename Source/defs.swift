@@ -47,7 +47,7 @@ public protocol OSCValue {
     // returns OSC type
     var oscType  : TypeTagValues { get }
     // construct value from OSC packet
-    init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S)
+    init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element
 
     // Custom equality check
     func isEqualTo(_ other: OSCValue) -> Bool

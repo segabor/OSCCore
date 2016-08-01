@@ -29,7 +29,7 @@ extension String : OSCValue {
     
     public var oscType : TypeTagValues { return .STRING_TYPE_TAG }
  
-    public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
+    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
         guard
             let termIndex = data.index(of:0)
         else {
@@ -56,7 +56,7 @@ extension Float32 : OSCValue {
     public var oscType : TypeTagValues { return .FLOAT_TYPE_TAG }
     
     // custom init
-    public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
+    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
         let binary : [Byte] = [Byte](data)
         if binary.count != sizeof(self.dynamicType) {
             return nil
@@ -76,7 +76,7 @@ extension Float32 : OSCValue {
 
 
 extension HasByteSwapping {
-    public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
+    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
         let binary : [Byte] = [Byte](data)
         if binary.count != sizeof(Self.self) {
             return nil
@@ -115,7 +115,7 @@ extension Int : OSCValue {
     
     public var oscType : TypeTagValues { return .INT32_TYPE_TAG }
 
-    public init?<S : Collection where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element>(data: S) {
+    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
         let binary : [Byte] = [Byte](data)
         if binary.count != sizeof(Int32.self) {
             return nil
