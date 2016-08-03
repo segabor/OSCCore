@@ -17,17 +17,21 @@
 
 func binarytotype <T> (_ value: [Byte], _: T.Type) -> T
 {
-    return value.withUnsafeBufferPointer {
-        return UnsafePointer<T>($0.baseAddress)!.pointee
+    return value.withUnsafeBufferPointer { /* (UnsafeBufferPointer<Byte>) -> T in */
+        $0.baseAddress!.withMemoryRebound(to: T.self, capacity: 1) {
+            $0.pointee
+        }
     }
 }
 
 func typetobinary <T> (_ value: T) -> [Byte]
 {
     var mv : T = value
-    return withUnsafePointer(to: &mv)
-    {
-        Array(UnsafeBufferPointer(start: UnsafePointer<Byte>($0), count: sizeof(T.self)))
+    let s : Int = sizeof(T.self)
+    return withUnsafePointer(to: &mv) { /* (UnsafePointer<T>) -> Void in */
+        $0.withMemoryRebound(to: Byte.self, capacity: s) { /* (UnsafeMutablePointer<Byte>) -> Void in */
+            Array(UnsafeBufferPointer(start: $0, count: s))
+        }
     }
 }
 

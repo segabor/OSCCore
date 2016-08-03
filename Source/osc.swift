@@ -50,7 +50,7 @@ extension Float32 : OSCValue {
 #if os(Linux)
         let z = htonl(self.bitPattern)
 #endif
-        return [Byte](typetobinary(z).prefix(4))
+        return [Byte](typetobinary(z))
     }
     
     public var oscType : TypeTagValues { return .FLOAT_TYPE_TAG }
@@ -92,7 +92,7 @@ extension HasByteSwapping {
 extension Int64 : OSCValue {
     public var oscValue : [Byte] {
         let z = self.bigEndian
-        return [Byte](typetobinary(z).prefix(sizeof(self.dynamicType)))
+        return [Byte](typetobinary(z))
     }
     
     public var oscType : TypeTagValues { return .INT64_TYPE_TAG }
@@ -101,7 +101,7 @@ extension Int64 : OSCValue {
 extension Int32 : OSCValue {
     public var oscValue : [Byte] {
         let z = self.bigEndian
-        return [Byte](typetobinary(z).prefix(sizeof(self.dynamicType)))
+        return [Byte](typetobinary(z))
     }
     
     public var oscType : TypeTagValues { return .INT32_TYPE_TAG }
