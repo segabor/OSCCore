@@ -36,7 +36,7 @@ func typetobinary <T> (_ value: T) -> [Byte]
 /*
  * round up number to the nearest multiple of 4
  */
-func paddedSize(_ size: Int) -> Int {
+@inline(__always) func paddedSize(_ size: Int) -> Int {
     return (size + 3) & ~0x03
 }
 
