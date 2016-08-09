@@ -1,9 +1,11 @@
 //: Playground - noun: a place where people can play
 
-import Cocoa
+import Foundation
 
 
 /*
+ * Function borrowed from JavaOSC ( https://github.com/hoijui/JavaOSC/blob/master/modules/core/src/main/java/com/illposed/osc/utility/OSCPatternAddressSelector.java )
+ * Which originates from LibLo ( https://github.com/radarsat1/liblo/blob/master/src/pattern_match.c )
  */
 func matches(address: String, pattern: String) -> Bool {
     // var negate = false
@@ -49,16 +51,12 @@ func matches(address: String, pattern: String) -> Bool {
             }
 
             return false
-            
-//            break
         case "?":
             if si < address.endIndex {
                 break
             }
  
             return false
-            
-//            break
         /*
          * set specification is inclusive, that is [a-z] is a, z and
          * everything in between. this means [z-a] may be interpreted
@@ -134,30 +132,33 @@ func matches(address: String, pattern: String) -> Bool {
                 // consume closing character
                 pi = pattern.index(after: pi)
             }
-            
-            break
         case "{":
             
             let place = si // to backtrack
-            var remainder = pi
+            var remainder = pi // to forward-track
             
-            // find the end of the brace list
+            // iterate to the end of the choice list
             while remainder < pattern.endIndex && pattern[remainder] != "}" {
                 remainder = pattern.index(after:remainder)
             }
             if remainder == pattern.endIndex {
+                print("ERROR: unbalanced Choice")
                 return false
             }
             
-            // step back
+            // ?? step back
+            //   reminder points to the last char AFTER closing curly brace
             remainder = pattern.index(after:remainder)
 
-            
+
+            // pick first char after opening curly brace
             var char = pattern[pi]
             pi = pattern.index(after:pi)
 
             while pi < pattern.endIndex {
                 if char == "," {
+                    // print("#1 choice: char = \(char)")
+                    // print("Test string \(address.substring(from: si)) against pattern \(pattern.substring(from: remainder))")
                     if matches(address: address.substring(from: si), pattern: pattern.substring(from: remainder)) {
                         return true
                     } else {
@@ -172,51 +173,60 @@ func matches(address: String, pattern: String) -> Bool {
                         }
                     }
                 } else if char == "}" {
+                    // print("#2 choice: char = \(char)")
+
                     // continue normal pattern matching
-                    
                     if pi == pattern.endIndex && si == address.endIndex {
                         return true
                     }
 
                     si = address.index(before: si) // str is incremented again below
-                    break
                 } else if char == address[si] {
+                    // print("#3 choice: \(char) == \(address[si])")
                     si = address.index(after: si)
                     if si == address.endIndex && remainder < pattern.endIndex {
+                        print("ERROR: address == EOF, pattern != EOF")
                         return false
                     }
-                    // step back
-                    si = address.index(before: si)
                 } else { // skip to next comma
+                    // print("#4 choice: char = \(char)")
+
+                    // reset string position
                     si = place
+
                     while pi < pattern.endIndex && pattern[pi] != "," && pattern[pi] != "}" {
                         pi = pattern.index(after: pi)
                     }
-                    if pi < pattern.endIndex {
-                        if pattern[pi] == "," {
-                            pi = pattern.index(after: pi)
-                        } else if pattern[pi] == "}" {
-                            return false
-                        }
+                    
+                    if pi == pattern.endIndex {
+                        print("ERR: UNBALANCED CHOICE")
+                        return false
+                    }
+
+                    if pattern[pi] == "," {
+                        pi = pattern.index(after: pi)
+                    } else if pattern[pi] == "}" {
+                        return false
                     }
                 }
 
-                // end of while
+                // --- end of inner switch ---
                 char = pattern[pi]
-                pi = pattern.index(after:pi)
+                if pi < pattern.endIndex {
+                    pi = pattern.index(after:pi)
+                }
             }
-
-            
-            break
         default:
             if char != address[si] {
                 return false
             }
-
-            break
         }
 
-        si = address.index(after:si)
+        // --- end of outer switch ---
+        
+        if si < address.endIndex {
+            si = address.index(after:si)
+        }
         
     }
     
@@ -224,21 +234,14 @@ func matches(address: String, pattern: String) -> Bool {
 }
 
 
-// true
-print(matches(address:"ablak", pattern:"ablak"))
+print("true", matches(address:"ablak", pattern:"ablak"))
 
-// false
-print(matches(address:"ablak", pattern:"abrak"))
+print("false", matches(address:"ablak", pattern:"abrak"))
 
-// true
-print(matches(address:"ablak", pattern:"ab?ak"))
+print("true", matches(address:"ablak", pattern:"ab?ak"))
 
-// true
-print(matches(address:"ablak", pattern:"ab*"))
+print("true", matches(address:"ablak", pattern:"ab*"))
+print("true", matches(address:"ablak", pattern:"ab*k"))
 
-// true
-print(matches(address:"ablak", pattern:"a{blak,jto}"))
-
-// false
-print(matches(address:"ablak", pattern:"a{blak|jto}"))
-
+print("true", matches(address:"ablak", pattern:"a{blak}"))
+print("true", matches(address:"ablak", pattern:"a{blak,jto}"))
