@@ -58,13 +58,12 @@ extension Float32 : OSCValue {
     // custom init
     public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
         let binary : [Byte] = [Byte](data)
-        if binary.count != sizeof(self.dynamicType) {
+        if binary.count != MemoryLayout<Float32>.size {
             return nil
         }
 #if os(OSX)
         self = CFConvertFloatSwappedToHost(binarytotype(binary, CFSwappedFloat32.self))
-#endif
-#if os(Linux)
+#elseif os(Linux)
         self = Float(bitPattern: ntohl(binarytotype(binary, UInt32.self)))
 #endif
     }
@@ -78,7 +77,7 @@ extension Float32 : OSCValue {
 extension HasByteSwapping {
     public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
         let binary : [Byte] = [Byte](data)
-        if binary.count != sizeof(Self.self) {
+        if binary.count != MemoryLayout<Self>.size {
             return nil
         }
         
@@ -117,7 +116,7 @@ extension Int : OSCValue {
 
     public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
         let binary : [Byte] = [Byte](data)
-        if binary.count != sizeof(Int32.self) {
+        if binary.count != MemoryLayout<Int32>.size {
             return nil
         }
 

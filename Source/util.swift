@@ -27,7 +27,7 @@ func binarytotype <T> (_ value: [Byte], _: T.Type) -> T
 func typetobinary <T> (_ value: T) -> [Byte]
 {
     var mv : T = value
-    let s : Int = sizeof(T.self)
+    let s : Int = MemoryLayout<T>.size
     return withUnsafePointer(to: &mv) { /* (UnsafePointer<T>) -> Void in */
         $0.withMemoryRebound(to: Byte.self, capacity: s) { /* (UnsafeMutablePointer<Byte>) -> Void in */
             Array(UnsafeBufferPointer(start: $0, count: s))
