@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import OSCCoreTestSuite 
+@testable import OSCCoreTests
 
 XCTMain([
     testCase(OSCMessageTests.allTests),
