@@ -25,7 +25,7 @@ public protocol MessageDispatcher {
     
     func unregister(pattern: String)
     
-    func dispatch(address : String, message : Message)
+    func dispatch(message : Message)
 }
 
 
@@ -64,16 +64,19 @@ public final class SimpleMessageDispatcher : MessageDispatcher {
         }
     }
 
-    
-    
-    public func dispatch(address : String, message: OSCMessage) {
-        queue.sync {
-            listeners.forEach {
-                if address == $0.key {
-                    // dispatch message
-                    $0.value.forEach { $0(message) }
+
+    public func dispatch(message: OSCMessage) {
+        
+        if let addr = message.parse()?.address {
+            queue.sync {
+                listeners.forEach {
+                    let ptn = $0.key
+                    if match(address: addr, pattern: ptn) {
+                        // dispatch message
+                        print("Address matched with pattern \(ptn), delivering message ...")
+                        $0.value.forEach { $0(message) }
+                    }
                 }
-                
             }
         }
     }
