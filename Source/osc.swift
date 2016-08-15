@@ -46,8 +46,7 @@ extension Float32 : OSCValue {
     public var oscValue : [Byte] {
 #if os(OSX)
         let z = CFConvertFloat32HostToSwapped(self).v
-#endif
-#if os(Linux)
+#elseif os(Linux)
         let z = htonl(self.bitPattern)
 #endif
         return [Byte](typetobinary(z))
