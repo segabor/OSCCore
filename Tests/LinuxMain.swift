@@ -4,5 +4,7 @@ import XCTest
 
 XCTMain([
     testCase(OSCMessageTests.allTests),
-    testCase(ValueConversionTests.allTests)
+    testCase(ValueConversionTests.allTests),
+    testCase(AddressMatcherTests.allTests),
+    testCase(DispatcherTests.allTests)
 ])
