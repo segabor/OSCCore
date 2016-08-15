@@ -38,14 +38,8 @@ public protocol MessageDispatcher {
 public final class SimpleMessageDispatcher : MessageDispatcher {
     public typealias Message = OSCMessage
 
-    private let queue : DispatchQueue
-
     private var listeners = [String : [(OSCMessage) -> Void]]()
 
-    
-    public init(queue : DispatchQueue) {
-        self.queue = queue
-    }
     
     public func register(pattern: String, _ listener: @escaping (OSCMessage) -> Void) {
         
@@ -68,14 +62,12 @@ public final class SimpleMessageDispatcher : MessageDispatcher {
     public func dispatch(message: OSCMessage) {
         
         if let addr = message.parse()?.address {
-            queue.sync {
-                listeners.forEach {
-                    let ptn = $0.key
-                    if match(address: addr, pattern: ptn) {
-                        // dispatch message
-                        print("Address matched with pattern \(ptn), delivering message ...")
-                        $0.value.forEach { $0(message) }
-                    }
+            listeners.forEach {
+                let ptn = $0.key
+                if match(address: addr, pattern: ptn) {
+                    // dispatch message
+                    print("Address matched with pattern \(ptn), delivering message ...")
+                    $0.value.forEach { $0(message) }
                 }
             }
         }
@@ -89,4 +81,4 @@ public final class SimpleMessageDispatcher : MessageDispatcher {
  # Default Message Dispatcher
  
  **/
-let OSCMessageDispatcher = SimpleMessageDispatcher(queue: DispatchQueue(label:"OSC"))
+let OSCMessageDispatcher = SimpleMessageDispatcher()
