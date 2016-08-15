@@ -31,7 +31,7 @@ class DispatcherTests : XCTestCase {
     extension DispatcherTests {
         static var allTests: [(String, (DispatcherTests) -> () throws -> Void)] {
             return [
-                "testMessageDispatch"
+                ("testMessageDispatch", testMessageDispatch)
             ]
         }
     }

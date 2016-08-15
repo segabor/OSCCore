@@ -30,9 +30,9 @@ class AddressMatcherTests : XCTestCase {
 
 #if os(Linux)
     extension AddressMatcherTests {
-        static var allTests: [(String, (DispatcherTests) -> () throws -> Void)] {
+        static var allTests: [(String, (AddressMatcherTests) -> () throws -> Void)] {
             return [
-                "testMatcherFunction"
+                ("testMatcherFunction", testMatcherFunction)
             ]
         }
     }
