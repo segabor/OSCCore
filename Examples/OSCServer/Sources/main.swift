@@ -1,6 +1,5 @@
 import UDP
 import OSCCore
-import C7
 
 let clientPort    = 5050
 
@@ -14,33 +13,8 @@ func receiveOSCMessage(port : Int) -> OSCMessage? {
 		return nil
 	}
 
-
-	func catchPackets(socket : UDPSocket) -> Data? {
-		/// this buffer collects incoming packets
-		var buf = Data()
-		let maxBytes = 1024
-
-		/// run until we have the entire stuff over the channel
-		while true {
-			guard let (pkt, _) = try? socket.receive(maxBytes)
-			else {
-				/// something went wrong ...
-				return nil
-			}
-
-			/// append packet to buffer
-			buf += pkt
-
-			/// packet is less than the maximum size
-			///   this was the last packet, bye
-			if pkt.count < maxBytes {
-				return buf
-			}
-		}
- 	}
-
 	/// fetch message over the UDP tunnel
-	guard let buf = catchPackets(socket: udpSocket)
+	guard let (buf, _) = try? udpSocket.receive(1536)
 	else {
 		return nil
 	}
