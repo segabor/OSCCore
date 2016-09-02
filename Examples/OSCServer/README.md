@@ -21,7 +21,6 @@ Send an OSC message. If you use osc-tools, run this command within the tools pro
 Now you should see the following output
 
     Received 16 bytes
-    Message arrived
     address: /hello
     arg: 123
 

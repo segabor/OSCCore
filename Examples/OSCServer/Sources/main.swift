@@ -1,37 +1,64 @@
+import C7 /// required for Data type
+import Result
 import UDP
 import OSCCore
 
-let clientPort    = 5050
+
+// the error part of Result
+enum MyError : Error {
+	case SocketError
+	case ReceiveError
+	case ParseError
+}
 
 
-extension OSCMessage {
-	convenience init?(port : Int) {
+// open port
+func createSocket(port : Int) -> Result<UDPSocket, MyError> {
+	if let udpSocket = try? UDPSocket(ip: IP(port: port)) {
+		return .success(udpSocket)
+	} else {
+		return .failure(.SocketError)
+	}
+}
 
-		// open socket and listen for incoming packet
-		guard let udpSocket = try? UDPSocket(ip: IP(port: clientPort))
-		else {
-			return nil
-		}
+// receive message over UDP channel
+func receivePacket(_ socket : UDPSocket) -> Result<Data, MyError> {
+	if let (buf, _) = try? socket.receive(1536) {
+		print("Received \(buf.count) bytes")
+		return .success(buf)
+	} else {
+		return .failure(.ReceiveError)
+	}
+}
 
-		/// fetch message over the UDP tunnel
-		guard let (buf, _) = try? udpSocket.receive(1536)
-		else {
-			return nil
-		}
-
-		/// create OSC message
-		self.init(data: buf.bytes)
+// parse OSC message
+func parseMessage(_ buf : Data ) -> Result<ParsedMessage, MyError> {
+	let msg = OSCMessage(data: buf.bytes )
+	if let parsed = msg.parse()	{
+		return .success(parsed)
+	} else {
+		return .failure(.ParseError)
 	}
 }
 
 
-if let msg = OSCMessage(port: clientPort),
-	let parsed_msg = msg.parse() {
+// let it flow ...
+let result =
+	createSocket(port: 5050)
+ 	>>- receivePacket
+	>>- parseMessage
 
+
+
+// see the result!
+switch result {
+case let .success(msg):
 	/// print out message content
-	print("address: \(parsed_msg.address)")
-	parsed_msg.args.forEach { arg in
+	print("address: \(msg.address)")
+	msg.args.forEach { arg in
 		print("arg: \(arg)")
 	}
+case .failure(_):
+	print("Failed to retrieve message")
 }
 
