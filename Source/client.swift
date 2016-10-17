@@ -1,15 +1,18 @@
 import UDP
-import struct Foundation.Data
+
+
 
 public class UDPClient {
 
   public let socket : UDPSendingSocket
 
+
   public init(socket : UDPSendingSocket) {
     self.socket = socket
   }
 
-  public convenience init?( port : Int, remotePort serverPort : Int) throws {
+
+  public convenience init?( port : Int, remotePort serverPort : Int) {
     guard
       let clientIP = try? IP(port : port),
       let serverIP = try? IP(port : serverPort),
@@ -19,5 +22,10 @@ public class UDPClient {
     }
 
     self.init(socket: sock)
+  }
+
+
+  public func send(message: OSCMessage) throws {
+    try socket.write(message.data, deadline: 1.second.fromNow())
   }
 }
