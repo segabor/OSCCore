@@ -9,12 +9,25 @@
 This is a tiny module that implements [OpenSoundControl](http://opensoundcontrol.org/spec-1_0) protocol in pure Swift.
 Currently only OSX is supported but Linux support is on the way (see Issue #1).
 
+## Installation
+
+```swift
+import PackageDescription
+
+let package = Package(
+    name: "OSCServer",
+    dependencies: [
+        .Package(url: "https://github.com/segabor/OSCCore.git", majorVersion: 0)
+    ]
+)
+```
+
 ## Roadmap
 
 - [x] Type conversion (Convert numeric and String types to OSC packets and back)
 - [x] Build OSC messages
 - [ ] Handle OSC bundles
-- [ ] Dispatch OSC messages
+- [x] Dispatch OSC messages
 - [x] Networking
 - [x] Linux support
 
