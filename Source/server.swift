@@ -27,18 +27,15 @@ public class OSCServer: MessageDispatcher {
   }
 
   public func listen() {
-    let deadline = 5.seconds.fromNow()
-
     while true {
       do {
-        let (buffer, _) = try socket.read(upTo: 4096, deadline: deadline)
+        let (buffer, _) = try socket.read(upTo: 1536, deadline: .never)
 
         let msg = OSCMessage(data: buffer.bytes )
 
         /// might crash during dispatch if message is garbled
         dispatcher.dispatch(message: msg)
       } catch {
-        // DISPLAY SOME ERROR
         print("Failed to read message \(error)")
         break
       }
