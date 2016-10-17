@@ -41,6 +41,22 @@ func parseMessage(_ buf : Data ) -> Result<ParsedMessage, MyError> {
 	}
 }
 
+// register an observer
+OSCMessageDispatcher.register("/hello") { (msg: OSCMessage)->Void in 
+	print("Message arrived")	
+}
+
+// The main loop
+let result : Result<UDPSocket, MyError> = createSoclet(port: 5050)
+switch result {
+case let .success(sock):
+	while true {
+
+	}
+default:
+}
+
+// -- old -- //
 
 // let it flow ...
 let result =
