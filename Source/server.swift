@@ -7,7 +7,7 @@ public class OSCServer: MessageDispatcher {
   let socket: UDPSocket
   let dispatcher = OSCMessageDispatcher
 
-  init(port: Int) throws {
+  public init(port: Int) throws {
     socket = try UDPSocket(ip: IP(port: port))
   }
 
@@ -33,7 +33,10 @@ public class OSCServer: MessageDispatcher {
       do {
         let (buffer, _) = try socket.read(upTo: 4096, deadline: deadline)
 
-        let msg = OSCMessage(data: buffer )
+        let msg = OSCMessage(data: buffer.bytes )
+
+        /// might crash during dispatch if message is garbled
+        dispatcher.dispatch(message: msg)
       } catch {
         // DISPLAY SOME ERROR
         break
