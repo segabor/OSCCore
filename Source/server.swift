@@ -39,6 +39,7 @@ public class OSCServer: MessageDispatcher {
         dispatcher.dispatch(message: msg)
       } catch {
         // DISPLAY SOME ERROR
+        print("Failed to read message \(error)")
         break
       }
     }
