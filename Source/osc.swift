@@ -132,6 +132,12 @@ public struct OSCTimeTag: OSCValue, Equatable {
     public var oscType: TypeTagValues { return .TIME_TAG_TYPE_TAG }
 
 
+    /// Create time tag with current time in millisecs
+    public init() {
+        self.init( Int64( Date().timeIntervalSince1970 * 1000) )
+    }
+
+
     public init(_ value: Int64) {
         self.value = value
     }
