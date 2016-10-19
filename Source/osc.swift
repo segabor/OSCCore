@@ -124,6 +124,33 @@ extension Int : OSCValue {
 }
 
 
+public struct OSCTimeTag: OSCValue, Equatable {
+    public let value: Int64
+
+    public var oscValue: [Byte] { return value.oscValue }
+
+    public var oscType: TypeTagValues { return .TIME_TAG_TYPE_TAG }
+
+
+    public init(_ value: Int64) {
+        self.value = value
+    }
+
+    public init?<S: Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
+        guard
+            let intValue = Int64(data: data)
+        else {
+            return nil
+        }
+
+        self.value = intValue
+    }
+
+    /// Equatable
+    public static func ==(lhs: OSCTimeTag, rhs: OSCTimeTag) -> Bool {
+        return lhs.value == rhs.value
+    }
+}
 
 
 
@@ -133,7 +160,7 @@ extension Int : OSCValue {
 
 public class OSCMessage {
     public let data : [Byte]
-    
+
     public init(address: String, args: OSCValue...) {
         data = OSCMessage.convert(address, args)
     }
@@ -224,6 +251,15 @@ public class OSCMessage {
                     }
                     args.append(val)
                     index+=4
+                case .TIME_TAG_TYPE_TAG:
+                    /// process the same way as Int64 but yield different Swift type
+                    guard
+                        let val = OSCTimeTag(data: data[index..<(index+8)])
+                    else {
+                         return nil
+                    }
+                    args.append(val)
+                    index+=8
                 default:
                     break
                 }

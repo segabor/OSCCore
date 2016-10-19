@@ -37,7 +37,7 @@ class ValueConversionTests : XCTestCase {
         let value : Int32 = 0x12345678
         let pkt = value.oscValue
         XCTAssertEqual(pkt, [0x12, 0x34, 0x56, 0x78])
-        XCTAssertEqual(value, Int32(data: pkt), "Values mismatch") 
+        XCTAssertEqual(value, Int32(data: pkt), "Value mismatch") 
     }
 
 
@@ -45,7 +45,7 @@ class ValueConversionTests : XCTestCase {
         let value : Int64 = 0x123456789abcdef0
         let pkt = value.oscValue
         XCTAssertEqual(pkt, [0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0])
-        XCTAssertEqual(value, Int64(data: pkt), "Values mismatch")
+        XCTAssertEqual(value, Int64(data: pkt), "Value mismatch")
     }
 
 
@@ -53,7 +53,7 @@ class ValueConversionTests : XCTestCase {
         let value : Int = 0x12345678
         let pkt = value.oscValue
         XCTAssertEqual(pkt, [0x12, 0x34, 0x56, 0x78])
-        XCTAssertEqual(value, Int(data: pkt), "Values mismatch")
+        XCTAssertEqual(value, Int(data: pkt), "Value mismatch")
     }
 
 
@@ -61,7 +61,14 @@ class ValueConversionTests : XCTestCase {
         let value : Float32 = Float32(1.234)
         let pkt = value.oscValue
         XCTAssertEqual(pkt, [0x3f, 0x9d, 0xf3, 0xb6])
-        XCTAssertEqual(value, Float32(data: pkt), "Values mismatch")
+        XCTAssertEqual(value, Float32(data: pkt), "Value mismatch")
+    }
+
+    func testTimeTagConversion() {
+        let value = OSCTimeTag(0x123456789abcdef0)
+        let pkt = value.oscValue
+        XCTAssertEqual(pkt, [0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0])
+        XCTAssertEqual(value, OSCTimeTag(data: pkt), "Value mismatch")
     }
 }
 
@@ -74,7 +81,8 @@ extension ValueConversionTests {
             ("testInt32Conversion", testInt32Conversion),
             ("testInt64Conversion", testInt64Conversion),
             ("testIntConversion", testIntConversion),
-            ("testFloat32Conversion", testFloat32Conversion)
+            ("testFloat32Conversion", testFloat32Conversion),
+            ("testTimeTagConversion", testTimeTagConversion)
         ]
     }
 }
