@@ -275,3 +275,45 @@ public class OSCMessage {
         return (address: address, args: args)
     }
 }
+
+
+public struct OSCBundle : OSCConvertible {
+    public let timetag : OSCTimeTag
+    public let messages : [OSCMessage]
+
+
+    public var oscValue : [Byte] {
+        var result = [Byte]()
+        result += "#bundle".oscValue
+        result += timetag.oscValue
+
+        messages.forEach { msg in
+            let v = msg.data
+            result += Int32(v.count).oscValue
+            result += v
+        }
+        return result
+    }
+
+
+    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
+
+        /// not enough data
+        guard
+            data.count >= 16
+        else {
+            return nil
+        }
+        let bytes = [Byte](data)
+
+        var ix = bytes.startIndex
+        guard
+            let marker = String(data: bytes.prefix(upTo: 8)), 
+            marker == "#bundle"
+        else {
+            return nil
+        }
+    }
+}
+
+
