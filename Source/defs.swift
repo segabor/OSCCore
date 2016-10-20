@@ -1,21 +1,24 @@
-//
-//  defs.swift
-//  OSCCore
-//
-//  Created by Gábor Sebestyén on 23/04/16.
-//  Copyright © 2016 Gábor Sebestyén. All rights reserved.
-//
+///
+///  defs.swift
+///  OSCCore
+///
+///  Created by Gábor Sebestyén on 23/04/16.
+///  Copyright © 2016 Gábor Sebestyén. All rights reserved.
+///
 
 public typealias Byte = UInt8
 
+
+/// Soon to be removed
 public typealias ParsedMessage = (address: String, args: [OSCValue])
 
 
-/*
- * OSC Type Tag values
- *
- * Enum borrowed from https://github.com/mkalten/reacTIVision/blob/master/ext/oscpack/osc/OscTypes.h
- */
+
+///
+/// OSC Type Tag values
+///
+/// Enum borrowed from https://github.com/mkalten/reacTIVision/blob/master/ext/oscpack/osc/OscTypes.h
+///
 public enum TypeTagValues : Character {
     case TRUE_TYPE_TAG = "T"
     case FALSE_TYPE_TAG = "F"
@@ -38,23 +41,41 @@ public enum TypeTagValues : Character {
 
 
 
-/*
- * Enable conversion between Swift types and OSC packets
- */
-public protocol OSCValue {
-    // convert value to OSC packet
+///
+/// Objects implementing this protocol
+/// can be converted to OSC packets
+/// and back
+///
+/// Containers like OSC messages and
+/// bundles implement this protocol
+///
+public protocol OSCConvertible {
+    // return as byte sequence
     var oscValue : [Byte] { get }
+
+    // construct OSC value from OSC packet
+    init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element
+}
+
+
+
+///
+/// Basic types adopting this protocol
+/// can be converted to OSC value
+///
+public protocol OSCValue : OSCConvertible {
     // returns OSC type
     var oscType  : TypeTagValues { get }
-    // construct value from OSC packet
-    init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element
 
     // Custom equality check
     func isEqualTo(_ other: OSCValue) -> Bool
 }
 
-// Workaround for Equatable adoption
-//
+
+
+///
+/// Workaround for Equatable adoption
+///
 extension OSCValue where Self : Equatable {
     // otherObject could also be 'Any'
     public func isEqualTo(_ other: OSCValue) -> Bool {
