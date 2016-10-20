@@ -297,7 +297,6 @@ public struct OSCBundle : OSCConvertible {
 
 
     public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
-
         /// not enough data
         guard
             data.count >= 16
@@ -306,13 +305,39 @@ public struct OSCBundle : OSCConvertible {
         }
         let bytes = [Byte](data)
 
-        var ix = bytes.startIndex
         guard
             let marker = String(data: bytes.prefix(upTo: 8)), 
             marker == "#bundle"
         else {
             return nil
         }
+
+        // extarct time tag
+        guard
+            let ts = OSCTimeTag(data: bytes[bytes.startIndex+8..<bytes.startIndex+16])
+        else {
+            return nil
+        }
+
+        self.timetag = ts
+
+        var msgs = [OSCMessage]()
+
+        /** var ix = data.index(data.startIndex, offsetBy: 16)
+
+        while ix < data.endIndex {
+            guard
+                let chunk_len = Int(data: data[ix ..< data.index(ix, offsetBy: 4)]),
+                ix+4+chunk_len < data.endIndex,
+                let msg = OSCMessage(data: data[(ix+4)..<(ix+chunk_len+4)])
+            else {
+                break
+            }
+
+            msgs += msg
+        } **/
+
+        self.messages = msgs
     }
 }
 
