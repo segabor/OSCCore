@@ -275,7 +275,7 @@ public struct OSCBundle : OSCConvertible {
         result += timetag.oscValue
 
         content.forEach { msg in
-            let v = msg.data
+            let v = msg.oscValue
             result += Int32(v.count).oscValue
             result += v
         }
@@ -321,14 +321,12 @@ public struct OSCBundle : OSCConvertible {
         while ix < bytes.count {
             guard
                 let chunk_len = Int(data: bytes[ix..<(ix+4)]),
-                ix+4+chunk_len < bytes.count
+                ix+4+chunk_len < bytes.count,
+                let msg = OSCMessage(data: [Byte]( bytes[(ix+4)..<(ix+chunk_len+4)] ))
             else {
                 break
             }
 
-            /// FIXME
-            let msg = OSCMessage(data: [Byte]( bytes[(ix+4)..<(ix+chunk_len+4)] ))
-            
             msgs.append(msg)
 
             /// step to the start of the next chunk

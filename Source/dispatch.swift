@@ -61,14 +61,12 @@ public final class SimpleMessageDispatcher : MessageDispatcher {
 
     public func dispatch(message: OSCMessage) {
         
-        if let addr = message.parse()?.address {
-            listeners.forEach {
-                let ptn = $0.key
-                if match(address: addr, pattern: ptn) {
-                    // dispatch message
-                    print("Address matched with pattern \(ptn), delivering message ...")
-                    $0.value.forEach { $0(message) }
-                }
+        listeners.forEach {
+            let ptn = $0.key
+            if match(address: message.address, pattern: ptn) {
+                // dispatch message
+                print("Address matched with pattern \(ptn), delivering message ...")
+                $0.value.forEach { $0(message) }
             }
         }
     }

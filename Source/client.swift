@@ -26,6 +26,6 @@ public class UDPClient {
 
 
   public func send(message: OSCMessage) throws {
-    try socket.write(message.data, deadline: 1.second.fromNow())
+    try socket.write(message.oscValue, deadline: 1.second.fromNow())
   }
 }
