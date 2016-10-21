@@ -279,15 +279,16 @@ public class OSCMessage {
 
 public struct OSCBundle : OSCConvertible {
     public let timetag : OSCTimeTag
-    public let messages : [OSCMessage]
 
+    /// TODO will be OSCConvertible once OSCMessage conforms to it
+    public let content : [OSCMessage]
 
     public var oscValue : [Byte] {
         var result = [Byte]()
         result += "#bundle".oscValue
         result += timetag.oscValue
 
-        messages.forEach { msg in
+        content.forEach { msg in
             let v = msg.data
             result += Int32(v.count).oscValue
             result += v
@@ -295,9 +296,13 @@ public struct OSCBundle : OSCConvertible {
         return result
     }
 
+    public init(timetag: OSCTimeTag, content: [OSCMessage]) {
+        self.timetag = timetag
+        self.content = content
+    }
 
     public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
-        /// not enough data
+        /// Chechk the header
         guard
             data.count >= 16
         else {
@@ -305,14 +310,15 @@ public struct OSCBundle : OSCConvertible {
         }
         let bytes = [Byte](data)
 
+        /// Bundle starts with string
         guard
-            let marker = String(data: bytes.prefix(upTo: 8)), 
+            let marker = String(data: bytes.prefix(8)), 
             marker == "#bundle"
         else {
             return nil
         }
 
-        // extarct time tag
+        /// Extract time tag
         guard
             let ts = OSCTimeTag(data: bytes[bytes.startIndex+8..<bytes.startIndex+16])
         else {
@@ -323,22 +329,26 @@ public struct OSCBundle : OSCConvertible {
 
         var msgs = [OSCMessage]()
 
-        /** var ix = data.index(data.startIndex, offsetBy: 16)
-
-        while ix < data.endIndex {
+        // Read up the content
+        // from offset
+        var ix = 16
+        while ix < bytes.count {
             guard
-                let chunk_len = Int(data: data[ix ..< data.index(ix, offsetBy: 4)]),
-                ix+4+chunk_len < data.endIndex,
-                let msg = OSCMessage(data: data[(ix+4)..<(ix+chunk_len+4)])
+                let chunk_len = Int(data: bytes[ix..<(ix+4)]),
+                ix+4+chunk_len < bytes.count
             else {
                 break
             }
 
-            msgs += msg
-        } **/
+            /// FIXME
+            let msg = OSCMessage(data: [Byte]( bytes[(ix+4)..<(ix+chunk_len+4)] ))
+            
+            msgs.append(msg)
 
-        self.messages = msgs
+            /// step to the start of the next chunk
+            ix = ix+4+chunk_len
+        }
+
+        self.content = msgs
     }
 }
-
-
