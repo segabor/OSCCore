@@ -322,6 +322,7 @@ public struct OSCBundle : OSCConvertible {
             guard
                 let chunk_len = Int(data: bytes[ix..<(ix+4)]),
                 ix+4+chunk_len < bytes.count,
+                /// FIXME: any OSCConvertible might come here!
                 let msg = OSCMessage(data: [Byte]( bytes[(ix+4)..<(ix+chunk_len+4)] ))
             else {
                 break

@@ -31,7 +31,7 @@ public class OSCServer: MessageDispatcher {
       do {
         let (buffer, _) = try socket.read(upTo: 1536, deadline: .never)
 
-        /// FIXME global parser
+        /// FIXME any OSCConvertible might come here!
         if let msg = OSCMessage(data: buffer.bytes ) {
           /// might crash during dispatch if message is garbled
           dispatcher.dispatch(message: msg)
