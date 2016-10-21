@@ -18,11 +18,6 @@ func ==(lhs: [OSCValue], rhs: [OSCValue]) -> Bool {
     return false
 }
 
-// compare two OSC messages parsed from byte stream
-func ==(lhs: ParsedMessage, rhs: ParsedMessage) -> Bool {
-    return lhs.address == rhs.address && lhs.args == rhs.args
-}
-
 
 class OSCMessageTests : XCTestCase {
     func testNoArgMessage() {
@@ -56,7 +51,7 @@ class OSCMessageTests : XCTestCase {
 
         let expected_pkt : [Byte] = [
             0x2f,  0x66,  0x6f,  0x6f,
-            0x0,   0x00,  0x00,  0x00,
+            0x00,  0x00,  0x00,  0x00,
             0x2c,  0x69,  0x69,  0x73,
             0x66,  0x66,  0x00,  0x00,
             0x00,  0x00,  0x03,  0xe8,
@@ -72,21 +67,22 @@ class OSCMessageTests : XCTestCase {
     
 
     private func doTestOSCMessage(_ msg : OSCMessage, _ expected_pkt : [Byte]) {
-        let converted_pkt = msg.data
+        let converted_pkt = msg.oscValue
         
         // check conversion is correct
         XCTAssertEqual(expected_pkt, converted_pkt)
         
         // check the opposite - restore messages from byte stream
         guard
-            let parsed : ParsedMessage = msg.parse(),
-            let parsed2 : ParsedMessage = OSCMessage(data: expected_pkt).parse()
+            let parsed:  OSCMessage = OSCMessage(data: converted_pkt),
+            let parsed2: OSCMessage = OSCMessage(data: expected_pkt)
         else {
             XCTFail("Failed to restore message from packet")
             return
         }
         
-        XCTAssertTrue(parsed == parsed2)
+        XCTAssertTrue(parsed.address == parsed2.address)
+        XCTAssertTrue(parsed.args == parsed2.args)
     }
 }
 

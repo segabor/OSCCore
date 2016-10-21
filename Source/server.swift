@@ -31,10 +31,11 @@ public class OSCServer: MessageDispatcher {
       do {
         let (buffer, _) = try socket.read(upTo: 1536, deadline: .never)
 
-        let msg = OSCMessage(data: buffer.bytes )
-
-        /// might crash during dispatch if message is garbled
-        dispatcher.dispatch(message: msg)
+        /// FIXME global parser
+        if let msg = OSCMessage(data: buffer.bytes ) {
+          /// might crash during dispatch if message is garbled
+          dispatcher.dispatch(message: msg)
+        }
       } catch {
         print("Failed to read message \(error)")
         break

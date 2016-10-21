@@ -164,23 +164,91 @@ public struct OSCTimeTag: OSCValue, Equatable {
 /* OSC Message structure */
 /*************************/
 
-public class OSCMessage {
-    public let data : [Byte]
+public struct OSCMessage : OSCConvertible {
+    public let address: String
+    public let args: [OSCValue]
 
     public init(address: String, args: OSCValue...) {
-        data = OSCMessage.convert(address, args)
+        self.address = address
+        self.args = args
     }
 
-    public init(address: String) {
-        data = OSCMessage.convert(address, [])
-    }
-    
-    public init(data: [Byte]) {
-        self.data = data
+    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
+        guard
+            let address = String(data: data)
+        else {
+            return nil
+        }
+        self.address = address
+
+
+        var index = paddedSize(address.utf8.count+1)
+        let bytes = [Byte](data)
+        
+        var args = [OSCValue]()
+
+        // find type tags string
+        if bytes[index] == 44,
+            let _type_tags = String(data: bytes.suffix(from:index+1)) {
+
+            // process args list
+            index += paddedSize(_type_tags.utf8.count+2)
+            for type_tag in _type_tags.characters {
+                
+                if let type : TypeTagValues = TypeTagValues(rawValue: type_tag) {
+                    switch type {
+                    case .STRING_TYPE_TAG:
+                        guard
+                            let val = String(data: bytes.suffix(from:index))
+                        else {
+                            return nil
+                        }
+                        args.append(val)
+                        index += paddedSize(val.utf8.count+1)
+                    case .INT32_TYPE_TAG:
+                        guard
+                            let val = Int32(data: bytes[index..<(index+4)])
+                        else {
+                            return nil
+                        }
+                        args.append(val)
+                        index+=4
+                    case .INT64_TYPE_TAG:
+                        guard
+                            let val = Int64(data: bytes[index..<(index+8)])
+                        else {
+                            return nil
+                        }
+                        args.append(val)
+                        index+=8
+                    case .FLOAT_TYPE_TAG:
+                        guard
+                            let val = Float32(data: bytes[index..<(index+4)])
+                        else {
+                            return nil
+                        }
+                        args.append(val)
+                        index+=4
+                    case .TIME_TAG_TYPE_TAG:
+                        /// process the same way as Int64 but yield different Swift type
+                        guard
+                            let val = OSCTimeTag(data: bytes[index..<(index+8)])
+                        else {
+                             return nil
+                        }
+                        args.append(val)
+                        index+=8
+                    default:
+                        break
+                    }
+                }
+            }
+        }
+        
+        self.args = args
     }
 
-    // convert message into OSC message
-    static func convert(_ address: String, _ args: [OSCValue]) -> [Byte] {
+    public var oscValue : [Byte] {
         // align type letters to one string, starting with a comma character
         let osc_type_tags : String = String(args.map{$0.oscType.rawValue })
         
@@ -191,88 +259,6 @@ public class OSCMessage {
         return address.oscValue
             + (","+osc_type_tags).oscValue
             + osc_args
-    }
-
-    /*
-     * Get OSC message from packet stream
-     */
-    public func parse() -> ParsedMessage? {
-        let commabuf = [Byte](",".utf8)
-        var index = data.startIndex
-        
-        guard
-            let address = String(data: data)
-        else {
-            return nil
-        }
-        
-        index = paddedSize(address.utf8.count+1)
-        
-        // find type tags string
-        
-        guard
-            data[index] == commabuf[0],
-            let _type_tags = String(data: data.suffix(from:index+1))
-        else {
-            return (address: address, args:[])
-        }
-        
-        // process args list
-        index += paddedSize(_type_tags.utf8.count+2)
-
-        var args = [OSCValue]()
-        for type_tag in _type_tags.characters {
-            
-            if let type : TypeTagValues = TypeTagValues(rawValue: type_tag) {
-                switch type {
-                case .STRING_TYPE_TAG:
-                    guard
-                        let val = String(data: data.suffix(from:index))
-                    else {
-                        return nil
-                    }
-                    args.append(val)
-                    index += paddedSize(val.utf8.count+1)
-                case .INT32_TYPE_TAG:
-                    guard
-                        let val = Int32(data: data[index..<(index+4)])
-                    else {
-                        return nil
-                    }
-                    args.append(val)
-                    index+=4
-                case .INT64_TYPE_TAG:
-                    guard
-                        let val = Int64(data: data[index..<(index+8)])
-                    else {
-                        return nil
-                    }
-                    args.append(val)
-                    index+=8
-                case .FLOAT_TYPE_TAG:
-                    guard
-                        let val = Float32(data: data[index..<(index+4)])
-                    else {
-                        return nil
-                    }
-                    args.append(val)
-                    index+=4
-                case .TIME_TAG_TYPE_TAG:
-                    /// process the same way as Int64 but yield different Swift type
-                    guard
-                        let val = OSCTimeTag(data: data[index..<(index+8)])
-                    else {
-                         return nil
-                    }
-                    args.append(val)
-                    index+=8
-                default:
-                    break
-                }
-            }
-        }
-        
-        return (address: address, args: args)
     }
 }
 
