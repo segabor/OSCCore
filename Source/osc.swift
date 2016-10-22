@@ -263,11 +263,33 @@ public struct OSCMessage : OSCConvertible {
 }
 
 
+
+/// Iterator that breaks down the byte stream
+/// into small chunks containing OSC packets
+struct ChunkIt : IteratorProtocol {
+    let bytes : ArraySlice<Byte>
+    var index : Int
+
+    init(_ bytes: ArraySlice<Byte>) { self.bytes = bytes; index = bytes.startIndex }
+
+    mutating func next() -> ArraySlice<Byte>? {
+        if index < bytes.endIndex, let len = Int(data: bytes[index..<(index+4)]) {
+            let d = bytes[(index+4)..<(index+4+len)]
+            index = index+4+len
+            return d
+        } else {
+            return nil
+        }
+    }
+}
+
+
+
 public struct OSCBundle : OSCConvertible {
     public let timetag : OSCTimeTag
 
-    /// TODO will be OSCConvertible once OSCMessage conforms to it
-    public let content : [OSCMessage]
+    /// Bundle elements 
+    public let content : [OSCConvertible]
 
     public var oscValue : [Byte] {
         var result = [Byte]()
@@ -282,7 +304,7 @@ public struct OSCBundle : OSCConvertible {
         return result
     }
 
-    public init(timetag: OSCTimeTag, content: [OSCMessage]) {
+    public init(timetag: OSCTimeTag, content: [OSCConvertible]) {
         self.timetag = timetag
         self.content = content
     }
@@ -313,26 +335,19 @@ public struct OSCBundle : OSCConvertible {
 
         self.timetag = ts
 
-        var msgs = [OSCMessage]()
+        var msgs = [OSCConvertible]()
 
         // Read up the content
         // from offset
-        var ix = 16
-        while ix < bytes.count {
-            guard
-                let chunk_len = Int(data: bytes[ix..<(ix+4)]),
-                ix+4+chunk_len < bytes.count,
-                /// FIXME: any OSCConvertible might come here!
-                let msg = OSCMessage(data: [Byte]( bytes[(ix+4)..<(ix+chunk_len+4)] ))
-            else {
-                break
+        var it = ChunkIt(bytes[(bytes.startIndex+16)..<bytes.endIndex] )
+        while let chunk = it.next() {
+            if let msg = OSCMessage(data: chunk ) {
+                msgs.append(msg)
+            } else if let bnd = OSCBundle(data: chunk) {
+                msgs.append(bnd)
             }
-
-            msgs.append(msg)
-
-            /// step to the start of the next chunk
-            ix = ix+4+chunk_len
         }
+
 
         self.content = msgs
     }
