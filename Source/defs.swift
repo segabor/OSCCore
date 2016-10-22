@@ -9,11 +9,6 @@
 public typealias Byte = UInt8
 
 
-/// Soon to be removed
-public typealias ParsedMessage = (address: String, args: [OSCValue])
-
-
-
 ///
 /// OSC Type Tag values
 ///
