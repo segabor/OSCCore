@@ -31,10 +31,31 @@ public class OSCServer: MessageDispatcher {
       do {
         let (buffer, _) = try socket.read(upTo: 1536, deadline: .never)
 
-        /// FIXME any OSCConvertible might come here!
         if let msg = OSCMessage(data: buffer.bytes ) {
-          /// might crash during dispatch if message is garbled
           dispatcher.dispatch(message: msg)
+        } else if let bndl = OSCBundle(data: buffer.bytes) {
+
+          // Temporary solution that collects messages and
+          // dispatches them at once, disregarding
+          // bundle timestamps
+          var msgs = [OSCMessage]()
+
+          // collect messages
+          recursive{ f, bundle in
+            bundle.content.forEach{ item in
+              switch item {
+              case let m as OSCMessage:
+                msgs.append(m)
+              case let b as OSCBundle:
+                f(b)
+              default:
+                ()
+              }
+            }
+          }(bndl)
+
+          // dispatc'em!!
+          msgs.forEach { dispatcher.dispatch(message: $0) }
         }
       } catch {
         print("Failed to read message \(error)")
