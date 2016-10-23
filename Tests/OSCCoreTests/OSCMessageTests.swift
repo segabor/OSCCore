@@ -3,25 +3,8 @@ import XCTest
 
 
 
-// compare two OSC value arrays
-func ==(lhs: [OSCValue], rhs: [OSCValue]) -> Bool {
-    if lhs.count == rhs.count {
-        
-        for pair in zip(lhs,rhs) {
-            if pair.0.isEqualTo(pair.1) == false {
-                return false
-            }
-        }
-        return true
-    }
-
-    return false
-}
-
-
 class OSCMessageTests : XCTestCase {
     func testNoArgMessage() {
-        // msg packet := "hello".osc + "," + osc
         let msg = OSCMessage(address: "hello")
 
         let expected_pkt : [Byte] = [0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00]

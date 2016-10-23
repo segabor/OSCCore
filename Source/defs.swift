@@ -50,6 +50,9 @@ public protocol OSCConvertible {
 
     // construct OSC value from OSC packet
     init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element
+
+    // Custom function for Equatable
+    func isEqualTo(_ other: OSCConvertible) -> Bool
 }
 
 
@@ -61,9 +64,6 @@ public protocol OSCConvertible {
 public protocol OSCValue : OSCConvertible {
     // returns OSC type
     var oscType  : TypeTagValues { get }
-
-    // Custom equality check
-    func isEqualTo(_ other: OSCValue) -> Bool
 }
 
 
@@ -71,12 +71,29 @@ public protocol OSCValue : OSCConvertible {
 ///
 /// Workaround for Equatable adoption
 ///
-extension OSCValue where Self : Equatable {
+extension OSCConvertible where Self : Equatable {
     // otherObject could also be 'Any'
-    public func isEqualTo(_ other: OSCValue) -> Bool {
+    public func isEqualTo(_ other: OSCConvertible) -> Bool {
         if let otherAsSelf = other as? Self {
             return otherAsSelf == self
         }
         return false
     }
+}
+
+
+
+/// Helper function to compare two OSC value arrays
+public func ==(lhs: [OSCConvertible], rhs: [OSCConvertible]) -> Bool {
+    if lhs.count == rhs.count {
+
+        for pair in zip(lhs,rhs) {
+            if pair.0.isEqualTo(pair.1) == false {
+                  return false
+            }
+        }
+        return true
+    }
+
+    return false
 }

@@ -164,7 +164,7 @@ public struct OSCTimeTag: OSCValue, Equatable {
 /* OSC Message structure */
 /*************************/
 
-public struct OSCMessage : OSCConvertible {
+public struct OSCMessage : OSCConvertible, Equatable {
     public let address: String
     public let args: [OSCValue]
 
@@ -260,6 +260,11 @@ public struct OSCMessage : OSCConvertible {
             + (","+osc_type_tags).oscValue
             + osc_args
     }
+
+    /// Equatable
+    public static func ==(lhs: OSCMessage, rhs: OSCMessage) -> Bool {
+        return lhs.address == rhs.address && lhs.args == rhs.args
+    }
 }
 
 
@@ -285,7 +290,7 @@ struct ChunkIt : IteratorProtocol {
 
 
 
-public struct OSCBundle : OSCConvertible {
+public struct OSCBundle : OSCConvertible, Equatable {
     public let timetag : OSCTimeTag
 
     /// Bundle elements 
@@ -350,5 +355,12 @@ public struct OSCBundle : OSCConvertible {
 
 
         self.content = msgs
+    }
+
+
+
+    // Equatable
+    public static func ==(lhs: OSCBundle, rhs: OSCBundle) -> Bool {
+        return lhs.timetag == rhs.timetag && lhs.content == rhs.content
     }
 }
