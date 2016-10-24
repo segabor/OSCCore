@@ -2,14 +2,11 @@ import OSCCore
 
 
 if let srv = try? OSCServer(port: 5050) {
-  srv.register(pattern: "/hello") { msg in
+  srv.register(pattern: "/hello") { (msg: OSCMessage) in
     
-    if let parsed = msg.parse() {
-      
-      print("Address: \(parsed.address)")
-      parsed.args.forEach { arg in
-        print("arg: \(arg)")
-      }
+    print("Address: \(msg.address)")
+    msg.args.forEach { arg in
+      print("arg: \(arg)")
     }
   }
 
