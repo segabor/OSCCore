@@ -15,7 +15,7 @@ This is a tiny module that implements [OpenSoundControl](http://opensoundcontrol
 import PackageDescription
 
 let package = Package(
-    name: "OSCServer",
+    name: "<my project name>",
     dependencies: [
         .Package(url: "https://github.com/segabor/OSCCore.git", majorVersion: 0)
     ]
