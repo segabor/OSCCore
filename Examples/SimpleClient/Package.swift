@@ -1,7 +1,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "OSCServer",
+    name: "SimpleClient",
     dependencies: [
         .Package(url: "../..", majorVersion: 0)
     ]
