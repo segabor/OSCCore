@@ -36,6 +36,38 @@ let package = Package(
 
 Swift 3 is required to build and test the module.
 
-## Usage
+## Examples
 
-See projects in Examples folder.
+### Simple OSC client
+
+```swift
+import OSCCore
+
+let clientPort    = 5050
+let remotePort    = 5051
+
+let msg = OSCMessage(address: "/hello", args: 1234, "test")
+
+if let client = UDPClient(port: clientPort, remotePort: remotePort) {
+  try client.send(message: msg)
+}
+```
+
+### Simple OSC server
+```
+import OSCCore
+
+if let srv = try? OSCServer(port: 5050) {
+  srv.register(pattern: "/hello") { (msg: OSCMessage) in
+    
+    print("Address: \(msg.address)")
+    msg.args.forEach { arg in
+      print("arg: \(arg)")
+    }
+  }
+
+  srv.listen()
+}
+```
+
+For details, see Examples folder.
