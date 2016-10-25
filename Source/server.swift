@@ -1,7 +1,7 @@
 import UDP
 
 
-public class OSCServer: MessageDispatcher {
+public class UDPServer: MessageDispatcher {
   public typealias Message = OSCMessage
 
   let socket: UDPSocket

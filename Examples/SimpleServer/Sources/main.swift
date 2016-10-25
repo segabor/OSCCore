@@ -1,7 +1,7 @@
 import OSCCore
 
 
-if let srv = try? OSCServer(port: 5050) {
+if let srv = try? UDPServer(port: 5050) {
   srv.register(pattern: "/hello") { (msg: OSCMessage) in
     
     print("Address: \(msg.address)")
