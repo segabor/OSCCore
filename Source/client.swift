@@ -6,11 +6,9 @@ public class UDPClient {
 
   public let socket : UDPSendingSocket
 
-
   public init(socket : UDPSendingSocket) {
     self.socket = socket
   }
-
 
   public convenience init?( port : Int, remotePort serverPort : Int) {
     guard
@@ -24,8 +22,7 @@ public class UDPClient {
     self.init(socket: sock)
   }
 
-
-  public func send(message: OSCMessage) throws {
+  public func send(message: OSCConvertible) throws {
     try socket.write(message.oscValue, deadline: 1.second.fromNow())
   }
 }
