@@ -5,7 +5,7 @@ import XCTest
 
 class OSCBundleTests : XCTestCase {
     func testNoArgMessage() {
-        let ttag = OSCTimeTag(0x123456789abcdef0)
+        let ttag = OSCTimeTag(timetag: TimeTag(rawValue: 0x123456789abcdef0))
         let bundle = OSCBundle(timetag: ttag, content: [])
 
         let expected_pkt : [Byte] = [

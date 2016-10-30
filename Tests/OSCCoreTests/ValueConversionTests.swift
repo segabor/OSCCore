@@ -66,7 +66,7 @@ class ValueConversionTests : XCTestCase {
 
 
     func testTimeTagConversion() {
-        let value = OSCTimeTag(0x123456789abcdef0)
+        let value = OSCTimeTag(timetag: TimeTag(rawValue: 0x123456789abcdef0))
         let pkt = value.oscValue
         XCTAssertEqual(pkt, [0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0])
         XCTAssertEqual(value, OSCTimeTag(data: pkt), "Value mismatch")
