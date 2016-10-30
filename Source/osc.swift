@@ -124,37 +124,44 @@ extension Int : OSCValue {
 }
 
 
-public struct OSCTimeTag: OSCValue, Equatable {
-    public let value: Int64
-
-    public var oscValue: [Byte] { return value.oscValue }
-
-    public var oscType: TypeTagValues { return .TIME_TAG_TYPE_TAG }
-
+public struct OSCTimeTag: Equatable {
+    public let value: TimeTag
 
     /// Create time tag with current time in millisecs
     public init() {
-        self.init( Int64( Date().timeIntervalSince1970 * 1000) )
+        self.value = TimeTag()
+    }
+
+    
+    public init(withDelay delay: TimeInterval) {
+        self.value = TimeTag(time: Date(timeIntervalSinceNow: delay))
     }
 
 
-    public init(_ value: Int64) {
-        self.value = value
-    }
-
-    public init?<S: Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
-        guard
-            let intValue = Int64(data: data)
-        else {
-            return nil
-        }
-
-        self.value = intValue
-    }
 
     /// Equatable
     public static func ==(lhs: OSCTimeTag, rhs: OSCTimeTag) -> Bool {
         return lhs.value == rhs.value
+    }
+}
+
+
+extension OSCTimeTag: OSCValue {
+    public var oscValue: [Byte] {
+        return [Byte](typetobinary(self.value.rawValue.bigEndian))
+    }
+    
+    public var oscType: TypeTagValues { return .TIME_TAG_TYPE_TAG }
+    
+    public init?<S: Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
+        let binary : [Byte] = [Byte](data)
+        if binary.count != MemoryLayout<UInt64>.size {
+            return nil
+        }
+        
+        let rawValue : UInt64 = binarytotype(binary, UInt64.self)
+
+        self.value = TimeTag(rawValue: rawValue)
     }
 }
 
