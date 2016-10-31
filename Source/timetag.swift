@@ -73,21 +73,6 @@ public extension TimeTag {
 
 
 
-// MARK: Raw value support
-public extension TimeTag {
-
-    public var rawValue : UInt64 {
-        return UInt64(integer) << 32 | UInt64(fraction)
-    }
-    
-    public init(rawValue: UInt64) {
-        self.init(integer: UInt32( rawValue >> 32), fraction: UInt32( rawValue & 0xFFFFFFFF ) )
-    }
-    
-}
-
-
-
 // MARK: Date conversion
 public extension TimeTag {
     /// seconds between 1900 and 1970
