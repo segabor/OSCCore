@@ -16,7 +16,7 @@ import Foundation
 /* OSC Packet Implementations */
 /******************************/
 
-extension String : OSCValue {
+extension String : OSCType {
     public var oscValue : [Byte] {
         var bytes = self.utf8.map({ Byte( $0 ) })
         let fullSize =  paddedSize(bytes.count+1)
@@ -42,7 +42,7 @@ extension String : OSCValue {
 
 
 
-extension Float32 : OSCValue {
+extension Float32 : OSCType {
     public var oscValue : [Byte] {
 #if os(OSX)
         let z = CFConvertFloat32HostToSwapped(self).v
@@ -87,7 +87,7 @@ extension HasByteSwapping {
 
 
 
-extension Int64 : OSCValue {
+extension Int64 : OSCType {
     public var oscValue : [Byte] {
         let z = self.bigEndian
         return [Byte](typetobinary(z))
@@ -96,7 +96,7 @@ extension Int64 : OSCValue {
     public var oscType : TypeTagValues { return .INT64_TYPE_TAG }
 }
 
-extension Int32 : OSCValue {
+extension Int32 : OSCType {
     public var oscValue : [Byte] {
         let z = self.bigEndian
         return [Byte](typetobinary(z))
@@ -106,7 +106,7 @@ extension Int32 : OSCValue {
 }
 
 // default Integers is converted to 32-bin integer for the sake of convenience
-extension Int : OSCValue {
+extension Int : OSCType {
     public var oscValue : [Byte] {
         return Int32(self).oscValue
     }
@@ -149,7 +149,7 @@ public struct OSCTimeTag: Equatable {
 }
 
 
-extension OSCTimeTag: OSCValue {
+extension OSCTimeTag: OSCType {
     
     static let oscImmediateBytes : [Byte] = [0, 0, 0, 0, 0, 0, 0, 1]
     
@@ -193,9 +193,9 @@ extension OSCTimeTag: OSCValue {
 
 public struct OSCMessage : OSCConvertible, Equatable {
     public let address: String
-    public let args: [OSCValue]
+    public let args: [OSCType]
 
-    public init(address: String, args: OSCValue...) {
+    public init(address: String, args: OSCType...) {
         self.address = address
         self.args = args
     }
@@ -212,7 +212,7 @@ public struct OSCMessage : OSCConvertible, Equatable {
         var index = paddedSize(address.utf8.count+1)
         let bytes = [Byte](data)
         
-        var args = [OSCValue]()
+        var args = [OSCType]()
 
         // find type tags string
         if bytes[index] == 44,

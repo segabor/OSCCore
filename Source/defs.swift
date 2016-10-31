@@ -61,7 +61,7 @@ public protocol OSCConvertible {
 /// Basic types adopting this protocol
 /// can be converted to OSC value
 ///
-public protocol OSCValue : OSCConvertible {
+public protocol OSCType : OSCConvertible {
     // returns OSC type
     var oscType  : TypeTagValues { get }
 }
