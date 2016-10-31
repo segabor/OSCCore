@@ -65,6 +65,15 @@ class ValueConversionTests : XCTestCase {
     }
 
 
+    func testImmediateTimeTagConversion() {
+        let value = OSCTimeTag(timetag: TimeTag())
+        let pkt = value.oscValue
+        XCTAssertEqual(value.timetag.immediate, true)
+        XCTAssertEqual(pkt, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01])
+        XCTAssertEqual(value, OSCTimeTag(data: pkt), "Value mismatch")
+    }
+
+    
     func testTimeTagConversion() {
         let value = OSCTimeTag(timetag: TimeTag(integer: 0x78563412, fraction: 0xf0debc9a))
         let pkt = value.oscValue
@@ -84,6 +93,7 @@ extension ValueConversionTests {
             ("testInt64Conversion", testInt64Conversion),
             ("testIntConversion", testIntConversion),
             ("testFloat32Conversion", testFloat32Conversion),
+            ("testImmediateTimeTagConversion", testImmediateTimeTagConversion),
             ("testTimeTagConversion", testTimeTagConversion)
         ]
     }
