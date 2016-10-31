@@ -125,23 +125,26 @@ extension Int : OSCValue {
 
 
 public struct OSCTimeTag: Equatable {
-    public let value: TimeTag
+    public let timetag: TimeTag
 
     /// Create time tag with current time in millisecs
     public init() {
-        self.value = TimeTag()
+        self.timetag = TimeTag()
     }
 
-    
+    public init(timetag: TimeTag) {
+        self.timetag = timetag
+    }
+
     public init(withDelay delay: TimeInterval) {
-        self.value = TimeTag(time: Date(timeIntervalSinceNow: delay))
+        self.timetag = TimeTag(time: Date(timeIntervalSinceNow: delay))
     }
 
 
 
     /// Equatable
     public static func ==(lhs: OSCTimeTag, rhs: OSCTimeTag) -> Bool {
-        return lhs.value == rhs.value
+        return lhs.timetag == rhs.timetag
     }
 }
 
