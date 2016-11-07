@@ -49,11 +49,18 @@ public protocol OSCConvertible {
     var oscValue : [Byte] { get }
 
     // construct OSC value from OSC packet
-    init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element
+    init?(data: ArraySlice<Byte>)
 
     // Custom function for Equatable
     func isEqualTo(_ other: OSCConvertible) -> Bool
 }
+
+extension OSCConvertible {
+    init?(data: Array<Byte>) {
+        self.init(data: data[0..<data.count])
+    }
+}
+
 
 
 

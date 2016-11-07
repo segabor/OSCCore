@@ -29,7 +29,7 @@ extension String : OSCType {
     
     public var oscType : TypeTagValues { return .STRING_TYPE_TAG }
  
-    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
+    public init?(data: ArraySlice<Byte>) {
         guard
             let termIndex = data.index(of:0)
         else {
@@ -55,7 +55,7 @@ extension Float32 : OSCType {
     public var oscType : TypeTagValues { return .FLOAT_TYPE_TAG }
     
     // custom init
-    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
+    public init?(data: ArraySlice<Byte>) {
         let binary : [Byte] = [Byte](data)
         if binary.count != MemoryLayout<Float32>.size {
             return nil
@@ -74,7 +74,7 @@ extension Float32 : OSCType {
 
 
 extension HasByteSwapping {
-    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
+    public init?(data: ArraySlice<Byte>) {
         let binary : [Byte] = [Byte](data)
         if binary.count != MemoryLayout<Self>.size {
             return nil
@@ -113,7 +113,7 @@ extension Int : OSCType {
     
     public var oscType : TypeTagValues { return .INT32_TYPE_TAG }
 
-    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
+    public init?(data: ArraySlice<Byte>) {
         let binary : [Byte] = [Byte](data)
         if binary.count != MemoryLayout<Int32>.size {
             return nil
@@ -195,38 +195,39 @@ public struct OSCMessage : OSCConvertible, Equatable {
     public let address: String
     public let args: [OSCType]
 
-    public init(address: String, args: OSCType...) {
+    public init(address: String, args: [OSCType]) {
         self.address = address
         self.args = args
     }
-
-    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
+    
+    public init(address: String, args: OSCType...) {
+        self.init(address: address, args: args)
+    }
+    
+    public init?(data: ArraySlice<Byte>) {
         guard
             let address = String(data: data)
         else {
             return nil
         }
-        self.address = address
 
 
-        var index = paddedSize(address.utf8.count+1)
-        let bytes = [Byte](data)
-        
+        var index = data.startIndex + paddedSize(address.utf8.count+1)
         var args = [OSCType]()
 
-        // find type tags string
-        if bytes[index] == 44,
-            let _type_tags = String(data: bytes.suffix(from:index+1)) {
+        // find type tags string starting with comma (',')
+        if data[index] == 0x2C,
+            let typeTags = String(data: data.suffix(from:index+1)) {
 
             // process args list
-            index += paddedSize(_type_tags.utf8.count+2)
-            for type_tag in _type_tags.characters {
+            index += paddedSize(typeTags.utf8.count+2)
+            for type_tag in typeTags.characters {
                 
                 if let type : TypeTagValues = TypeTagValues(rawValue: type_tag) {
                     switch type {
                     case .STRING_TYPE_TAG:
                         guard
-                            let val = String(data: bytes.suffix(from:index))
+                            let val = String(data: data.suffix(from:index))
                         else {
                             return nil
                         }
@@ -234,7 +235,7 @@ public struct OSCMessage : OSCConvertible, Equatable {
                         index += paddedSize(val.utf8.count+1)
                     case .INT32_TYPE_TAG:
                         guard
-                            let val = Int32(data: bytes[index..<(index+4)])
+                            let val = Int32(data: data[index..<index+4])
                         else {
                             return nil
                         }
@@ -242,7 +243,7 @@ public struct OSCMessage : OSCConvertible, Equatable {
                         index+=4
                     case .INT64_TYPE_TAG:
                         guard
-                            let val = Int64(data: bytes[index..<(index+8)])
+                            let val = Int64(data: data[index..<index+8])
                         else {
                             return nil
                         }
@@ -250,7 +251,7 @@ public struct OSCMessage : OSCConvertible, Equatable {
                         index+=8
                     case .FLOAT_TYPE_TAG:
                         guard
-                            let val = Float32(data: bytes[index..<(index+4)])
+                            let val = Float32(data: data[index..<index+4])
                         else {
                             return nil
                         }
@@ -259,7 +260,7 @@ public struct OSCMessage : OSCConvertible, Equatable {
                     case .TIME_TAG_TYPE_TAG:
                         /// process the same way as Int64 but yield different Swift type
                         guard
-                            let val = OSCTimeTag(data: bytes[index..<(index+8)])
+                            let val = OSCTimeTag(data: data[index..<index+8])
                         else {
                              return nil
                         }
@@ -272,7 +273,7 @@ public struct OSCMessage : OSCConvertible, Equatable {
             }
         }
         
-        self.args = args
+        self.init(address: address, args: args)
     }
 
     public var oscValue : [Byte] {
@@ -296,9 +297,8 @@ public struct OSCMessage : OSCConvertible, Equatable {
 
 
 
-/// Iterator that breaks down the byte stream
-/// into small chunks containing OSC packets
-struct ChunkIt : IteratorProtocol {
+/// Iterator that yields bundle elements as slices
+struct OSCBundleElementIterator : IteratorProtocol {
     let bytes : ArraySlice<Byte>
     var index : Int
 
@@ -306,8 +306,8 @@ struct ChunkIt : IteratorProtocol {
 
     mutating func next() -> ArraySlice<Byte>? {
         if index < bytes.endIndex, let len = Int(data: bytes[index..<(index+4)]) {
-            let d = bytes[(index+4)..<(index+4+len)]
-            index = index+4+len
+            let d = bytes[index+4..<index+4+len]
+            index += 4+len
             return d
         } else {
             return nil
@@ -325,9 +325,12 @@ public struct OSCBundle : OSCConvertible, Equatable {
 
     public var oscValue : [Byte] {
         var result = [Byte]()
+        
+        // write out head first
         result += "#bundle".oscValue
         result += timetag.oscValue
 
+        /// asemble osc elements: size then content
         content.forEach { msg in
             let v = msg.oscValue
             result += Int32(v.count).oscValue
@@ -341,37 +344,22 @@ public struct OSCBundle : OSCConvertible, Equatable {
         self.content = content
     }
 
-    public init?<S : Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
-        /// Chechk the header
+    public init?(data: ArraySlice<Byte>) {
+        /// Check the header
+        /// - packet length must be at least 16 bytes ('#bundle' + timetag)
         guard
-            data.count >= 16
+            data.count >= 16,
+            data[0] == 0x23,
+            let ts = OSCTimeTag(data: data[data.startIndex+8..<data.startIndex+16])
         else {
             return nil
         }
-        let bytes = [Byte](data)
-
-        /// Bundle starts with string
-        guard
-            let marker = String(data: bytes.prefix(8)), 
-            marker == "#bundle"
-        else {
-            return nil
-        }
-
-        /// Extract time tag
-        guard
-            let ts = OSCTimeTag(data: bytes[bytes.startIndex+8..<bytes.startIndex+16])
-        else {
-            return nil
-        }
-
-        self.timetag = ts
 
         var msgs = [OSCConvertible]()
 
         // Read up the content
         // from offset
-        var it = ChunkIt(bytes[(bytes.startIndex+16)..<bytes.endIndex] )
+        var it = OSCBundleElementIterator(data[data.startIndex+16..<data.endIndex] )
         while let chunk = it.next() {
             if let msg = OSCMessage(data: chunk ) {
                 msgs.append(msg)
@@ -380,8 +368,8 @@ public struct OSCBundle : OSCConvertible, Equatable {
             }
         }
 
-
-        self.content = msgs
+        // init object state
+        self.init(timetag: ts, content: msgs)
     }
 
 
