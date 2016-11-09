@@ -17,33 +17,15 @@
 
 func binarytotype <T> (_ value: [Byte], _: T.Type) -> T
 {
-    /// input: array of bytes 
-    /// -> get pointer to byte array (UnsafeBufferPointer<[Byte]>)
-    /// -> access its base address
-    /// -> rebind memory to target type T (UnsafeMutablePointer<T>)
-    /// -> extract and return the value of target type
-    return value.withUnsafeBufferPointer {
-        $0.baseAddress!
-          .withMemoryRebound(to: T.self, capacity: 1) {
-            $0.pointee
-        }
+    return value.withUnsafeBytes {
+        $0.baseAddress!.load(as: T.self)
     }
 }
 
 func typetobinary <T> (_ value: T) -> [Byte]
 {
-    /// input type: value of type T
-    /// -> get pointer to value of T
-    /// -> rebind memory to the target type, which is a byte array
-    /// -> create array with a buffer pointer initialized with the source pointer
-    /// -> return the resulted array
-    var mv : T = value
-    let s : Int = MemoryLayout<T>.size
-    return withUnsafePointer(to: &mv) {
-        $0.withMemoryRebound(to: Byte.self, capacity: s) {
-            Array(UnsafeBufferPointer(start: $0, count: s))
-        }
-    }
+    var mv = value
+    return withUnsafeBytes(of: &mv) { Array($0) }
 }
 
 
