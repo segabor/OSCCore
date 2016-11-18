@@ -54,7 +54,7 @@ if let client = UDPClient(port: clientPort, remotePort: remotePort) {
 ```
 
 ### Simple OSC server
-```
+```swift
 import OSCCore
 
 if let srv = try? UDPServer(port: 5050) {
