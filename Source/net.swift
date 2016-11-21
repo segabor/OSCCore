@@ -9,10 +9,10 @@ public class UDPClient {
     self.socket = socket
   }
 
-  public convenience init?( port: Int, remotePort serverPort: Int) {
+  public convenience init?(localPort: Int, remotePort: Int) {
     guard
-      let clientIP = try? IP(port: port),
-      let serverIP = try? IP(port: serverPort),
+      let clientIP = try? IP(port: localPort),
+      let serverIP = try? IP(port: remotePort),
       let sock = try? UDPSocket(ip: clientIP).sending(to: serverIP)
     else {
       return nil
@@ -33,8 +33,13 @@ public class UDPServer: MessageDispatcher {
   let socket: UDPSocket
   let dispatcher = OSCMessageDispatcher
 
-  public init(port: Int) throws {
-    socket = try UDPSocket(ip: IP(port: port))
+  public init(socket: UDPSocket) {
+     self.socket = socket
+  }
+
+  public convenience init(remotePort: Int) throws {
+    let sock = try UDPSocket(ip: IP(port: remotePort))
+    self.init( socket: sock )
   }
 
   // override
@@ -90,3 +95,23 @@ public class UDPServer: MessageDispatcher {
     }
   }
 }
+
+
+/// create a server and client sharing the same UDP ports
+public func createUDPBridge(localPort: Int, remotePort: Int) -> (client: UDPClient, server: UDPServer)? {
+    
+  do {
+    let clientIP    = try IP(port: localPort)
+    let serverIP    = try IP(port: remotePort)
+
+    let sock        = try UDPSocket(ip: clientIP)
+        
+    let sendingSocket = sock.sending(to: serverIP)
+
+    return (client: UDPClient(socket: sendingSocket ),
+                         server: UDPServer(socket: sock))
+  } catch {}
+    
+  return nil
+}
+

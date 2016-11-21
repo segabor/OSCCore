@@ -48,16 +48,16 @@ let remotePort    = 5051
 
 let msg = OSCMessage(address: "/hello", args: 1234, "test")
 
-if let client = UDPClient(port: clientPort, remotePort: remotePort) {
+if let client = UDPClient(localPort: clientPort, remotePort: remotePort) {
   try client.send(message: msg)
 }
 ```
 
 ### Simple OSC server
-```
+```swift
 import OSCCore
 
-if let srv = try? UDPServer(port: 5050) {
+if let srv = try? UDPServer(remotePort: 5050) {
   srv.register(pattern: "/hello") { (msg: OSCMessage) in
     
     print("Address: \(msg.address)")
