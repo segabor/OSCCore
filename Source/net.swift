@@ -1,6 +1,30 @@
 import UDP
 
 
+/// this function converts byte stream and passes to a message consumer
+func processRawData(data rawData: [Byte], _ handler: @escaping (OSCMessage, OSCTimeTag) -> () ) {
+  if let msg = OSCMessage(data: rawData ) {
+    handler(msg, OSCTimeTag())
+  } else if let bndl = OSCBundle(data: rawData) {
+    // extract messages and
+    // pass them to handler function
+    recursive { f, bundle in
+      bundle.content.forEach { item in
+        switch item {
+        case let m as OSCMessage:
+          handler(m, bndl.timetag )
+        case let b as OSCBundle:
+          f(b)
+        default:
+          ()
+        }
+      }
+    }(bndl)
+  }
+}
+
+
+
 public class UDPClient {
 
   public let socket: UDPSendingSocket
@@ -62,31 +86,8 @@ public class UDPServer: MessageDispatcher {
       do {
         let (buffer, _) = try socket.read(upTo: 1536, deadline: .never)
 
-        if let msg = OSCMessage(data: buffer.bytes ) {
-          dispatcher.dispatch(message: msg)
-        } else if let bndl = OSCBundle(data: buffer.bytes) {
-
-          // Temporary solution that collects messages and
-          // dispatches them at once, disregarding
-          // bundle timestamps
-          var msgs = [OSCMessage]()
-
-          // collect messages
-          recursive { f, bundle in
-            bundle.content.forEach { item in
-              switch item {
-              case let m as OSCMessage:
-                msgs.append(m)
-              case let b as OSCBundle:
-                f(b)
-              default:
-                ()
-              }
-            }
-          }(bndl)
-
-          // dispatc'em!!
-          msgs.forEach { dispatcher.dispatch(message: $0) }
+        processRawData(data: buffer.bytes) { msg, timetag in
+          self.dispatcher.dispatch(message: msg)
         }
       } catch {
         print("Failed to read message \(error)")
