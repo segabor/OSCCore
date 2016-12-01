@@ -1,25 +1,11 @@
 import UDP
 
-
 /// this function converts byte stream and passes to a message consumer
 func processRawData(data rawData: [Byte], _ handler: @escaping (OSCMessage, OSCTimeTag) -> () ) {
   if let msg = OSCMessage(data: rawData ) {
     handler(msg, OSCTimeTag())
   } else if let bndl = OSCBundle(data: rawData) {
-    // extract messages and
-    // pass them to handler function
-    recursive { f, bundle in
-      bundle.content.forEach { item in
-        switch item {
-        case let m as OSCMessage:
-          handler(m, bndl.timetag )
-        case let b as OSCBundle:
-          f(b)
-        default:
-          ()
-        }
-      }
-    }(bndl)
+    bndl.unwrap(handler)
   }
 }
 

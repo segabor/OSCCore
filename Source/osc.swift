@@ -372,6 +372,22 @@ public struct OSCBundle : OSCConvertible, Equatable {
         self.init(timetag: ts, content: msgs)
     }
 
+  
+    /// Unwrap OSC Bundle content and pass each item to handler function
+    func unwrap(_ handler: @escaping (OSCMessage, OSCTimeTag) -> ()) {
+        recursive { visit, parentBundle in
+            parentBundle.content.forEach { (item: OSCConvertible) in
+                switch item {
+                case let msg as OSCMessage:
+                    handler(msg, parentBundle.timetag )
+                case let childBundle as OSCBundle:
+                    visit(childBundle)
+                default:
+                    ()
+                }
+            }
+        }(self)
+    }
 
 
     // Equatable
