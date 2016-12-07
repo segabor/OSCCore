@@ -1,14 +1,25 @@
 import UDP
 
-/// this function converts byte stream and passes to a message consumer
-func processRawData(data rawData: [Byte], _ handler: @escaping (OSCMessage, OSCTimeTag) -> () ) {
-  if let msg = OSCMessage(data: rawData ) {
-    handler(msg, OSCTimeTag())
-  } else if let bndl = OSCBundle(data: rawData) {
-    bndl.unwrap(handler)
-  }
+// The IN part of OSC message channel
+public protocol OSCSource {
+
+  // is channel available for read
+  func available() -> Bool
+  
+  func release()
+  
+  func read() throws -> (packet: OSCConvertible, timetag: OSCTimeTag)
+  
+  // read out a packet and pass it to a handler function
+  func read(_ handler: (OSCMessage, OSCTimeTag) -> ())
+  
 }
 
+// The OUT part of OSC message channel
+public protocol OSCSink {
+  
+  func send(packet: OSCConvertible)
+}
 
 
 public class UDPClient {
@@ -82,6 +93,25 @@ public class UDPServer: MessageDispatcher {
     }
   }
 }
+
+
+
+public extension UDPServer {
+  public func readMessages(_ fun: @escaping (OSCMessage, OSCTimeTag)->() ) {
+    while true {
+      do {
+        let (buffer, _) = try socket.read(upTo: 1536, deadline: .never)
+
+        // pass raw data to message consumer
+        processRawData(data: buffer.bytes, fun)
+      } catch {
+        print("Failed to read message \(error)")
+        break
+      }
+    }
+  }
+}
+
 
 
 /// create a server and client sharing the same UDP ports
