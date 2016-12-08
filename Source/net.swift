@@ -49,13 +49,12 @@ public class UDPClient {
 
 
 public class UDPServer: MessageDispatcher {
-  public typealias Message = OSCMessage
 
   let socket: UDPSocket
-  let dispatcher = OSCMessageDispatcher
+  let dispatcher = SimpleMessageDispatcher()
 
   public init(socket: UDPSocket) {
-     self.socket = socket
+    self.socket = socket
   }
 
   public convenience init(remotePort: Int) throws {

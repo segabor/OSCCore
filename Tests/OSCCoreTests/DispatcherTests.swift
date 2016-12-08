@@ -12,7 +12,7 @@ import XCTest
 
 class DispatcherTests : XCTestCase {
     func testMessageDispatch() {
-        let mgr = OSCMessageDispatcher
+        let mgr = SimpleMessageDispatcher()
         
         var flag = false
         
