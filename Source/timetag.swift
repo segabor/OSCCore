@@ -17,7 +17,7 @@ import Foundation
 // The time tag value consisting of 63 zero bits followed by
 // a one in the least signifigant bit is a special case meaning "immediately."
 
-public struct TimeTag : Equatable {
+public struct TimeTag {
     /// number of seconds since midnight on January 1
     public let integer : UInt32
     
@@ -28,13 +28,15 @@ public struct TimeTag : Equatable {
         self.integer = integer
         self.fraction = fraction
     }
-
-    // MARK: Equatable
-    public static func ==(lhs: TimeTag, rhs: TimeTag) -> Bool {
-        return lhs.integer == rhs.integer && lhs.fraction == rhs.fraction
-    }
 }
 
+
+// MARK: Equatable
+extension TimeTag : Equatable {
+  public static func ==(lhs: TimeTag, rhs: TimeTag) -> Bool {
+    return lhs.integer == rhs.integer && lhs.fraction == rhs.fraction
+  }
+}
 
 
 // MARK: Immediate time tag support
@@ -55,7 +57,7 @@ public extension TimeTag {
 
 // MARK: Floating point value conversion
 public extension TimeTag {
-    
+  
     /// return floating point representation
     public var value : Double? {
         return self.immediate
