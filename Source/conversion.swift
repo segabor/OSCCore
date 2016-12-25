@@ -441,10 +441,12 @@ extension OSCBundle : OSCConvertible {
 
 // MARK: === Convert Raw Byte Array to Messages ===
 
+public typealias MessageDecoder = ([Byte], @escaping MessageEventHandler) -> ()
+
 /// this function converts byte stream and passes to a message consumer
-func processRawData(data rawData: [Byte], _ handler: @escaping (OSCMessage, OSCTimeTag) -> () ) {
+func processRawData(_ rawData: [Byte], _ handler: @escaping MessageEventHandler ) {
   if let msg = OSCMessage(data: rawData ) {
-    handler(msg, OSCTimeTag())
+    handler(MessageEvent(when: Date(), message: msg))
   } else if let bndl = OSCBundle(data: rawData) {
     bndl.unwrap(handler)
   }

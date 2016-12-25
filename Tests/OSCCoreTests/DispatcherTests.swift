@@ -11,28 +11,49 @@ import XCTest
 
 
 class DispatcherTests : XCTestCase {
-    func testMessageDispatch() {
-        let mgr = SimpleMessageDispatcher()
-        
-        var flag = false
-        
-        mgr.register(pattern: "/test/*") {_ in 
-            flag = true
-        }
+  
+  func testDispatchWithMatchingAddresses() {
+    doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: 1234)), expected: true)
+    
+    doTestDispatch(pattern: "/test/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: 1234)), expected: true)
 
-        mgr.dispatch(message: OSCMessage(address: "/test/1", args: 1234))
-        
-        XCTAssertTrue(flag)
+    doTestDispatch(pattern: "/test/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: 1234)), expected: true)
+  }
+
+  func testDispatchWithNonMatchingAddresses() {
+    doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: 1234)), expected: false)
+
+    doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/tezt/1", args: 1234)), expected: false)
+    
+    doTestDispatch(pattern: "/tezt/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: 1234)), expected: false)
+
+    doTestDispatch(pattern: "/tezt/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: 1234)), expected: false)
+  }
+
+  private func doTestDispatch(pattern ptn: String, event: MessageEvent, expected: Bool) {
+    let mgr = MessageDispatcher()
+    
+    var flag = false
+    
+    mgr.register(pattern: ptn) {_ in
+      flag = true
     }
+
+    mgr.fire(event: event)
+    
+    XCTAssertTrue(flag == expected)
+    
+  }
 }
 
 
 #if os(Linux)
-    extension DispatcherTests {
-        static var allTests: [(String, (DispatcherTests) -> () throws -> Void)] {
-            return [
-                ("testMessageDispatch", testMessageDispatch)
-            ]
-        }
+  extension DispatcherTests {
+    static var allTests: [(String, (DispatcherTests) -> () throws -> Void)] {
+      return [
+        ("testDispatchWithMatchingAddresses", testDispatchWithMatchingAddresses),
+        ("testDispatchWithNonMatchingAddresses", testDispatchWithNonMatchingAddresses)
+      ]
     }
+  }
 #endif

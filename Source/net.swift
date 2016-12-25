@@ -1,25 +1,5 @@
 import UDP
 
-// The IN part of OSC message channel
-public protocol OSCSource {
-
-  // is channel available for read
-  func available() -> Bool
-  
-  func release()
-  
-  func read() throws -> (packet: OSCConvertible, timetag: OSCTimeTag)
-  
-  // read out a packet and pass it to a handler function
-  func read(_ handler: (OSCMessage, OSCTimeTag) -> ())
-  
-}
-
-// The OUT part of OSC message channel
-public protocol OSCSink {
-  
-  func send(packet: OSCConvertible)
-}
 
 
 public class UDPClient {
@@ -41,71 +21,53 @@ public class UDPClient {
 
     self.init(socket: sock)
   }
+}
 
-  public func send(message: OSCConvertible) throws {
-    try socket.write(message.oscValue, deadline: 1.second.fromNow())
+
+extension UDPClient : Sender {
+  public func sendMessage(_ message: OSCConvertible) {
+    try? socket.write(message.oscValue, deadline: 1.second.fromNow())
   }
 }
 
 
-public class UDPServer: MessageDispatcher {
+public class UDPServer {
 
   let socket: UDPSocket
-  let dispatcher = SimpleMessageDispatcher()
-
+  
+  public let dispatcher = MessageDispatcher()
+  
   public init(socket: UDPSocket) {
     self.socket = socket
   }
 
   public convenience init(remotePort: Int) throws {
     let sock = try UDPSocket(ip: IP(port: remotePort))
-    self.init( socket: sock )
-  }
-
-  // override
-  public func register(pattern: String, _ listener: @escaping (OSCMessage) -> Void) {
-    dispatcher.register(pattern: pattern, listener)
-  }
-
-  // override
-  public func unregister(pattern: String) {
-    dispatcher.unregister(pattern: pattern)
-  }
-
-  // override
-  public func dispatch(message: OSCMessage) {
-    dispatcher.dispatch(message: message)
-  }
-
-  public func listen() {
-    while true {
-      do {
-        let (buffer, _) = try socket.read(upTo: 1536, deadline: .never)
-
-        processRawData(data: buffer.bytes) { msg, timetag in
-          self.dispatcher.dispatch(message: msg)
-        }
-      } catch {
-        print("Failed to read message \(error)")
-        break
-      }
-    }
+    self.init( socket: sock)
   }
 }
 
 
-
 public extension UDPServer {
-  public func readMessages(_ fun: @escaping (OSCMessage, OSCTimeTag)->() ) {
-    while true {
-      do {
-        let (buffer, _) = try socket.read(upTo: 1536, deadline: .never)
+  
+  // read packet and pass decoded message values to handler
+  public func receiveMessages(decoder: MessageDecoder, _ handler: @escaping MessageEventHandler ) {
+    do {
+      let (buffer, _) = try socket.read(upTo: 1536, deadline: .never)
 
-        // pass raw data to message consumer
-        processRawData(data: buffer.bytes, fun)
-      } catch {
-        print("Failed to read message \(error)")
-        break
+      decoder(buffer.bytes, handler)
+    } catch {
+      print("Failed to read message \(error)")
+    }
+  }
+  
+  public func listen() {
+    
+    let defaultDecoder = processRawData
+
+    while true {
+      receiveMessages(decoder: defaultDecoder) { (event: MessageEvent) in
+        self.dispatcher.fire(event: event)
       }
     }
   }

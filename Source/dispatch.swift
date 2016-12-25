@@ -8,61 +8,32 @@
 
 import Foundation
 
+public typealias MessageEvent = (when: Date, message: OSCMessage)
 
-public protocol MessageDispatcher {
+public typealias MessageEventHandler = (MessageEvent) -> ()
 
-  /**
-   
-   # Register for OSC events
+public typealias MessageHandler = (OSCMessage) -> ()
 
-   - Parameter pattern: OSC address pattern to observe
-   - Parameter body: closure that will be executed upon
+public final class MessageDispatcher {
 
-   **/
-  func register(pattern : String, _ listener : @escaping (OSCMessage)->Void )
-  
-  func unregister(pattern: String)
-  
-  func dispatch(message : OSCMessage)
-}
+  /// list of pattern -> handler pairs
+  private var listeners = [String: MessageHandler]()
 
-
-
-/**
- 
- # Basic implementation
- 
- **/
-public final class SimpleMessageDispatcher : MessageDispatcher {
-
-  private var listeners = [String : [(OSCMessage) -> Void]]()
-
-    
-  public func register(pattern: String, _ listener: @escaping (OSCMessage) -> Void) {
-      
-    if var list = listeners[pattern] {
-      list.append(listener)
-    } else {
-      listeners[pattern] = [listener]
-    }
+  /// register a message listener
+  public func register(pattern: String, _ listener: @escaping MessageHandler) {
+      listeners[pattern] = listener
   }
 
-    
-    
+  /// remove listener
   public func unregister(pattern: String) {
-    if listeners[pattern] != nil {
-      listeners.removeValue(forKey: pattern)
-    }
+    listeners.removeValue(forKey: pattern)
   }
 
-
-  public func dispatch(message: OSCMessage) {
-    listeners.forEach {
-      let ptn = $0.key
-      if match(address: message.address, pattern: ptn) {
-        // dispatch message
-        print("Address matched with pattern \(ptn), delivering message ...")
-        $0.value.forEach { $0(message) }
+  /// fire event
+  public func fire(event: MessageEvent) {
+    listeners.forEach { ptn, handler in
+      if match(address: event.message.address, pattern: ptn) {
+        handler(event.message)
       }
     }
   }
