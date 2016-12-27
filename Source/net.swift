@@ -63,11 +63,9 @@ public extension UDPServer {
   
   public func listen() {
     
-    let defaultDecoder = processRawData
-
     while true {
-      receiveMessages(decoder: defaultDecoder) { (event: MessageEvent) in
-        self.dispatcher.fire(event: event)
+      receiveMessages(decoder: decodeBytes) {
+        self.dispatcher.fire(event: $0)
       }
     }
   }
