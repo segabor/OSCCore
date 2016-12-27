@@ -76,18 +76,18 @@ public extension UDPServer {
 /// create a server and client sharing the same UDP ports
 public func createUDPBridge(localPort: Int, remotePort: Int) -> (client: UDPClient, server: UDPServer)? {
     
-  do {
-    let clientIP    = try IP(port: localPort)
-    let serverIP    = try IP(port: remotePort)
+  guard
+    let clientIP    = try? IP(port: localPort),
+    let serverIP    = try? IP(port: remotePort),
 
-    let sock        = try UDPSocket(ip: clientIP)
-        
-    let sendingSocket = sock.sending(to: serverIP)
-
-    return (client: UDPClient(socket: sendingSocket ),
-                         server: UDPServer(socket: sock))
-  } catch {}
+    let sock        = try? UDPSocket(ip: clientIP)
+  else {
+    return nil
+  }
     
-  return nil
+  let sendingSocket = sock.sending(to: serverIP)
+
+  return (client: UDPClient(socket: sendingSocket ),
+          server: UDPServer(socket: sock))
 }
 
