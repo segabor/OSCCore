@@ -11,12 +11,12 @@
 #endif
 import Foundation
 
-// MARK: === Definitions ===
+// MARK: Definitions
 
 public typealias Byte = UInt8
 
 
-// MARK: === Byte Swapping ===
+// MARK: Byte Swapping
 
 
 // A simple hack to translate various Swift types to byte array
@@ -74,7 +74,7 @@ extension HasByteSwapping {
 
 
 
-// MARK: === Conversion Protocol ===
+// MARK: Conversion protocol
 
 ///
 /// Objects implementing this protocol
@@ -106,7 +106,7 @@ extension OSCConvertible {
 
 
 ///
-/// Basic types adopting this protocol
+/// Types adopting this protocol
 /// can be converted to OSC value
 ///
 public protocol OSCType : OSCConvertible {
@@ -148,7 +148,7 @@ public func ==(lhs: [OSCConvertible], rhs: [OSCConvertible]) -> Bool {
 
 
 
-// MARK: === Convert basic Swift type ===
+// MARK: Convert Swift string
 
 extension String : OSCType {
   public var oscValue : [Byte] {
@@ -175,6 +175,8 @@ extension String : OSCType {
 }
 
 
+
+// MARK: Convert Swift numeric types
 
 extension Float32 : OSCType {
   public var oscValue : [Byte] {
@@ -242,7 +244,7 @@ extension Int : OSCType {
 }
 
 
-// MARK: === Time Tag Conversion ===
+// MARK: Time Tag conversion
 
 extension OSCTimeTag: OSCType {
   
@@ -281,7 +283,8 @@ extension OSCTimeTag: OSCType {
 }
 
 
-// MARK: === Message Conversion ===
+
+// MARK: OSC message conversion
 
 extension OSCMessage : OSCConvertible {
   public init?(data: ArraySlice<Byte>) {
@@ -358,21 +361,22 @@ extension OSCMessage : OSCConvertible {
   
   public var oscValue : [Byte] {
     // align type letters to one string, starting with a comma character
-    let osc_type_tags : String = String(args.map{$0.oscType.rawValue })
+    let typeTags : String = String(args.map{$0.oscType.rawValue })
     
     // convert values to packets and collect them into a byte array
-    let osc_args : [Byte] = args.map{$0.oscValue}.reduce([Byte](), +)
+    let argsArray : [Byte] = args.map{$0.oscValue}.reduce([Byte](), +)
     
     // OSC Message := Address Pattern + Type Tag String + Arguments
     return address.oscValue
-      + (","+osc_type_tags).oscValue
-      + osc_args
+      + (","+typeTags).oscValue
+      + argsArray
   }
   
 }
 
 
-// MARK: === Bundle Conversion ===
+
+// MARK: OSC bundle conversion
 
 /// Iterator that yields bundle elements as slices
 struct OSCBundleElementIterator : IteratorProtocol {
