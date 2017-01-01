@@ -102,24 +102,6 @@ public struct OSCBundle : Equatable {
     self.content = content
   }
 
-
-  /// Unwrap OSC Bundle content and pass each item to handler function
-  func unwrap(_ handler: @escaping MessageEventHandler) {
-    recursive { visit, parentBundle in
-      parentBundle.content.forEach { (item: OSCConvertible) in
-        switch item {
-        case let msg as OSCMessage:
-          handler(MessageEvent(when: parentBundle.timetag.timetag.time, message: msg))
-        case let childBundle as OSCBundle:
-          visit(childBundle)
-        default:
-          ()
-        }
-      }
-    }(self)
-  }
-
-
   // Equatable
   public static func ==(lhs: OSCBundle, rhs: OSCBundle) -> Bool {
     return lhs.timetag == rhs.timetag && lhs.content == rhs.content

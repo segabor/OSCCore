@@ -443,15 +443,17 @@ extension OSCBundle : OSCConvertible {
 }
 
 
-// MARK: === Convert Raw Byte Array to Messages ===
 
-public typealias MessageDecoder = ([Byte], @escaping MessageEventHandler) -> ()
+// MARK: decode message packets from byte stream
 
-/// this function converts byte stream and passes to a message consumer
-func decodeBytes(_ rawData: [Byte], _ handler: @escaping MessageEventHandler ) {
+public typealias MessageDecoder = ([Byte]) -> OSCConvertible?
+
+public func decodeBytes(_ rawData: [Byte]) -> OSCConvertible? {
   if let msg = OSCMessage(data: rawData ) {
-    handler(MessageEvent(when: Date(), message: msg))
+    return msg
   } else if let bndl = OSCBundle(data: rawData) {
-    bndl.unwrap(handler)
+    return bndl
   }
+  
+  return nil
 }
