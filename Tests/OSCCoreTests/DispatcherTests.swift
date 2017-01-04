@@ -31,7 +31,7 @@ class DispatcherTests : XCTestCase {
   }
 
   private func doTestDispatch(pattern ptn: String, event: MessageEvent, expected: Bool) {
-    let mgr = MessageDispatcher()
+    let mgr = BasicMessageDispatcher()
     
     var flag = false
     
