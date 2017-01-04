@@ -34,7 +34,7 @@ let package = Package(
 
 ## Requirements
 
-Swift 3 is required to build and test the module.
+Swift 3.0.2 is required to build and test the module.
 
 ## Examples
 
@@ -49,7 +49,7 @@ let remotePort    = 5051
 let msg = OSCMessage(address: "/hello", args: 1234, "test")
 
 if let client = UDPClient(localPort: clientPort, remotePort: remotePort) {
-  try client.send(message: msg)
+  msg.send(over: client)
 }
 ```
 
@@ -57,7 +57,7 @@ if let client = UDPClient(localPort: clientPort, remotePort: remotePort) {
 ```swift
 import OSCCore
 
-if let srv = try? UDPServer(remotePort: 5050) {
+if let srv = try? OSCListener(remotePort: 5050) {
   srv.register(pattern: "/hello") { (msg: OSCMessage) in
     
     print("Address: \(msg.address)")
@@ -66,8 +66,23 @@ if let srv = try? UDPServer(remotePort: 5050) {
     }
   }
 
-  srv.listen()
+  srv.start()
 }
 ```
 
-For details, see Examples folder.
+### Two-way communication via UDP bridge
+```swift
+
+guard
+  let bridge = createUDPChannel(localPort: myPort, remotePort: scPort)
+else {
+  // failed to create UDP socket
+}
+
+let client = UDPClient(withBridge: bridge)
+let server = OSCListener(withBridge: bridge)
+
+// do the stuff
+
+```
+
