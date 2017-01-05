@@ -9,6 +9,9 @@
 @testable import OSCCore
 import XCTest
 
+#if os(Linux) 
+import Foundation
+#endif
 
 class DispatcherTests : XCTestCase {
   
