@@ -34,7 +34,7 @@ let package = Package(
 
 ## Requirements
 
-Swift 3.0.2 is required to build and test the module.
+Swift 3.1.1 is required to build and test the module.
 
 ## Examples
 
