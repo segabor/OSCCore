@@ -1,4 +1,6 @@
-import UDP
+import Foundation
+
+import Socket
 
 
 // MARK: OSC packet I/O
@@ -44,17 +46,15 @@ public extension OSCBundle {
 
 public class UDPClient {
 
-  public let socket: UDPSendingSocket
+  public let socket: Socket
 
-  public init(withSocket socket: UDPSendingSocket) {
+  public init(withSocket socket: Socket) {
     self.socket = socket
   }
 
   public convenience init?(localPort: Int, remotePort: Int) {
     guard
-      let localIP = try? IP(port: localPort),
-      let remoteIP = try? IP(port: remotePort),
-      let socket = try? UDPSocket(ip: localIP).sending(to: remoteIP)
+      let socket = try? Socket.create(family: .inet, type: .datagram, proto: .udp)
     else {
       return nil
     }
@@ -68,11 +68,11 @@ public class UDPClient {
 extension UDPClient : PacketSender {
   
   public var available : Bool {
-    return !socket.closed
+    return socket.isActive
   }
   
   public func send(packet: OSCConvertible) {
-    try? socket.write(packet.oscValue, deadline: 1.second.fromNow())
+    // FIXME - send packet.oscValue
   }
 }
 
@@ -82,28 +82,28 @@ extension UDPClient : PacketSender {
 
 public class UDPReceiver : PacketReceiver {
   
-  let socket: UDPSocket
+  let socket: Socket
 
   let messageDecoder : MessageDecoder = decodeBytes
 
   public var available: Bool {
-    return !socket.closed
+    return socket.isActive
   }
   
-  public init(withSocket socket: UDPSocket) {
+  public init(withSocket socket: Socket) {
     self.socket = socket
   }
 
   
   // returns OSC packet received over UDP socket
   public func receivePacket() throws -> OSCConvertible? {
-    guard !socket.closed else {
+    guard !socket.isActive else {
         return nil
     }
     
-    let (buffer, _) = try socket.read(upTo: 1536, deadline: .never)
+    // FIXME - read packet over UDP and send to messageDecoder
     
-    return messageDecoder(buffer.bytes)
+    return nil /* messageDecoder(buffer.bytes) */
   }
 }
 
@@ -180,8 +180,8 @@ extension OSCListener : MessageEventSource {
 // MARK: Two-way communication
 
 public struct UDPBridge {
-  let outSocket: UDPSendingSocket
-  let inSocket: UDPSocket
+  let outSocket: Socket
+  let inSocket: Socket
 }
 
 
