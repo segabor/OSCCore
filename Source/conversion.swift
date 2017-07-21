@@ -264,7 +264,7 @@ extension OSCTimeTag: OSCType {
   
   public var oscType: TypeTagValues { return .TIME_TAG_TYPE_TAG }
   
-  public init?<S: Collection>(data: S) where S.Iterator.Element == Byte, S.SubSequence.Iterator.Element == S.Iterator.Element {
+  public init?<S: Collection>(data: S) where S.Iterator.Element == Byte {
     
     if data.count != 8 {
       return nil
@@ -273,7 +273,7 @@ extension OSCTimeTag: OSCType {
     if data.elementsEqual(OSCTimeTag.oscImmediateBytes) {
       self.timetag = TimeTag()
     } else {
-      
+
       let secs = binarytotype([Byte](data.prefix(4)), UInt32.self)
       let frac = binarytotype([Byte](data.suffix(4)) , UInt32.self)
       
