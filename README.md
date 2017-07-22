@@ -2,7 +2,6 @@
     <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-3.0-orange.svg?style=flat" alt="Swift" /></a>
     <a href="https://swift.org"><img src="https://img.shields.io/badge/Platforms-OS%20X%20--%20Linux-lightgray.svg?style=flat" alt="Platform" /></a>
     <a href="https://travis-ci.org/segabor/OSCCore" alt="Travis"><img src="https://travis-ci.org/segabor/OSCCore.svg?branch=master"></a>
-    <a href="https://codecov.io/gh/segabor/OSCCore"><img src="https://codecov.io/gh/segabor/OSCCore/branch/master/graph/badge.svg" alt="Codecov" /></a>
 </div>
 
 # OSCCore
