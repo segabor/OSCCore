@@ -5,21 +5,16 @@ import Socket
 
 // MARK: OSC packet I/O
 
-public protocol PacketSender {
+public protocol OSCChannel {
 
   func send(packet: OSCConvertible)
+  func receive() -> OSCConvertible?
+
 }
-
-public protocol PacketReceiver {
-
-  func receivePacket() throws -> OSCConvertible?
-}
-
-
 
 public extension OSCMessage {
 
-  public func send(over channel: PacketSender) {
+  public func send(over channel: OSCChannel) {
     channel.send(packet: self)
   }
 
@@ -27,35 +22,46 @@ public extension OSCMessage {
 
 public extension OSCBundle {
 
-  public func send(over channel: PacketSender) {
+  public func send(over channel: OSCChannel) {
     channel.send(packet: self)
   }
 
 }
 
+// MARK : base class for two-way UDP communication
 
-// MARK: UDP packet sender (aka client)
-
-public class UDPClient {
-
-  public let socket: Socket
-  public let address : Socket.Address
-
-  public init(withSocket socket: Socket, address: Socket.Address) {
+public class UDPChannel : OSCChannel {
+  
+  let socket : Socket
+  let messageDecoder : MessageDecoder
+  
+  public init(socket: Socket, decoder : MessageDecoder = decodeBytes) {
     self.socket = socket
-    self.address = address
+    self.messageDecoder = decodeBytes
+    
+    try! socket.setReadTimeout(value: 100)
   }
 
-  public convenience init?(host: String, port: Int32) {
+  // returns OSC packet received over UDP socket
+  public func receive() -> OSCConvertible? {
+    var receiveBuffer = UnsafeMutablePointer<CChar>.allocate(capacity: 1024)
+    defer {
+      receiveBuffer.deallocate(capacity: 1024)
+    }
     
-    guard
-      let address : Socket.Address = Socket.createAddress(for: host, on: port),
-      let socket = try? Socket.create(family: .inet, type: .datagram, proto: .udp)
-    else {
+    guard let readResult : (bytesRead: Int, address: Socket.Address?) = try? socket.readDatagram(into: receiveBuffer, bufSize: 1024) else {
       return nil
     }
     
-    self.init(withSocket: socket, address: address)
+    let rawBytes : [Byte] = receiveBuffer.withMemoryRebound(to: Byte.self, capacity: readResult.bytesRead) { (bytesPointer : UnsafeMutablePointer<Byte>) -> [Byte] in
+      return [Byte](UnsafeBufferPointer<Byte>.init(start: bytesPointer, count: readResult.bytesRead))
+    }
+    
+    return messageDecoder(rawBytes)
+  }
+
+  public func send(packet: OSCConvertible) {
+    // ABSTRACT FUNCTION - IMPLEMENT IN SUBCLASSES
   }
 
   deinit {
@@ -65,9 +71,27 @@ public class UDPClient {
 
 
 
-extension UDPClient : PacketSender {
-  
-  public func send(packet: OSCConvertible) {
+// MARK: UDP client
+
+public class UDPClient : UDPChannel {
+
+  let address : Socket.Address
+
+  public init(host: String, port: Int32) {
+    
+    guard
+      let socket = try? Socket.create(family: .inet, type: .datagram, proto: .udp),
+      let address = Socket.createAddress(for: host, on: port)
+    else {
+      fatalError("Failed to establish UDP connection to host \(host):\(port)")
+    }
+    
+    self.address = address
+
+    super.init(socket: socket)
+  }
+
+  public override func send(packet: OSCConvertible) {
     let _ = packet.oscValue.withUnsafeBufferPointer {
       try! socket.write(from: $0.baseAddress!, bufSize: $0.count, to: address)
     }
@@ -76,118 +100,5 @@ extension UDPClient : PacketSender {
 
 
 
-// MARK: UDP packet receiver
-
-public class UDPReceiver : PacketReceiver {
-  
-  let socket: Socket
-  let listenerPort: Int
-  
-  let messageDecoder : MessageDecoder = decodeBytes
-
-  public init?(listenerPort: Int) {
-    guard let sock = try? Socket.create(family: .inet, type: .datagram, proto: .udp) else {
-      return nil
-    }
-
-    try! sock.setReadTimeout(value: 100)
-    
-    self.socket = sock
-    self.listenerPort = listenerPort
-  }
-
-  
-  // returns OSC packet received over UDP socket
-  public func receivePacket() throws -> OSCConvertible? {
-    var receiveBuffer = UnsafeMutablePointer<CChar>.allocate(capacity: 1024)
-    defer {
-      receiveBuffer.deallocate(capacity: 1024)
-    }
-
-    guard let listenResult = try?  socket.readDatagram(into: receiveBuffer, bufSize: 1024) else {
-      return nil
-    }
-
-    let rawBytes = receiveBuffer.withMemoryRebound(to: Byte.self, capacity: listenResult.bytesRead) { (bytesPointer : UnsafeMutablePointer<Byte>) -> [Byte] in
-      return [Byte](UnsafeBufferPointer<Byte>.init(start: bytesPointer, count: listenResult.bytesRead))
-    }
-    
-    return messageDecoder(rawBytes)
-  }
-  
-  deinit {
-    socket.close()
-  }
-}
-
-// MARK: OSC message reader
-
-public final class OSCReader {
-  
-  let channel: PacketReceiver
-
-  public init(receiver: PacketReceiver) {
-    self.channel = receiver
-  }
-  
-  public func read() -> OSCConvertible? {
-    guard let oscPacket = try? channel.receivePacket() else {
-      return nil
-    }
-    
-    return oscPacket
-  }
-}
-
 // MARK: OSC message listener
-
-public class OSCListener {
-
-  let channel: PacketReceiver
-  
-  public let dispatcher = BasicMessageDispatcher()
-  
-  
-  public init(receiver: PacketReceiver) {
-    self.channel = receiver
-  }
-  
-  public func start() {
-
-    while true {
-      
-      do {
-      
-        // read an OSC packet
-        if let pkt = try channel.receivePacket() {
-          makeEvents(pkt) { event in
-            self.dispatcher.fire(event: event )
-          }
-        } else {
-          break
-        }
-        
-      } catch {
-        print("Listening aborted due to error \(error)")
-        
-        break
-      }
-    
-    }
-  }
-}
-
-// MARK: UDP extension
-
-// Export observer interface
-extension OSCListener : MessageEventSource {
-
-  public func register(pattern: String, _ listener: @escaping MessageHandler) {
-    dispatcher.register(pattern: pattern, listener)
-  }
-  
-  public func unregister(pattern: String) {
-    dispatcher.unregister(pattern: pattern)
-  }
-}
-
+// TBD
