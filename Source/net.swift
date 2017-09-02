@@ -56,8 +56,10 @@ public class UDPChannel : OSCChannel {
     // ABSTRACT FUNCTION - IMPLEMENT IN SUBCLASSES
   }
 
-  deinit {
-    socket.close()
+  func send(packet: OSCConvertible, to address: Socket.Address) {
+    let _ = packet.oscValue.withUnsafeBufferPointer {
+      try! socket.write(from: $0.baseAddress!, bufSize: $0.count, to: address)
+    }
   }
 }
 
@@ -71,26 +73,50 @@ public class UDPClient : UDPChannel {
 
   public init(host: String, port: Int32) {
     
-    guard
-      let socket = try? Socket.create(family: .inet, type: .datagram, proto: .udp),
-      let address = Socket.createAddress(for: host, on: port)
-    else {
-      fatalError("Failed to establish UDP connection to host \(host):\(port)")
-    }
-    
-    self.address = address
+    let socket = try! Socket.create(family: .inet, type: .datagram, proto: .udp)
+
+    self.address = Socket.createAddress(for: host, on: port)!
 
     super.init(socket: socket)
   }
 
   public override func send(packet: OSCConvertible) {
-    let _ = packet.oscValue.withUnsafeBufferPointer {
-      try! socket.write(from: $0.baseAddress!, bufSize: $0.count, to: address)
-    }
+    send(packet: packet, to: address)
   }
 }
 
 
 
 // MARK: OSC message listener
-// TBD
+
+public final class UDPListener : UDPChannel {
+    
+    let listenerPort : Int
+    
+    public init(listenerPort: Int) {
+        self.listenerPort = listenerPort
+
+        let socket = try! Socket.create(family: .inet, type: .datagram, proto: .udp)
+
+        super.init(socket: socket)
+    }
+ 
+    public func listen(responder : (OSCConvertible) -> OSCConvertible?) {
+        var receiveBuffer = UnsafeMutablePointer<CChar>.allocate(capacity: 1024)
+        defer {
+            receiveBuffer.deallocate(capacity: 1024)
+        }
+
+        if let result = try? socket.listen(forMessage: receiveBuffer, bufSize: 1024, on: listenerPort) {
+            if let oscValue = extract(contentOf: receiveBuffer, length: result.bytesRead) {
+                let response = responder(oscValue)
+                
+                // send response
+                if let response = response {
+                    send(packet: response, to: result.address!)
+                }
+            }
+        }
+    }
+}
+
