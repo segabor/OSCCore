@@ -33,11 +33,9 @@ public extension OSCBundle {
 public class UDPChannel : OSCChannel {
   
   let socket : Socket
-  let messageDecoder : MessageDecoder
   
-  public init(socket: Socket, decoder : MessageDecoder = decodeBytes) {
+  public init(socket: Socket) {
     self.socket = socket
-    self.messageDecoder = decodeBytes
     
     try! socket.setReadTimeout(value: 100)
   }
@@ -49,15 +47,9 @@ public class UDPChannel : OSCChannel {
       receiveBuffer.deallocate(capacity: 1024)
     }
     
-    guard let readResult : (bytesRead: Int, address: Socket.Address?) = try? socket.readDatagram(into: receiveBuffer, bufSize: 1024) else {
-      return nil
-    }
+    guard let readResult = try? socket.readDatagram(into: receiveBuffer, bufSize: 1024) else { return nil }
     
-    let rawBytes : [Byte] = receiveBuffer.withMemoryRebound(to: Byte.self, capacity: readResult.bytesRead) { (bytesPointer : UnsafeMutablePointer<Byte>) -> [Byte] in
-      return [Byte](UnsafeBufferPointer<Byte>.init(start: bytesPointer, count: readResult.bytesRead))
-    }
-    
-    return messageDecoder(rawBytes)
+    return extract(contentOf: receiveBuffer, length: readResult.bytesRead)
   }
 
   public func send(packet: OSCConvertible) {

@@ -448,12 +448,20 @@ extension OSCBundle : OSCConvertible {
 
 public typealias MessageDecoder = ([Byte]) -> OSCConvertible?
 
-public func decodeBytes(_ rawData: [Byte]) -> OSCConvertible? {
-  if let msg = OSCMessage(data: rawData ) {
-    return msg
-  } else if let bndl = OSCBundle(data: rawData) {
-    return bndl
+public func extract(contentOf buffer : UnsafeMutablePointer<CChar>, length: Int) -> OSCConvertible? {
+  let rawBytes : [Byte] = buffer.withMemoryRebound(to: Byte.self, capacity: length) { (bytesPointer : UnsafeMutablePointer<Byte>) -> [Byte] in
+    return [Byte](UnsafeBufferPointer<Byte>.init(start: bytesPointer, count: length))
   }
   
-  return nil
+  let decodedPacket : OSCConvertible? = { rawData in
+    if let msg = OSCMessage(data: rawData ) {
+      return msg
+    } else if let bndl = OSCBundle(data: rawData) {
+      return bndl
+    }
+    return nil
+  }(rawBytes)
+
+  return decodedPacket
 }
+
