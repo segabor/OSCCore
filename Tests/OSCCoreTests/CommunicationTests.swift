@@ -48,9 +48,6 @@ class CommunicationTests: XCTestCase {
         let hostname = "127.0.0.1"
         let port: Int32 = 1337
       
-        let bufSize = 4096
-        var data = Data()
-      
         do {
           
             let socket = try self.createUDPHelper()
@@ -99,6 +96,14 @@ class CommunicationTests: XCTestCase {
               
             }
 
+            // Need to wait for the helper to come up...
+            #if os(Linux)
+                _ = Glibc.sleep(2)
+            #else
+                _ = Darwin.sleep(2)
+            #endif
+
+            // Send test message, result will be checked in the listener thread
             testMessage.send(over: channel)
 
             // Need to wait for the server to go down before continuing...
