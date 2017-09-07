@@ -86,31 +86,23 @@ class CommunicationTests: XCTestCase {
                     }
                     return nil
                 }
-                
+
                 if let value = capturedMessage {
-                  XCTAssertTrue(testMessage.address == value.address)
-                  XCTAssertTrue(testMessage.args == value.args)
+                    XCTAssertTrue(testMessage.address == value.address)
+                    XCTAssertTrue(testMessage.args == value.args)
                 } else {
                     XCTFail("No message received")
                 }
-              
             }
-
-            // Need to wait for the helper to come up...
-            #if os(Linux)
-                _ = Glibc.sleep(2)
-            #else
-                _ = Darwin.sleep(2)
-            #endif
 
             // Send test message, result will be checked in the listener thread
             testMessage.send(over: channel)
 
             // Need to wait for the server to go down before continuing...
             #if os(Linux)
-              _ = Glibc.sleep(1)
+                _ = Glibc.sleep(1)
             #else
-              _ = Darwin.sleep(1)
+                _ = Darwin.sleep(1)
             #endif
 
         } catch let error {
