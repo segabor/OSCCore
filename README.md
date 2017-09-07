@@ -53,5 +53,12 @@ if let client = UDPClient(host: "127.0.0.1", port: remotePort) {
 
 ### Simple OSC server
 
-TBD
+```swift
+let listener = UDPListener(listenerPort: 1234)
+listener.listen() { receivedMessage in
+  if let msg = receivedMessage as? OSCMessage {
+    print("Just received a message \(receivedMessage)")
+  }
+}
+```
 
