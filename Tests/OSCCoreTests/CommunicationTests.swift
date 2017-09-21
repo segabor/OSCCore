@@ -59,10 +59,6 @@ class CommunicationTests: XCTestCase {
                 XCTAssertFalse(socket.isActive)
             }
           
-            let addr = Socket.createAddress(for: hostname, on: port)
-          
-            XCTAssertNotNil(addr)
-          
             // test me here
             let testMessage : OSCMessage = OSCMessage(address: "/s_new", args: "sine", Int32(100), Int32(1), Int32(1) )
           
