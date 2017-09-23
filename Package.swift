@@ -4,7 +4,6 @@ let package = Package(
     name: "OSCCore",
 
     dependencies: [
-        .Package(url: "https://github.com/Zewo/UDP.git", majorVersion: 0, minor: 14),
+        .Package(url: "https://github.com/IBM-Swift/BlueSocket", majorVersion: 0, minor: 12)
     ]
 )
-

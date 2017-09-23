@@ -42,46 +42,23 @@ Swift 3.1.1 is required to build and test the module.
 ```swift
 import OSCCore
 
-let clientPort    = 5050
 let remotePort    = 5051
 
 let msg = OSCMessage(address: "/hello", args: 1234, "test")
 
-if let client = UDPClient(localPort: clientPort, remotePort: remotePort) {
+if let client = UDPClient(host: "127.0.0.1", port: remotePort) {
   msg.send(over: client)
 }
 ```
 
 ### Simple OSC server
-```swift
-import OSCCore
 
-if let srv = try? OSCListener(remotePort: 5050) {
-  srv.register(pattern: "/hello") { (msg: OSCMessage) in
-    
-    print("Address: \(msg.address)")
-    msg.args.forEach { arg in
-      print("arg: \(arg)")
-    }
+```swift
+let listener = UDPListener(listenerPort: 1234)
+listener.listen() { receivedMessage in
+  if let msg = receivedMessage as? OSCMessage {
+    print("Just received a message \(receivedMessage)")
   }
-
-  srv.start()
 }
-```
-
-### Two-way communication via UDP bridge
-```swift
-
-guard
-  let bridge = createUDPChannel(localPort: myPort, remotePort: scPort)
-else {
-  // failed to create UDP socket
-}
-
-let client = UDPClient(withBridge: bridge)
-let server = OSCListener(withBridge: bridge)
-
-// do the stuff
-
 ```
 

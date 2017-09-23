@@ -273,9 +273,9 @@ extension OSCTimeTag: OSCType {
     if data.elementsEqual(OSCTimeTag.oscImmediateBytes) {
       self.timetag = TimeTag()
     } else {
-      
+
       let secs = binarytotype([Byte](data.prefix(4)), UInt32.self)
-      let frac = binarytotype([Byte](data.suffix(4)) , UInt32.self)
+      let frac = binarytotype([Byte](data.suffix(4)), UInt32.self)
       
       self.timetag = TimeTag(integer: secs, fraction: frac)
     }
@@ -448,12 +448,20 @@ extension OSCBundle : OSCConvertible {
 
 public typealias MessageDecoder = ([Byte]) -> OSCConvertible?
 
-public func decodeBytes(_ rawData: [Byte]) -> OSCConvertible? {
-  if let msg = OSCMessage(data: rawData ) {
-    return msg
-  } else if let bndl = OSCBundle(data: rawData) {
-    return bndl
+public func extract(contentOf buffer : UnsafeMutablePointer<CChar>, length: Int) -> OSCConvertible? {
+  let rawBytes : [Byte] = buffer.withMemoryRebound(to: Byte.self, capacity: length) { (bytesPointer : UnsafeMutablePointer<Byte>) -> [Byte] in
+    return [Byte](UnsafeBufferPointer<Byte>.init(start: bytesPointer, count: length))
   }
   
-  return nil
+  let decodedPacket : OSCConvertible? = { rawData in
+    if let msg = OSCMessage(data: rawData ) {
+      return msg
+    } else if let bndl = OSCBundle(data: rawData) {
+      return bndl
+    }
+    return nil
+  }(rawBytes)
+
+  return decodedPacket
 }
+
