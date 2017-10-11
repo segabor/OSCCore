@@ -160,6 +160,13 @@ class CommunicationTests: XCTestCase {
                 }
             }
 
+            // Wait a bit before sending anything to the server 
+            #if os(Linux)
+                _ = Glibc.sleep(1)
+            #else
+                _ = Darwin.sleep(1)
+            #endif
+
             // Send test message, result will be checked in the listener thread
             testMessage.send(over: channel)
             
