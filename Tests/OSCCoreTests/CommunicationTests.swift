@@ -117,7 +117,7 @@ class CommunicationTests: XCTestCase {
 
     func testReadWriteOverUDP() {
         let hostname = "127.0.0.1"
-        let port: Int32 = 1337
+        let port: Int32 = 1338
         
         do {
             
