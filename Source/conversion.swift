@@ -180,7 +180,7 @@ extension String : OSCType {
 
 extension Float32 : OSCType {
   public var oscValue : [Byte] {
-    #if os(OSX)
+    #if os(OSX) || os(iOS)
       let z = CFConvertFloat32HostToSwapped(self).v
     #elseif os(Linux)
       let z = htonl(self.bitPattern)
@@ -196,7 +196,7 @@ extension Float32 : OSCType {
     if binary.count != MemoryLayout<Float32>.size {
       return nil
     }
-    #if os(OSX)
+    #if os(OSX) || os(iOS)
       self = CFConvertFloatSwappedToHost(binarytotype(binary, CFSwappedFloat32.self))
     #elseif os(Linux)
       self = Float(bitPattern: ntohl(binarytotype(binary, UInt32.self)))
