@@ -17,15 +17,10 @@ import Foundation
 
 internal struct TimeTag: Equatable {
     /// number of seconds since midnight on January 1
-    public let integer: UInt32
+    let integer: UInt32
 
     /// fractional parts of a second
-    public let fraction: UInt32
-
-    public init(integer: UInt32, fraction: UInt32) {
-        self.integer = integer
-        self.fraction = fraction
-    }
+    let fraction: UInt32
 
     /// Equatable
     public static func == (lhs: TimeTag, rhs: TimeTag) -> Bool {
