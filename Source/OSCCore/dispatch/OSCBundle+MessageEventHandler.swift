@@ -24,7 +24,6 @@ extension OSCBundle {
     }
 }
 
-
 // MARK: recursive call support
 
 ///
@@ -38,8 +37,8 @@ private func unimplemented<T>() -> T {
 
 private func recursive<T, U>(f: (@escaping (((T) -> U), T) -> U)) -> ((T) -> U) { //swiftlint:disable:this identifier_name
     var g: ((T) -> U) = { _ in unimplemented() }
-    
+
     g = { f(g, $0) }
-    
+
     return g
 }
