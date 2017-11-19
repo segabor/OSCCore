@@ -5,6 +5,19 @@
 //  Created by Sebestyén Gábor on 2017. 11. 19..
 //
 
+
+/// Create integers from bytes
+extension FixedWidthInteger {
+    public init?(data: ArraySlice<Byte>) {
+        let binary: [Byte] = [Byte](data)
+        if binary.count != MemoryLayout<Self>.size {
+            return nil
+        }
+
+        self = binarytotype(binary, Self.self).byteSwapped
+    }
+}
+
 extension Int64: OSCType {
     public var oscValue: [Byte] {
         let z = self.bigEndian
