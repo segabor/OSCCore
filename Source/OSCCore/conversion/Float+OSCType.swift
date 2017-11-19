@@ -5,6 +5,9 @@
 //  Created by Sebestyén Gábor on 2017. 11. 19..
 //
 
+#if os(Linux)
+	import Glibc
+#endif
 import CoreFoundation
 
 extension Float32: OSCType {

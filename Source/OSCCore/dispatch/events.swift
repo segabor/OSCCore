@@ -5,7 +5,7 @@
 //  Created by Sebestyén Gábor on 2017. 11. 19..
 //
 
-import Foundation.NSDate
+import Foundation
 
 // MARK: Message Events
 

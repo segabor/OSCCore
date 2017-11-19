@@ -5,7 +5,7 @@
 //  Created by Sebestyén Gábor on 2017. 11. 18..
 //
 
-import Foundation.NSDate
+import Foundation
 
 public struct OSCTimeTag: Equatable {
     internal let timetag: TimeTag
