@@ -14,7 +14,7 @@ public final class UDPListener: UDPChannel {
     public init(listenerPort: Int) {
         self.listenerPort = listenerPort
 
-        let socket = try! Socket.create(family: .inet, type: .datagram, proto: .udp)
+        let socket = try! Socket.create(family: .inet, type: .datagram, proto: .udp) //swiftlint:disable:this force_try
 
         super.init(socket: socket)
     }

@@ -13,7 +13,7 @@ public class UDPChannel: OSCChannel {
     public init(socket: Socket) {
         self.socket = socket
 
-        try! socket.setReadTimeout(value: 100)
+        try! socket.setReadTimeout(value: 100) //swiftlint:disable:this force_try
     }
 
     // returns OSC packet received over UDP socket
@@ -34,7 +34,7 @@ public class UDPChannel: OSCChannel {
 
     func send(packet: OSCConvertible, to address: Socket.Address) {
         _ = packet.oscValue.withUnsafeBufferPointer {
-            try! socket.write(from: $0.baseAddress!, bufSize: $0.count, to: address)
+            try! socket.write(from: $0.baseAddress!, bufSize: $0.count, to: address) //swiftlint:disable:this force_try
         }
     }
 }

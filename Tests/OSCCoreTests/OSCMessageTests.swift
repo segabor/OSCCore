@@ -3,19 +3,19 @@ import XCTest
 
 
 
-class OSCMessageTests : XCTestCase {
+class OSCMessageTests: XCTestCase {
     func testNoArgMessage() {
         let msg = OSCMessage(address: "hello")
 
-        let expected_pkt : [Byte] = [0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00]
+        let expectedPacket: [Byte] = [0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00]
 
-        doTestOSCMessage(msg, expected_pkt)
+        doTestOSCMessage(msg, expectedPacket)
     }
 
     func testSingleArgMessage() {
         let msg = OSCMessage(address: "/oscillator/4/frequency", args: Float32(440.0))
 
-        let expected_pkt : [Byte] = [
+        let expectedPacket: [Byte] = [
             0x2f, 0x6f, 0x73, 0x63,
             0x69, 0x6c, 0x6c, 0x61,
             0x74, 0x6f, 0x72, 0x2f,
@@ -26,44 +26,43 @@ class OSCMessageTests : XCTestCase {
             0x43, 0xdc, 0x00, 0x00
         ]
 
-        doTestOSCMessage(msg, expected_pkt)
+        doTestOSCMessage(msg, expectedPacket)
     }
 
     func testMultipleArgsMessage() {
         let msg = OSCMessage(address: "/foo", args: 1000, -1, "hello", Float32(1.234), Float32(5.678))
 
-        let expected_pkt : [Byte] = [
-            0x2f,  0x66,  0x6f,  0x6f,
-            0x00,  0x00,  0x00,  0x00,
-            0x2c,  0x69,  0x69,  0x73,
-            0x66,  0x66,  0x00,  0x00,
-            0x00,  0x00,  0x03,  0xe8,
-            0xff,  0xff,  0xff,  0xff,
-            0x68,  0x65,  0x6c,  0x6c,
-            0x6f,  0x00,  0x00,  0x00,
-            0x3f,  0x9d,  0xf3,  0xb6,
-            0x40,  0xb5,  0xb2,  0x2d
+        let expectedPacket: [Byte] = [
+            0x2f, 0x66, 0x6f, 0x6f,
+            0x00, 0x00, 0x00, 0x00,
+            0x2c, 0x69, 0x69, 0x73,
+            0x66, 0x66, 0x00, 0x00,
+            0x00, 0x00, 0x03, 0xe8,
+            0xff, 0xff, 0xff, 0xff,
+            0x68, 0x65, 0x6c, 0x6c,
+            0x6f, 0x00, 0x00, 0x00,
+            0x3f, 0x9d, 0xf3, 0xb6,
+            0x40, 0xb5, 0xb2, 0x2d
         ]
 
-        doTestOSCMessage(msg, expected_pkt)
+        doTestOSCMessage(msg, expectedPacket)
     }
-    
 
-    private func doTestOSCMessage(_ msg : OSCMessage, _ expected_pkt : [Byte]) {
-        let converted_pkt = msg.oscValue
-        
+    private func doTestOSCMessage(_ msg: OSCMessage, _ expectedPacket: [Byte]) {
+        let convertedPacket = msg.oscValue
+
         // check conversion is correct
-        XCTAssertEqual(expected_pkt, converted_pkt)
-        
+        XCTAssertEqual(expectedPacket, convertedPacket)
+
         // check the opposite - restore messages from byte stream
         guard
-            let parsed:  OSCMessage = OSCMessage(data: converted_pkt),
-            let parsed2: OSCMessage = OSCMessage(data: expected_pkt)
+            let parsed: OSCMessage = OSCMessage(data: convertedPacket),
+            let parsed2: OSCMessage = OSCMessage(data: expectedPacket)
         else {
             XCTFail("Failed to restore message from packet")
             return
         }
-        
+
         XCTAssertTrue(parsed.address == parsed2.address)
         XCTAssertTrue(parsed.args == parsed2.args)
     }

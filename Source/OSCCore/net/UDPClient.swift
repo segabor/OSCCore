@@ -13,7 +13,7 @@ public class UDPClient: UDPChannel {
 
     public init(host: String, port: Int32) {
 
-        let socket = try! Socket.create(family: .inet, type: .datagram, proto: .udp)
+        let socket = try! Socket.create(family: .inet, type: .datagram, proto: .udp) //swiftlint:disable:this force_try
 
         self.address = Socket.createAddress(for: host, on: port)!
 

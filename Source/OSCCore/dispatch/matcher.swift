@@ -14,7 +14,7 @@ import Foundation
 /// Borrowed from JavaOSC ( https://github.com/hoijui/JavaOSC/blob/master/modules/core/src/main/java/com/illposed/osc/utility/OSCPatternAddressSelector.java )
 /// Which originates from LibLo ( https://github.com/radarsat1/liblo/blob/master/src/pattern_match.c )
 ///
-func matchComponent(address: String, pattern: String) -> Bool {
+func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disable:this function_body_length swiftlint:disable:this cyclomatic_complexity swiftlint:disable:this line_length
     var si = address.startIndex
     var pi = pattern.startIndex
 

@@ -5,7 +5,6 @@
 //  Created by Sebestyén Gábor on 2017. 11. 19..
 //
 
-
 /// Create integers from bytes
 extension FixedWidthInteger {
     public init?(data: ArraySlice<Byte>) {

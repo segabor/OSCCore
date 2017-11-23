@@ -21,7 +21,7 @@ extension Float32: OSCType {
     }
 
     public var oscType: TypeTagValues { return .FLOAT_TYPE_TAG }
-    
+
     // custom init
     public init?(data: ArraySlice<Byte>) {
         let binary: [Byte] = [Byte](data)
