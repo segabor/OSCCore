@@ -9,24 +9,16 @@
 @testable import OSCCore
 import XCTest
 
-
-class AddressMatcherTests : XCTestCase {
+class AddressMatcherTests: XCTestCase {
     func testMatcherFunction() {
-        
-        XCTAssertTrue(matchComponent(address:"ablak", pattern:"ablak"))
-        
-        // print("false", matchComponent(address:"ablak", pattern:"abrak"))
-        
-        XCTAssertTrue(matchComponent(address:"ablak", pattern:"ab?ak"))
-        
-        XCTAssertTrue(matchComponent(address:"ablak", pattern:"ab*"))
-        XCTAssertTrue(matchComponent(address:"ablak", pattern:"ab*k"))
-        
-        XCTAssertTrue(matchComponent(address:"ablak", pattern:"a{blak}"))
-        XCTAssertTrue(matchComponent(address:"ablak", pattern:"a{blak,jto}"))
+        XCTAssertTrue(matchComponent(address: "ablak", pattern: "ablak"))
+        XCTAssertTrue(matchComponent(address: "ablak", pattern: "ab?ak"))
+        XCTAssertTrue(matchComponent(address: "ablak", pattern: "ab*"))
+        XCTAssertTrue(matchComponent(address: "ablak", pattern: "ab*k"))
+        XCTAssertTrue(matchComponent(address: "ablak", pattern: "a{blak}"))
+        XCTAssertTrue(matchComponent(address: "ablak", pattern: "a{blak,jto}"))
     }
 }
-
 
 #if os(Linux)
     extension AddressMatcherTests {

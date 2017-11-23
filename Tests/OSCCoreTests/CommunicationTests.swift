@@ -26,7 +26,7 @@ class CommunicationTests: XCTestCase {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
-    
+
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
@@ -34,49 +34,47 @@ class CommunicationTests: XCTestCase {
 
     // NOTE: copied from https://github.com/IBM-Swift/BlueSocket/blob/master/Tests/SocketTests/SocketTests.swift
     func createUDPHelper(family: Socket.ProtocolFamily = .inet) throws -> Socket {
-      
+
         let socket = try Socket.create(family: family, type: .datagram, proto: .udp)
         XCTAssertNotNil(socket)
         XCTAssertFalse(socket.isConnected)
         XCTAssertTrue(socket.isBlocking)
-      
+
         return socket
     }
-
 
     func testSendOverUDP() {
         let hostname = "127.0.0.1"
         let port: Int32 = 1337
-      
+
         do {
-          
+
             let socket = try self.createUDPHelper()
-          
+
             // Defer cleanup...
             defer {
                 // Close the socket...
                 socket.close()
                 XCTAssertFalse(socket.isActive)
             }
-          
+
             // test me here
-            let testMessage : OSCMessage = OSCMessage(address: "/s_new", args: "sine", Int32(100), Int32(1), Int32(1) )
-          
+            let testMessage: OSCMessage = OSCMessage(address: "/s_new", args: "sine", Int32(100), Int32(1), Int32(1) )
+
             let channel = UDPClient(host: hostname, port: port)
-          
+
             let queue: DispatchQueue? = DispatchQueue.global(qos: .userInteractive)
             guard let pQueue = queue else {
-              
-                print("Unable to access global interactive QOS queue")
-                XCTFail()
+
+                XCTFail("Unable to access global interactive QOS queue")
                 return
             }
-            
-            pQueue.async { [unowned self] in
-              
+
+            pQueue.async {
+
                 let listener = UDPListener(listenerPort: Int(port))
-                var capturedMessage : OSCMessage?
-                listener.listen() { receivedMessage in
+                var capturedMessage: OSCMessage?
+                listener.listen { receivedMessage in
                     if let msg = receivedMessage as? OSCMessage {
                         capturedMessage = msg
                     }
@@ -104,51 +102,48 @@ class CommunicationTests: XCTestCase {
         } catch let error {
             // See if it's a socket error or something else...
             guard let socketError = error as? Socket.Error else {
-              
-                print("Unexpected error...")
-                XCTFail()
+
+                XCTFail("Unexpected error...")
                 return
             }
-          
-            print("testReadWriteUDP Error reported: \(socketError.description)")
-            XCTFail()
+
+            XCTFail("testReadWriteUDP Error reported: \(socketError.description)")
         }
     }
 
     func testReadWriteOverUDP() {
         let hostname = "127.0.0.1"
         let port: Int32 = 1338
-        
+
         do {
-            
+
             let socket = try self.createUDPHelper()
-            
+
             // Defer cleanup...
             defer {
                 // Close the socket...
                 socket.close()
                 XCTAssertFalse(socket.isActive)
             }
-            
+
             // test message to send
-            let testMessage : OSCMessage = OSCMessage(address: "/s_get", args: Int32(4), "freq")
+            let testMessage: OSCMessage = OSCMessage(address: "/s_get", args: Int32(4), "freq")
             // and the correct response
-            let testResponse : OSCMessage = OSCMessage(address: "/n_set", args: Int32(4), "freq", Int32(440))
-            
+            let testResponse: OSCMessage = OSCMessage(address: "/n_set", args: Int32(4), "freq", Int32(440))
+
             let channel = UDPClient(host: hostname, port: port)
-            
+
             let queue: DispatchQueue? = DispatchQueue.global(qos: .userInteractive)
             guard let pQueue = queue else {
-                
-                print("Unable to access global interactive QOS queue")
-                XCTFail()
+
+                XCTFail("Unable to access global interactive QOS queue")
                 return
             }
-            
-            pQueue.async { [unowned self] in
-                
+
+            pQueue.async {
+
                 let listener = UDPListener(listenerPort: Int(port))
-                listener.listen() { receivedMessage in
+                listener.listen { receivedMessage in
                     guard
                         let msg = receivedMessage as? OSCMessage,
                         msg.address == "/s_get"
@@ -169,7 +164,7 @@ class CommunicationTests: XCTestCase {
 
             // Send test message, result will be checked in the listener thread
             testMessage.send(over: channel)
-            
+
             if let receivedPacket = channel.receive(),
                 let response = receivedPacket as? OSCMessage {
                 XCTAssertTrue(testResponse.address == response.address)
@@ -185,18 +180,16 @@ class CommunicationTests: XCTestCase {
             #else
                 _ = Darwin.sleep(1)
             #endif
-            
+
         } catch let error {
             // See if it's a socket error or something else...
             guard let socketError = error as? Socket.Error else {
-                
-                print("Unexpected error...")
-                XCTFail()
+
+                XCTFail("Unexpected error...")
                 return
             }
-            
-            print("testReadWriteUDP Error reported: \(socketError.description)")
-            XCTFail()
+
+            XCTFail("testReadWriteUDP Error reported: \(socketError.description)")
         }
     }
 }

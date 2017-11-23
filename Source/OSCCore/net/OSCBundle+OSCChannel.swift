@@ -10,4 +10,3 @@ public extension OSCBundle {
         channel.send(packet: self)
     }
 }
-

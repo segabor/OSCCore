@@ -1,8 +1,6 @@
 @testable import OSCCore
 import XCTest
 
-
-
 class OSCMessageTests: XCTestCase {
     func testNoArgMessage() {
         let msg = OSCMessage(address: "hello")

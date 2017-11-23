@@ -58,7 +58,7 @@ func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disa
             if si < address.endIndex {
                 break
             }
-            
+
             return false
             /*
              * set specification is inclusive, that is [a-z] is a, z and
@@ -66,14 +66,14 @@ func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disa
              * as a set that contains z, a and nothing in between.
              */
         case "[":
-            
+
             let negate = (pattern[pi] == "!")
             if negate {
                 pi = pattern.index(after: pi)
             }
-            
+
             var match = false
-            
+
             while !match && pi < pattern.endIndex {
 
                 if pi == pattern.endIndex {
@@ -118,7 +118,7 @@ func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disa
                     }
                 }
             }
-            
+
             // FIXME: negate result
             if negate == match {
                 match = false
@@ -136,10 +136,10 @@ func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disa
                 pi = pattern.index(after: pi)
             }
         case "{":
-            
+
             let place = si // to backtrack
             var remainder = pi // to forward-track
-            
+
             // iterate to the end of the choice list
             while remainder < pattern.endIndex && pattern[remainder] != "}" {
                 remainder = pattern.index(after: remainder)
