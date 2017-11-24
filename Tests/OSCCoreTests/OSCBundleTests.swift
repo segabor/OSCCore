@@ -3,7 +3,7 @@ import XCTest
 
 class OSCBundleTests: XCTestCase {
     func testNoArgMessage() {
-        let ttag = OSCTimeTag(timetag: TimeTag())
+        let ttag = OSCTimeTag.immediate
         let bundle = OSCBundle(timetag: ttag, content: [])
 
         let expected_pkt: [Byte] = [

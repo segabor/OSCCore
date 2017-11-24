@@ -12,8 +12,7 @@ extension OSCBundle {
             parentBundle.content.forEach { (item: OSCConvertible) in
                 switch item {
                 case let msg as OSCMessage:
-                    // FIXME: this is ugly!
-                    handler(MessageEvent(when: parentBundle.timetag.timetag.time, message: msg))
+                    handler(MessageEvent(when: parentBundle.timetag.toDate(), message: msg))
                 case let childBundle as OSCBundle:
                     visit(childBundle)
                 default:
