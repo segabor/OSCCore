@@ -7,17 +7,21 @@
 
 import Foundation
 
-internal func secondsToTuple(_ seconds: Double) -> (integer: UInt32, fraction: UInt32) {
+// MARK: Conversion between double and 64 bit fixed point values
+
+internal func convertDoubleTo64bitFixPoint(_ seconds: Double) -> (integer: UInt32, fraction: UInt32) {
     let fraction: UInt32 = UInt32( (seconds-floor(seconds))*4_294_967_296 )
     let integer: UInt32 = UInt32(seconds)
 
     return (integer: integer, fraction: fraction)
 }
 
-internal func tupleToSeconds(integer: UInt32, fraction: UInt32) -> Double {
+internal func conver64bitFixPointToDouble(integer: UInt32, fraction: UInt32) -> Double {
     return Double(integer) + Double(fraction)/4_294_967_296
 
 }
+
+// MARK: TimeTag type
 
 extension OSCTimeTag: OSCType {
 
@@ -31,7 +35,7 @@ extension OSCTimeTag: OSCType {
         case .secondsSince1990(let seconds):
 
             // first convert double value to integer/fraction tuple
-            let tuple = secondsToTuple(seconds)
+            let tuple = convertDoubleTo64bitFixPoint(seconds)
 
             // them make bytes out of them
             let b0 = typetobinary(tuple.integer)
@@ -57,7 +61,7 @@ extension OSCTimeTag: OSCType {
             let frac = binarytotype([Byte](data.suffix(4)), UInt32.self)
 
             // convert to double
-            let seconds = tupleToSeconds(integer: secs, fraction: frac)
+            let seconds = conver64bitFixPointToDouble(integer: secs, fraction: frac)
 
             self = .secondsSince1990(seconds)
         }
