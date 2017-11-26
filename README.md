@@ -6,7 +6,9 @@
 
 # OSCCore
 
-This is a tiny module that implements [OpenSoundControl](http://opensoundcontrol.org/spec-1_0) protocol in pure Swift.
+OSCCore is a cross-platform [OpenSoundControl](http://opensoundcontrol.org/spec-1_0) implementation in pure Swift. It is aimed to run on various platforms, including embedded systems like Raspberry Pi.
+
+Current development is done on macOS but tested on Linux/amd64 as well.
 
 ## Version history
 
