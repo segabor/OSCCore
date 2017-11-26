@@ -19,7 +19,9 @@ This is a tiny module that implements [OpenSoundControl](http://opensoundcontrol
 
 ## Supported Platforms
 
-- macOS, Linux, iOS
+- macOS 10.12.4+ for dev, 10.9+ for deployment
+- Linux
+- iOS 10.0+
 
 ## Installation
 
