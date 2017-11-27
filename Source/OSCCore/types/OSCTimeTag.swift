@@ -15,30 +15,46 @@ import Foundation
 // The time tag value consisting of 63 zero bits followed by
 // a one in the least signifigant bit is a special case meaning "immediately."
 
+// input: TimeInterval, seconds since 1970 (as defined in NSDate)
+// output: seconds since 1900 (seconds counted in OSC)
+@inline(__always)
+internal func intervalToOSCSeconds(_ interval: TimeInterval) -> Double {
+    return interval - OSCTimeTag.SecondsSince1900
+}
+
+@inline(__always)
+internal func OSCSecondsToInterval(_ seconds: Double) -> TimeInterval {
+    return seconds + OSCTimeTag.SecondsSince1900
+}
+
 public enum OSCTimeTag: Equatable {
     /// seconds between 1900 and 1970
     static internal let SecondsSince1900: Double = 2208988800
 
     case immediate
-    case secondsSince1990(TimeInterval) // seconds since January 1, 1900
-
+    case secondsSince1900(Double) // seconds since January 1, 1900
+    
     /// Equatable
     public static func == (lhs: OSCTimeTag, rhs: OSCTimeTag) -> Bool {
         if case .immediate = lhs, case .immediate = rhs {
             return true
         }
-        if case .secondsSince1990(let lval) = lhs, case .secondsSince1990(let rval) = rhs {
+        if case .secondsSince1900(let lval) = lhs, case .secondsSince1900(let rval) = rhs {
             return lval == rval
         }
         return false
     }
 
+    public static func withDelay(_ delay: TimeInterval) -> OSCTimeTag {
+        return OSCTimeTag.secondsSince1900( intervalToOSCSeconds(Date.timeIntervalSinceReferenceDate + delay) )
+    }
+    
     public func toDate() -> Date {
         switch self {
         case .immediate:
             return Date()
-        case .secondsSince1990(let interval):
-            return Date(timeIntervalSince1970: interval - OSCTimeTag.SecondsSince1900)
+        case .secondsSince1900(let oscSeconds):
+            return Date(timeIntervalSince1970: OSCSecondsToInterval(oscSeconds))
         }
     }
 }

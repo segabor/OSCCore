@@ -32,7 +32,7 @@ extension OSCTimeTag: OSCType {
         switch self {
         case .immediate:
             return OSCTimeTag.oscImmediateBytes
-        case .secondsSince1990(let seconds):
+        case .secondsSince1900(let seconds):
 
             // first convert double value to integer/fraction tuple
             let tuple = convertDoubleTo64bitFixPoint(seconds)
@@ -63,7 +63,7 @@ extension OSCTimeTag: OSCType {
             // convert to double
             let seconds = conver64bitFixPointToDouble(integer: secs, fraction: frac)
 
-            self = .secondsSince1990(seconds)
+            self = .secondsSince1900(seconds)
         }
     }
 }
