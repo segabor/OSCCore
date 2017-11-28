@@ -9,17 +9,20 @@ import Foundation
 
 // MARK: Conversion between double and 64 bit fixed point values
 
-internal func convertDoubleTo64bitFixPoint(_ seconds: Double) -> (integer: UInt32, fraction: UInt32) {
-    let fraction: UInt32 = UInt32( (seconds-floor(seconds))*4_294_967_296 )
-    let integer: UInt32 = UInt32(seconds)
+internal extension Double {
+    internal var fixPointValue: (integer: UInt32, fraction: UInt32) {
+        let fraction: UInt32 = UInt32( (self-floor(self))*4_294_967_296 )
+        let integer: UInt32 = UInt32(self)
+        
+        return (integer: integer, fraction: fraction)
+    }
 
-    return (integer: integer, fraction: fraction)
+    internal init(integer: UInt32, fraction: UInt32) {
+        self = Double(integer) + Double(fraction)/4_294_967_296
+    }
+
 }
 
-internal func conver64bitFixPointToDouble(integer: UInt32, fraction: UInt32) -> Double {
-    return Double(integer) + Double(fraction)/4_294_967_296
-
-}
 
 // MARK: TimeTag type
 
@@ -35,7 +38,7 @@ extension OSCTimeTag: OSCType {
         case .secondsSince1900(let seconds):
 
             // first convert double value to integer/fraction tuple
-            let tuple = convertDoubleTo64bitFixPoint(seconds)
+            let tuple = seconds.fixPointValue
 
             // them make bytes out of them
             let b0 = typetobinary(tuple.integer)
@@ -61,7 +64,7 @@ extension OSCTimeTag: OSCType {
             let frac = binarytotype([Byte](data.suffix(4)), UInt32.self)
 
             // convert to double
-            let seconds = conver64bitFixPointToDouble(integer: secs, fraction: frac)
+            let seconds = Double(integer: secs, fraction: frac)
 
             self = .secondsSince1900(seconds)
         }

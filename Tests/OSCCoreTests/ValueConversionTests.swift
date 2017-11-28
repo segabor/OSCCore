@@ -79,23 +79,23 @@ class ValueConversionTests: XCTestCase {
     func testFixedPrecisionToDoubleConversion() {
         let testZeroValue: Double = 0;
         
-        var fixedPointValue = convertDoubleTo64bitFixPoint(testZeroValue)
+        var fixedPointValue = testZeroValue.fixPointValue
         
         XCTAssertEqual(fixedPointValue.integer, UInt32(0))
         XCTAssertEqual(fixedPointValue.fraction, UInt32(0))
         
-        var dblValue = conver64bitFixPointToDouble(integer: fixedPointValue.integer, fraction: fixedPointValue.fraction)
+        var dblValue = Double(integer: fixedPointValue.integer, fraction: fixedPointValue.fraction)
         
         XCTAssertEqual(testZeroValue, dblValue)
         
         let testNonZeroValue: Double = 123.0+(456.0/4_294_967_296)
         
-        fixedPointValue = convertDoubleTo64bitFixPoint(testNonZeroValue)
+        fixedPointValue = testNonZeroValue.fixPointValue
         
         XCTAssertEqual(fixedPointValue.integer, UInt32(123))
         XCTAssertEqual(fixedPointValue.fraction, UInt32(456))
 
-        dblValue = conver64bitFixPointToDouble(integer: fixedPointValue.integer, fraction: fixedPointValue.fraction)
+        dblValue = Double(integer: fixedPointValue.integer, fraction: fixedPointValue.fraction)
         
         XCTAssertEqual(testNonZeroValue, dblValue)
     }
