@@ -40,10 +40,10 @@ extension OSCBundle: OSCConvertible {
         // Read up content
         var it = OSCBundleElementIterator(data[data.startIndex+16..<data.endIndex] )
         while let chunk = it.next() {
-            if let msg = OSCMessage(data: chunk ) {
-                msgs.append(msg)
-            } else if let bnd = OSCBundle(data: chunk) {
+            if let bnd = OSCBundle(data: chunk) {
                 msgs.append(bnd)
+            } else if let msg = OSCMessage(data: chunk ) {
+                msgs.append(msg)
             }
         }
 
