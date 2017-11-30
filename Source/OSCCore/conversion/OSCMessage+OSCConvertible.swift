@@ -22,7 +22,7 @@ extension OSCMessage: OSCConvertible {
 
             // process args list
             index += paddedSize(typeTags.utf8.count+2)
-            for type_tag in typeTags.characters {
+            for type_tag in typeTags {
 
                 if let type: TypeTagValues = TypeTagValues(rawValue: type_tag) {
                     switch type {

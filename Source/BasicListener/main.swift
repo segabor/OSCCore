@@ -4,7 +4,7 @@ let listener = UDPListener(listenerPort: Int(57110))
 
 listener.listen { receivedMessage in
     if let msg = receivedMessage as? OSCMessage {
-        print("Received \(receivedMessage)")
+        print("Received \(msg)")
     }
     return nil
 }
