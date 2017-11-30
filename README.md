@@ -15,6 +15,8 @@ Passing messages is easy, just create an OSCMessage and send it. A message is co
 Address is like an URI, starting with slash character. Arguments tipically are simple strings and numbers.
 
 ```swift
+import OSCCore
+
 let msg = OSCMessage("/instr/osc1", ["frequency", 440.0])
 ```
 
