@@ -15,9 +15,9 @@ import Glibc
 import XCTest
 
 class OSCTimeTagTests: XCTestCase {
-    
-    internal static let EPSILON: Double = 0.00001
-    
+
+    internal static let EPSILON: Double = 0.0001
+
     public func testImmediateTimeTagToDateConversion() {
         let timeTag: OSCTimeTag = OSCTimeTag.immediate
 
@@ -29,18 +29,18 @@ class OSCTimeTagTests: XCTestCase {
 
         XCTAssertTrue( fabs(delta) < OSCTimeTagTests.EPSILON )
     }
-    
+
     public func testSecondsSince1900TimeTagConversion() {
         let testOSCSeconds = 1234.0
-        
+
         let timeTag: OSCTimeTag = OSCTimeTag.secondsSince1900(testOSCSeconds)
 
         let expectedDate: Date =  Date(timeIntervalSince1970: OSCSecondsToInterval(testOSCSeconds))
-        
+
         let ttDate = timeTag.toDate()
-        
+
         let delta: Double = ttDate.timeIntervalSinceReferenceDate - expectedDate.timeIntervalSinceReferenceDate
-        
+
         XCTAssertTrue( fabs(delta) < OSCTimeTagTests.EPSILON )
     }
 }
