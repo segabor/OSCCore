@@ -29,10 +29,10 @@ extension OSCBundle: OSCConvertible {
         // - packet length must be at least 16 bytes ('#bundle' + timetag)
         guard
             data.count >= 16,
-            data[0] == 0x23,
+            data[data.startIndex] == 0x23,
             let ts = OSCTimeTag(data: data[data.startIndex+8..<data.startIndex+16])
-            else {
-                return nil
+        else {
+            return nil
         }
 
         var msgs = [OSCConvertible]()
