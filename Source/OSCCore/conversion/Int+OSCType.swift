@@ -26,6 +26,16 @@ extension Int64: OSCType {
     public var oscType: TypeTagValues { return .INT64_TYPE_TAG }
 }
 
+// for timestamps
+extension UInt64: OSCType {
+    public var oscValue: [Byte] {
+        let z = self.bigEndian
+        return [Byte](typetobinary(z))
+    }
+
+    public var oscType: TypeTagValues { return .INT64_TYPE_TAG }
+}
+
 extension Int32: OSCType {
     public var oscValue: [Byte] {
         let z = self.bigEndian

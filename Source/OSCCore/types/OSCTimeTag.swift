@@ -19,12 +19,12 @@ import Foundation
 // output: seconds since 1900 (seconds counted in OSC)
 @inline(__always)
 internal func intervalToOSCSeconds(_ interval: TimeInterval) -> Double {
-    return interval - OSCTimeTag.SecondsSince1900
+    return interval + OSCTimeTag.SecondsSince1900
 }
 
 @inline(__always)
 internal func OSCSecondsToInterval(_ seconds: Double) -> TimeInterval {
-    return seconds + OSCTimeTag.SecondsSince1900
+    return seconds - OSCTimeTag.SecondsSince1900
 }
 
 public enum OSCTimeTag: Equatable {
@@ -33,7 +33,7 @@ public enum OSCTimeTag: Equatable {
 
     case immediate
     case secondsSince1900(Double) // seconds since January 1, 1900
-    
+
     /// Equatable
     public static func == (lhs: OSCTimeTag, rhs: OSCTimeTag) -> Bool {
         if case .immediate = lhs, case .immediate = rhs {
@@ -48,7 +48,7 @@ public enum OSCTimeTag: Equatable {
     public static func withDelay(_ delay: TimeInterval) -> OSCTimeTag {
         return OSCTimeTag.secondsSince1900( intervalToOSCSeconds(Date.timeIntervalSinceReferenceDate + delay) )
     }
-    
+
     public func toDate() -> Date {
         switch self {
         case .immediate:

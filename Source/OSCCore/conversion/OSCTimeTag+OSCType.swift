@@ -13,16 +13,15 @@ internal extension Double {
     internal var fixPointValue: (integer: UInt32, fraction: UInt32) {
         let fraction: UInt32 = UInt32( (self-floor(self))*4_294_967_296 )
         let integer: UInt32 = UInt32(self)
-        
+
         return (integer: integer, fraction: fraction)
     }
 
     internal init(integer: UInt32, fraction: UInt32) {
-        self = Double(integer) + Double(fraction)/4_294_967_296
+        self = Double(integer) + (Double(fraction)/4_294_967_296)
     }
 
 }
-
 
 // MARK: TimeTag type
 
@@ -40,11 +39,9 @@ extension OSCTimeTag: OSCType {
             // first convert double value to integer/fraction tuple
             let tuple = seconds.fixPointValue
 
-            // them make bytes out of them
-            let b0 = typetobinary(tuple.integer)
-            let b1 = typetobinary(tuple.fraction)
+            let timestamp: UInt64 = UInt64(tuple.integer) << 32 | UInt64(tuple.fraction)
 
-            return b0+b1
+            return timestamp.oscValue
         }
     }
 
@@ -59,9 +56,12 @@ extension OSCTimeTag: OSCType {
         if data.elementsEqual(OSCTimeTag.oscImmediateBytes) {
             self = .immediate
         } else {
-            // integer/fraction tuple from byte stream
-            let secs = binarytotype([Byte](data.prefix(4)), UInt32.self)
-            let frac = binarytotype([Byte](data.suffix(4)), UInt32.self)
+            guard let timestamp = UInt64(data: [Byte](data)) else {
+                return nil
+            }
+
+            let secs = UInt32(timestamp >> 32)
+            let frac = UInt32(timestamp & 0xFFFFFFFF)
 
             // convert to double
             let seconds = Double(integer: secs, fraction: frac)

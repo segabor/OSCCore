@@ -68,35 +68,35 @@ class ValueConversionTests: XCTestCase {
     }
 
     func testTimeTagConversion() {
-        let interval = Double(0x78563412)
+        let interval = Double(0x12345678)
         let value: OSCTimeTag = OSCTimeTag.secondsSince1900(interval)
         let pkt = value.oscValue
         XCTAssertNotEqual(value, OSCTimeTag.immediate)
         XCTAssertEqual(pkt, [0x12, 0x34, 0x56, 0x78, 0x00, 0x00, 0x00, 0x00])
-        XCTAssertEqual(value, OSCTimeTag(data: pkt), "Value mismatch")
+        XCTAssertEqual(value, OSCTimeTag(data: pkt)!, "Value mismatch")
     }
-    
+
     func testFixedPrecisionToDoubleConversion() {
-        let testZeroValue: Double = 0;
-        
+        let testZeroValue: Double = 0
+
         var fixedPointValue = testZeroValue.fixPointValue
-        
+
         XCTAssertEqual(fixedPointValue.integer, UInt32(0))
         XCTAssertEqual(fixedPointValue.fraction, UInt32(0))
-        
+
         var dblValue = Double(integer: fixedPointValue.integer, fraction: fixedPointValue.fraction)
-        
+
         XCTAssertEqual(testZeroValue, dblValue)
-        
+
         let testNonZeroValue: Double = 123.0+(456.0/4_294_967_296)
-        
+
         fixedPointValue = testNonZeroValue.fixPointValue
-        
+
         XCTAssertEqual(fixedPointValue.integer, UInt32(123))
         XCTAssertEqual(fixedPointValue.fraction, UInt32(456))
 
         dblValue = Double(integer: fixedPointValue.integer, fraction: fixedPointValue.fraction)
-        
+
         XCTAssertEqual(testNonZeroValue, dblValue)
     }
 }
