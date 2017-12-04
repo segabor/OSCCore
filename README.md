@@ -47,7 +47,10 @@ Other dependency managers like CocoaPods or Chartage is under consideration.
 
 ## Version history
 
+- 0.4 Important fixes: timestamp and OSC packet detection
+  Switch to Swift 4.0.2
 - 0.3.1 iOS support
+  Note: this is last Swift 3 supported version
 - 0.3 Replace socket implementation to IBM's BlueSocket
 - 0.2.3 Bugfix release (see issue #5).
 - 0.2.2 Improved timetag support
