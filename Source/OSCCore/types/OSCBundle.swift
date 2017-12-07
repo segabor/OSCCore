@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct OSCBundle: Equatable {
+public struct OSCBundle {
     public let timetag: OSCTimeTag
 
     /// Bundle elements
@@ -16,10 +16,5 @@ public struct OSCBundle: Equatable {
     public init(timetag: OSCTimeTag, content: [OSCConvertible]) {
         self.timetag = timetag
         self.content = content
-    }
-
-    /// Equatable
-    public static func == (lhs: OSCBundle, rhs: OSCBundle) -> Bool {
-        return lhs.timetag == rhs.timetag && lhs.content == rhs.content
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct OSCMessage: Equatable {
+public struct OSCMessage {
     public let address: String
     public let args: [OSCType]
 
@@ -18,10 +18,5 @@ public struct OSCMessage: Equatable {
 
     public init(address: String, args: OSCType...) {
         self.init(address: address, args: args)
-    }
-
-    /// Equatable
-    public static func == (lhs: OSCMessage, rhs: OSCMessage) -> Bool {
-        return lhs.address == rhs.address && lhs.args == rhs.args
     }
 }
