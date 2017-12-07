@@ -6,9 +6,9 @@
 //
 
 extension String: OSCType {
-    public var oscValue: [Byte] {
-        var bytes = self.utf8.map({ Byte( $0 ) })
-        let fullSize =  paddedSize(bytes.count+1)
+    public var oscValue: [Byte]? {
+        var bytes = self.utf8.map {Byte( $0)}
+        let fullSize = paddedSize(bytes.count+1)
         let padding = fullSize - bytes.count
         if padding > 0 {
             bytes += [Byte](repeating: 0, count: padding)

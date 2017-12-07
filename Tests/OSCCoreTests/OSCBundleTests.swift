@@ -11,7 +11,8 @@ class OSCBundleTests: XCTestCase {
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01
         ]
 
-        XCTAssertEqual(expected_pkt, bundle.oscValue)
+        XCTAssertNotNil(bundle.oscValue)
+        XCTAssertEqual(expected_pkt, bundle.oscValue!)
     }
 }
 

@@ -8,18 +8,19 @@
 import Foundation
 
 extension OSCBundle: OSCConvertible {
-    public var oscValue: [Byte] {
+    public var oscValue: [Byte]? {
         var result = [Byte]()
 
         // write out head first
-        result += "#bundle".oscValue
-        result += timetag.oscValue
+        result += "#bundle".oscValue!
+        result += timetag.oscValue!
 
         /// asemble osc elements: size then content
         content.forEach { msg in
-            let v = msg.oscValue
-            result += Int32(v.count).oscValue
-            result += v
+            if let v = msg.oscValue {
+                result += Int32(v.count).oscValue!
+                result += v
+            }
         }
         return result
     }

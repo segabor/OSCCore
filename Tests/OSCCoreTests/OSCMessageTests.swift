@@ -10,6 +10,14 @@ class OSCMessageTests: XCTestCase {
         doTestOSCMessage(msg, expectedPacket)
     }
 
+    func testMessageHavingNilArgument() {
+        let msg = OSCMessage(address: "/nil", args: NilType.instance)
+
+        let expectedPacket: [Byte] = [0x2f, 0x6e, 0x69, 0x6c, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x4e, 0x00, 0x00]
+
+        doTestOSCMessage(msg, expectedPacket)
+    }
+    
     func testSingleArgMessage() {
         let msg = OSCMessage(address: "/oscillator/4/frequency", args: Float32(440.0))
 
@@ -28,7 +36,7 @@ class OSCMessageTests: XCTestCase {
     }
 
     func testMultipleArgsMessage() {
-        let msg = OSCMessage(address: "/foo", args: 1000, -1, "hello", Float32(1.234), Float32(5.678))
+        let msg = OSCMessage(address: "/foo", args: Int32(1000), Int32(-1), "hello", Float32(1.234), Float32(5.678))
 
         let expectedPacket: [Byte] = [
             0x2f, 0x66, 0x6f, 0x6f,
@@ -47,22 +55,12 @@ class OSCMessageTests: XCTestCase {
     }
 
     private func doTestOSCMessage(_ msg: OSCMessage, _ expectedPacket: [Byte]) {
-        let convertedPacket = msg.oscValue
+        XCTAssertNotNil(msg.oscValue)
+
+        let convertedPacket = msg.oscValue!
 
         // check conversion is correct
         XCTAssertEqual(expectedPacket, convertedPacket)
-
-        // check the opposite - restore messages from byte stream
-        guard
-            let parsed: OSCMessage = OSCMessage(data: convertedPacket),
-            let parsed2: OSCMessage = OSCMessage(data: expectedPacket)
-        else {
-            XCTFail("Failed to restore message from packet")
-            return
-        }
-
-        XCTAssertTrue(parsed.address == parsed2.address)
-        XCTAssertTrue(parsed.args == parsed2.args)
     }
 }
 

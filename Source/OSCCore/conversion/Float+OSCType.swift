@@ -11,7 +11,7 @@
 import CoreFoundation
 
 extension Float32: OSCType {
-    public var oscValue: [Byte] {
+    public var oscValue: [Byte]? {
         #if os(OSX) || os(iOS)
             let z = CFConvertFloat32HostToSwapped(self).v
         #elseif os(Linux)

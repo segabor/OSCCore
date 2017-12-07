@@ -17,7 +17,7 @@ import Foundation
 ///
 public protocol OSCConvertible {
     /// return as byte sequence
-    var oscValue: [Byte] { get }
+    var oscValue: [Byte]? { get }
 
     /// construct OSC value from byte array
     init?(data: ArraySlice<Byte>)

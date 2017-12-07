@@ -18,7 +18,7 @@ extension FixedWidthInteger {
 }
 
 extension Int64: OSCType {
-    public var oscValue: [Byte] {
+    public var oscValue: [Byte]? {
         let z = self.bigEndian
         return [Byte](typetobinary(z))
     }
@@ -28,7 +28,7 @@ extension Int64: OSCType {
 
 // for timestamps
 extension UInt64: OSCType {
-    public var oscValue: [Byte] {
+    public var oscValue: [Byte]? {
         let z = self.bigEndian
         return [Byte](typetobinary(z))
     }
@@ -37,7 +37,7 @@ extension UInt64: OSCType {
 }
 
 extension Int32: OSCType {
-    public var oscValue: [Byte] {
+    public var oscValue: [Byte]? {
         let z = self.bigEndian
         return [Byte](typetobinary(z))
     }
@@ -47,7 +47,7 @@ extension Int32: OSCType {
 
 // default Integers is converted to 32-bin integer for the sake of convenience
 extension Int: OSCType {
-    public var oscValue: [Byte] {
+    public var oscValue: [Byte]? {
         return Int32(self).oscValue
     }
 

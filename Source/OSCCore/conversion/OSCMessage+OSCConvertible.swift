@@ -67,17 +67,23 @@ extension OSCMessage: OSCConvertible {
         self.init(address: address, args: args)
     }
 
-    public var oscValue: [Byte] {
-        // align type letters to one string, starting with a comma character
-        let typeTags: String = String(args.map {$0.oscType.rawValue })
+    public var oscValue: [Byte]? {
+        guard let addressBytes = address.oscValue,
+            let typeTagBytes: [Byte] = (","+String(args.map {$0.oscType.rawValue })).oscValue
+        else {
+            return nil
+        }
 
         // convert values to packets and collect them into a byte array
-        let argsArray: [Byte] = args.map {$0.oscValue}.reduce([Byte](), +)
+        var argsBytes: [Byte] = [Byte]()
+        args.forEach {
+            if let bytes = $0.oscValue {
+                argsBytes += bytes
+            }
+        }
 
         // OSC Message := Address Pattern + Type Tag String + Arguments
-        return address.oscValue
-            + (","+typeTags).oscValue
-            + argsArray
+        return addressBytes + typeTagBytes + argsBytes
     }
 
 }

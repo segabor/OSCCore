@@ -29,7 +29,7 @@ extension OSCTimeTag: OSCType {
 
     static let oscImmediateBytes: [Byte] = [0, 0, 0, 0, 0, 0, 0, 1]
 
-    public var oscValue: [Byte] {
+    public var oscValue: [Byte]? {
 
         switch self {
         case .immediate:
@@ -41,7 +41,7 @@ extension OSCTimeTag: OSCType {
 
             let timestamp: UInt64 = UInt64(tuple.integer) << 32 | UInt64(tuple.fraction)
 
-            return timestamp.oscValue
+            return timestamp.oscValue!
         }
     }
 
