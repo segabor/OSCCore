@@ -82,8 +82,11 @@ class CommunicationTests: XCTestCase {
                 }
 
                 if let value = capturedMessage {
-                    XCTAssertTrue(testMessage.address == value.address)
-                    XCTAssertTrue(testMessage.args == value.args)
+                    if let expectedBytes = testMessage.oscValue, let receivedBytes = value.oscValue {
+                        XCTAssertTrue(expectedBytes == receivedBytes)
+                    } else {
+                        XCTFail("Unexpected message")
+                    }
                 } else {
                     XCTFail("No message received")
                 }
@@ -167,9 +170,11 @@ class CommunicationTests: XCTestCase {
 
             if let receivedPacket = channel.receive(),
                 let response = receivedPacket as? OSCMessage {
-                XCTAssertTrue(testResponse.address == response.address)
-                XCTAssertTrue(testResponse.args == response.args)
-
+                if let expectedBytes = testResponse.oscValue, let receivedBytes = response.oscValue {
+                    XCTAssertTrue(expectedBytes == receivedBytes)
+                } else {
+                    XCTFail("Unexpected message")
+                }
             } else {
                 XCTFail("Received no response")
             }

@@ -21,9 +21,6 @@ public protocol OSCConvertible {
 
     /// construct OSC value from byte array
     init?(data: ArraySlice<Byte>)
-
-    /// Custom function for Equatable
-    func isEqualTo(_ other: OSCConvertible) -> Bool
 }
 
 extension OSCConvertible {
@@ -33,15 +30,3 @@ extension OSCConvertible {
     }
 }
 
-//
-// Workaround for Equatable adoption
-//
-extension OSCConvertible where Self : Equatable {
-    /// otherObject could also be 'Any'
-    public func isEqualTo(_ other: OSCConvertible) -> Bool {
-        if let otherAsSelf = other as? Self {
-            return otherAsSelf == self
-        }
-        return false
-    }
-}
