@@ -14,7 +14,7 @@ extension OSCMessage: OSCConvertible {
         }
 
         var index = data.startIndex + paddedSize(address.utf8.count+1)
-        var args = [OSCType]()
+        var args = [OSCType?]()
 
         // find type tags string starting with comma (',')
         if data[index] == 0x2C,
@@ -57,6 +57,12 @@ extension OSCMessage: OSCConvertible {
                         }
                         args.append(val)
                         index+=8
+                    case .NIL_TYPE_TAG:
+                        args.append(nil)
+                    case .TRUE_TYPE_TAG:
+                        args.append(true)
+                    case .FALSE_TYPE_TAG:
+                        args.append(false)
                     default:
                         break
                     }
