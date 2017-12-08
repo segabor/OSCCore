@@ -127,7 +127,6 @@ class ValueConversionTests: XCTestCase {
 extension ValueConversionTests {
     static var allTests: [(String, (ValueConversionTests) -> () throws -> Void)] {
         return [
-            ("testNoValueConversion", testNoValueConversion),
             ("testEmptyStringConversion", testEmptyStringConversion),
             ("testBasicStringConversion", testBasicStringConversion),
             ("testInt32Conversion", testInt32Conversion),
