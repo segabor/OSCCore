@@ -68,22 +68,21 @@ extension OSCMessage: OSCConvertible {
     }
 
     public var oscValue: [Byte]? {
-        guard let addressBytes = address.oscValue,
-            let typeTagBytes: [Byte] = (","+String(args.map {$0.oscType.rawValue })).oscValue
-        else {
-            return nil
+        var typeTags : [Character] = [","]
+        args.forEach {
+            typeTags.append($0?.oscType.rawValue ?? TypeTagValues.NIL_TYPE_TAG.rawValue)
         }
-
+        
         // convert values to packets and collect them into a byte array
         var argsBytes: [Byte] = [Byte]()
         args.forEach {
-            if let bytes = $0.oscValue {
+            if let bytes = $0?.oscValue {
                 argsBytes += bytes
             }
         }
 
         // OSC Message := Address Pattern + Type Tag String + Arguments
-        return addressBytes + typeTagBytes + argsBytes
+        return address.oscValue! + String(typeTags).oscValue! + argsBytes
     }
 
 }

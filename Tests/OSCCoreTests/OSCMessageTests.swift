@@ -11,7 +11,7 @@ class OSCMessageTests: XCTestCase {
     }
 
     func testMessageHavingNilArgument() {
-        let msg = OSCMessage(address: "/nil", args: NilType.instance)
+        let msg = OSCMessage(address: "/nil", args: nil)
 
         let expectedPacket: [Byte] = [0x2f, 0x6e, 0x69, 0x6c, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x4e, 0x00, 0x00]
 

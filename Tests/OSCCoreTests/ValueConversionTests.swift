@@ -3,12 +3,6 @@ import XCTest
 
 class ValueConversionTests: XCTestCase {
 
-    func testNoValueConversion() {
-        let testSubject : OSCType = NilType.instance
-        
-        XCTAssertNil(testSubject.oscValue, "Unexpected OSC value")
-    }
-
     func testEmptyStringConversion() {
         // test value
         let str = ""
