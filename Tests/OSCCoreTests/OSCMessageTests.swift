@@ -61,6 +61,23 @@ class OSCMessageTests: XCTestCase {
 
         // check conversion is correct
         XCTAssertEqual(expectedPacket, convertedPacket)
+        
+        if let otherMsg = OSCMessage(data: convertedPacket) {
+            XCTAssertEqual(msg.address, otherMsg.address, "Address field mismatch")
+            XCTAssertEqual(msg.args.count, otherMsg.args.count, "Arguments size mismatch")
+            
+            for argPair in zip(msg.args, otherMsg.args) {
+                if let msgVal = argPair.0, let msg2Val = argPair.1 {
+                    XCTAssertEqual(msgVal.oscType, msg2Val.oscType)
+                    // XCTAssertTrue(msgVal.isEqualTo(msg2Val))
+                } else {
+                    XCTAssertNil(argPair.0)
+                    XCTAssertNil(argPair.1)
+                }
+            }
+        } else {
+            XCTFail("Failed to build message from bytes")
+        }
     }
 }
 

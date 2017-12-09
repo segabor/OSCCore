@@ -20,9 +20,3 @@ func typetobinary <T> (_ value: T) -> [Byte] {
     return withUnsafeBytes(of: &mv) { Array($0) }
 }
 
-// MARK: padding support
-
-// Round up number to the nearest multiple of 4
-@inline(__always) func paddedSize(_ size: Int) -> Int {
-    return (size + 3) & ~0x03
-}

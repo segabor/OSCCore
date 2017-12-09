@@ -13,17 +13,17 @@ extension OSCMessage: OSCConvertible {
             return nil
         }
 
-        var index = data.startIndex + paddedSize(address.utf8.count+1)
+        var index = data.startIndex + address.alignedSize
         var args = [OSCType?]()
 
         // find type tags string starting with comma (',')
         if data[index] == 0x2C,
-            let typeTags = String(data: data.suffix(from: index+1)) {
+            let typeTags = String(data: data.suffix(from: index))  {
+
+            index += typeTags.alignedSize
 
             // process args list
-            index += paddedSize(typeTags.utf8.count+2)
-            for type_tag in typeTags {
-
+            for type_tag in typeTags.suffix(from: typeTags.index(typeTags.startIndex, offsetBy: 1)) {
                 if let type: TypeTagValues = TypeTagValues(rawValue: type_tag) {
                     switch type {
                     case .STRING_TYPE_TAG:
@@ -31,7 +31,7 @@ extension OSCMessage: OSCConvertible {
                             return nil
                         }
                         args.append(val)
-                        index += paddedSize(val.utf8.count+1)
+                        index += val.alignedSize
                     case .INT32_TYPE_TAG:
                         guard let val = Int32(data: data[index..<index+4]) else {
                             return nil
