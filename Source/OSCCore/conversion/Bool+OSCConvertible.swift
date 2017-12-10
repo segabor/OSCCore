@@ -20,4 +20,3 @@ extension Bool: OSCType {
         return nil
     }
 }
-

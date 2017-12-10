@@ -8,7 +8,7 @@
 import Foundation
 
 extension OSCMessage: OSCConvertible {
-    public init?(data: ArraySlice<Byte>) {
+    public init?(data: ArraySlice<Byte>) { //swiftlint:disable:this cyclomatic_complexity
         guard let address = String(data: data) else {
             return nil
         }
@@ -18,7 +18,7 @@ extension OSCMessage: OSCConvertible {
 
         // find type tags string starting with comma (',')
         if data[index] == 0x2C,
-            let typeTags = String(data: data.suffix(from: index))  {
+            let typeTags = String(data: data.suffix(from: index)) {
 
             index += typeTags.alignedSize
 
@@ -86,11 +86,11 @@ extension OSCMessage: OSCConvertible {
     }
 
     public var oscValue: [Byte]? {
-        var typeTags : [Character] = [","]
+        var typeTags: [Character] = [","]
         args.forEach {
             typeTags.append($0?.oscType.rawValue ?? TypeTagValues.NIL_TYPE_TAG.rawValue)
         }
-        
+
         // convert values to packets and collect them into a byte array
         var argsBytes: [Byte] = [Byte]()
         args.forEach {

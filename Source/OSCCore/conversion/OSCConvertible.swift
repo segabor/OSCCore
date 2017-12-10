@@ -29,4 +29,3 @@ extension OSCConvertible {
         self.init(data: data[0..<data.count])
     }
 }
-

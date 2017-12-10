@@ -19,4 +19,3 @@ func typetobinary <T> (_ value: T) -> [Byte] {
     var mv = value
     return withUnsafeBytes(of: &mv) { Array($0) }
 }
-

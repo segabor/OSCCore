@@ -61,7 +61,7 @@ class ValueConversionTests: XCTestCase {
     func testFloat32Conversion() {
         let value: Float32 = Float32(1.234)
         let packet: [Byte] = [0x3f, 0x9d, 0xf3, 0xb6]
-        
+
         assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.FLOAT_TYPE_TAG, testValue: value)
     }
 
@@ -108,7 +108,7 @@ class ValueConversionTests: XCTestCase {
         XCTAssertEqual(expectedTypeTag, testValue.oscType, "Type tag mismatch")
         if let value = testValue.oscValue {
             XCTAssertEqual(expected, value, "Incorrect OSC Packet")
-            
+
             if TypeTagValues.STRING_TYPE_TAG == expectedTypeTag {
                 XCTAssertEqual(value.count%4, 0, "Packet length misaligment, it must be multiple of 4")
             }
