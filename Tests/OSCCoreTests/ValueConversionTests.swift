@@ -28,6 +28,15 @@ class ValueConversionTests: XCTestCase {
         assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.STRING_TYPE_TAG, testValue: str)
     }
 
+    func testSymbolConversion() {
+        // test value
+        let value = OSCSymbol(label: "hello")
+        // expected packet
+        let packet: [Byte] = [0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x00, 0x00, 0x00]
+
+        assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.SYMBOL_TYPE_TAG, testValue: value)
+    }
+
     func testInt32Conversion() {
         let value: Int32 = 0x12345678
         let packet: [Byte] = [0x12, 0x34, 0x56, 0x78]
@@ -116,6 +125,7 @@ extension ValueConversionTests {
             ("testCharacterConversion", testCharacterConversion),
             ("testEmptyStringConversion", testEmptyStringConversion),
             ("testBasicStringConversion", testBasicStringConversion),
+            ("testSymbolConversion", testSymbolConversion),
             ("testInt32Conversion", testInt32Conversion),
             ("testInt64Conversion", testInt64Conversion),
             ("testIntConversion", testIntConversion),

@@ -17,7 +17,7 @@ class OSCMessageTests: XCTestCase {
 
         doTestOSCMessage(msg, expectedPacket)
     }
-    
+
     func testSingleArgMessage() {
         let msg = OSCMessage(address: "/oscillator/4/frequency", args: Float32(440.0))
 
@@ -49,6 +49,23 @@ class OSCMessageTests: XCTestCase {
             0x6f, 0x00, 0x00, 0x00,
             0x3f, 0x9d, 0xf3, 0xb6,
             0x40, 0xb5, 0xb2, 0x2d
+        ]
+
+        doTestOSCMessage(msg, expectedPacket)
+    }
+
+    func testMessageHavingSymbolArgument() {
+        let msg = OSCMessage(address: "/test", args: OSCSymbol(label: "symbol1"))
+
+        let expectedPacket: [Byte] = [
+            // "/test"
+            0x2f, 0x74, 0x65, 0x73,
+            0x74, 0x00, 0x00, 0x00,
+            // ",S"
+            0x2c, 0x53, 0x00, 0x00,
+            // "symbol1"
+            0x73, 0x79, 0x6d, 0x62,
+            0x6f, 0x6c, 0x31, 0x00
         ]
 
         doTestOSCMessage(msg, expectedPacket)
@@ -87,8 +104,8 @@ extension OSCMessageTests {
         return [
             ("testNoArgMessage", testNoArgMessage),
             ("testSingleArgMessage", testSingleArgMessage),
-            ("testMultipleArgsMessage", testMultipleArgsMessage)
-
+            ("testMultipleArgsMessage", testMultipleArgsMessage),
+            ("testMessageHavingSymbolArgument", testMessageHavingSymbolArgument)
         ]
     }
 }

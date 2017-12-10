@@ -32,6 +32,12 @@ extension OSCMessage: OSCConvertible {
                         }
                         args.append(val)
                         index += val.alignedSize
+                    case .SYMBOL_TYPE_TAG:
+                        guard let val = OSCSymbol(data: data.suffix(from: index)) else {
+                            return nil
+                        }
+                        args.append(val)
+                        index += val.alignedSize
                     case .INT32_TYPE_TAG:
                         guard let val = Int32(data: data[index..<index+4]) else {
                             return nil
