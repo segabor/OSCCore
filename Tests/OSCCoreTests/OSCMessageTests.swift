@@ -71,6 +71,37 @@ class OSCMessageTests: XCTestCase {
         doTestOSCMessage(msg, expectedPacket)
     }
 
+    func testMessageHavingDoubleValue() {
+        let msg = OSCMessage(address: "/test", args: 1234.5678)
+
+        let expectedPacket: [Byte] = [
+            // "/test"
+            0x2f, 0x74, 0x65, 0x73,
+            0x74, 0x00, 0x00, 0x00,
+            // ",d"
+            0x2c, 0x64, 0x00, 0x00,
+            // double value
+            0x40, 0x93, 0x4a, 0x45,
+            0x6d, 0x5c, 0xfa, 0xad
+        ]
+
+        doTestOSCMessage(msg, expectedPacket)
+    }
+
+    func testMessageHavingInfinityValue() {
+        let msg = OSCMessage(address: "/test", args: Double.infinity)
+
+        let expectedPacket: [Byte] = [
+            // "/test"
+            0x2f, 0x74, 0x65, 0x73,
+            0x74, 0x00, 0x00, 0x00,
+            // ",I"
+            0x2c, 0x49, 0x00, 0x00
+        ]
+
+        doTestOSCMessage(msg, expectedPacket)
+    }
+
     private func doTestOSCMessage(_ msg: OSCMessage, _ expectedPacket: [Byte]) {
         XCTAssertNotNil(msg.oscValue)
 
@@ -105,7 +136,9 @@ extension OSCMessageTests {
             ("testNoArgMessage", testNoArgMessage),
             ("testSingleArgMessage", testSingleArgMessage),
             ("testMultipleArgsMessage", testMultipleArgsMessage),
-            ("testMessageHavingSymbolArgument", testMessageHavingSymbolArgument)
+            ("testMessageHavingSymbolArgument", testMessageHavingSymbolArgument),
+            ("testMessageHavingDoubleValue", testMessageHavingDoubleValue),
+            ("testMessageHavingInfinityValue", testMessageHavingInfinityValue)
         ]
     }
 }

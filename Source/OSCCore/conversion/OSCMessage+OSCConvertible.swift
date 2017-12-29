@@ -56,6 +56,12 @@ extension OSCMessage: OSCConvertible {
                         }
                         args.append(val)
                         index+=4
+                    case .DOUBLE_TYPE_TAG:
+                        guard let val = Double(data: data[index..<index+8]) else {
+                            return nil
+                        }
+                        args.append(val)
+                        index+=8
                     case .TIME_TAG_TYPE_TAG:
                         /// process the same way as Int64 but yield different Swift type
                         guard let val = OSCTimeTag(data: data[index..<index+8]) else {
@@ -75,6 +81,8 @@ extension OSCMessage: OSCConvertible {
                         args.append(true)
                     case .FALSE_TYPE_TAG:
                         args.append(false)
+                    case .INFINITUM_TYPE_TAG:
+                        args.append(Double.infinity)
                     default:
                         break
                     }
