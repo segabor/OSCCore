@@ -81,6 +81,12 @@ extension OSCMessage: OSCConvertible {
                         }
                         args.append(val)
                         index+=4
+                    case .MIDI_MESSAGE_TYPE_TAG:
+                        guard let val = MIDI(data: data[index..<index+4]) else {
+                            return nil
+                        }
+                        args.append(val)
+                        index+=4
                     case .NIL_TYPE_TAG:
                         args.append(nil)
                     case .TRUE_TYPE_TAG:

@@ -125,6 +125,13 @@ class ValueConversionTests: XCTestCase {
         assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.RGBA_COLOR_TYPE_TAG, testValue: value)
     }
 
+    func testMIDIConversion() {
+        let value = MIDI(portId: 0x12, status: 0x34, data1: 0x56, data2: 0x78)
+        let packet: [Byte] = [0x12, 0x34, 0x56, 0x78]
+
+        assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.MIDI_MESSAGE_TYPE_TAG, testValue: value)
+    }
+
     private func assertValueConversion(expected expectedBytes: [Byte]?, expectedTypeTag: TypeTagValues, testValue: OSCType) {
         XCTAssertEqual(expectedTypeTag, testValue.oscType, "Type tag mismatch")
 
@@ -158,6 +165,7 @@ extension ValueConversionTests {
             ("testImmediateTimeTagConversion", testImmediateTimeTagConversion),
             ("testTimeTagConversion", testTimeTagConversion),
             ("testFixedPrecisionToDoubleConversion", testFixedPrecisionToDoubleConversion),
+            ("testMIDIConversion", testMIDIConversion),
             ("testRGBAConversion", testRGBAConversion)
         ]
     }
