@@ -158,7 +158,7 @@ extension ValueConversionTests {
             ("testImmediateTimeTagConversion", testImmediateTimeTagConversion),
             ("testTimeTagConversion", testTimeTagConversion),
             ("testFixedPrecisionToDoubleConversion", testFixedPrecisionToDoubleConversion),
-            ("testRGBAConversion"), testRGBAConversion
+            ("testRGBAConversion", testRGBAConversion)
         ]
     }
 }

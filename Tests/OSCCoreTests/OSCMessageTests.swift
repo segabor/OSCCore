@@ -155,7 +155,7 @@ extension OSCMessageTests {
             ("testMessageHavingSymbolArgument", testMessageHavingSymbolArgument),
             ("testMessageHavingDoubleValue", testMessageHavingDoubleValue),
             ("testMessageHavingInfinityValue", testMessageHavingInfinityValue),
-            ("testMessageHavingRGBAValue"), testMessageHavingRGBAValue
+            ("testMessageHavingRGBAValue", testMessageHavingRGBAValue)
         ]
     }
 }
