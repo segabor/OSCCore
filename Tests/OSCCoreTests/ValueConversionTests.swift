@@ -3,6 +3,11 @@ import XCTest
 
 class ValueConversionTests: XCTestCase {
 
+    func testBooleanConversion() {
+        assertValueConversion(expected: nil, expectedTypeTag: TypeTagValues.TRUE_TYPE_TAG, testValue: true)
+        assertValueConversion(expected: nil, expectedTypeTag: TypeTagValues.FALSE_TYPE_TAG, testValue: false)
+    }
+
     func testCharacterConversion() {
         let testValue = Character(" ")
         let packet: [Byte] = [0x00, 0x00, 0x00, 0x20]
@@ -65,6 +70,15 @@ class ValueConversionTests: XCTestCase {
         assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.FLOAT_TYPE_TAG, testValue: value)
     }
 
+    func testDoubleConversion() {
+        let value: Double = 1234.5678
+        let packet: [Byte] = [0x40, 0x93, 0x4a, 0x45, 0x6d, 0x5c, 0xfa, 0xad]
+
+        assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.DOUBLE_TYPE_TAG, testValue: value)
+
+        assertValueConversion(expected: nil, expectedTypeTag: TypeTagValues.INFINITUM_TYPE_TAG, testValue: Double.infinity)
+    }
+
     func testImmediateTimeTagConversion() {
         let value = OSCTimeTag.immediate
         let packet: [Byte] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]
@@ -104,16 +118,25 @@ class ValueConversionTests: XCTestCase {
         XCTAssertEqual(testNonZeroValue, dblValue)
     }
 
-    private func assertValueConversion(expected: [Byte], expectedTypeTag: TypeTagValues, testValue: OSCType) {
+    func testRGBAConversion() {
+        let value = RGBA(red: 0x12, green: 0x34, blue: 0x56, alpha: 0x78)
+        let packet: [Byte] = [0x12, 0x34, 0x56, 0x78]
+
+        assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.RGBA_COLOR_TYPE_TAG, testValue: value)
+    }
+
+    private func assertValueConversion(expected expectedBytes: [Byte]?, expectedTypeTag: TypeTagValues, testValue: OSCType) {
         XCTAssertEqual(expectedTypeTag, testValue.oscType, "Type tag mismatch")
-        if let value = testValue.oscValue {
-            XCTAssertEqual(expected, value, "Incorrect OSC Packet")
+
+        if let bytes = testValue.oscValue {
+            XCTAssertTrue(expectedBytes != nil, "Test OSC value did not return serialized bytes")
+            XCTAssertEqual(expectedBytes!, bytes, "Incorrect OSC Packet")
 
             if TypeTagValues.STRING_TYPE_TAG == expectedTypeTag {
-                XCTAssertEqual(value.count%4, 0, "Packet length misaligment, it must be multiple of 4")
+                XCTAssertEqual(bytes.count%4, 0, "Packet length misaligment, it must be multiple of 4")
             }
         } else {
-            XCTFail("Failed to convert value with type tag \(expectedTypeTag) to OSC bytes")
+            XCTAssertNil(expectedBytes, "Test OSC value should not return serialized bytes")
         }
     }
 }
@@ -122,6 +145,7 @@ class ValueConversionTests: XCTestCase {
 extension ValueConversionTests {
     static var allTests: [(String, (ValueConversionTests) -> () throws -> Void)] {
         return [
+            ("testBooleanConversion", testBooleanConversion),
             ("testCharacterConversion", testCharacterConversion),
             ("testEmptyStringConversion", testEmptyStringConversion),
             ("testBasicStringConversion", testBasicStringConversion),
@@ -130,9 +154,11 @@ extension ValueConversionTests {
             ("testInt64Conversion", testInt64Conversion),
             ("testIntConversion", testIntConversion),
             ("testFloat32Conversion", testFloat32Conversion),
+            ("testDoubleConversion", testDoubleConversion),
             ("testImmediateTimeTagConversion", testImmediateTimeTagConversion),
             ("testTimeTagConversion", testTimeTagConversion),
-            ("testFixedPrecisionToDoubleConversion", testFixedPrecisionToDoubleConversion)
+            ("testFixedPrecisionToDoubleConversion", testFixedPrecisionToDoubleConversion),
+            ("testRGBAConversion"), testRGBAConversion
         ]
     }
 }

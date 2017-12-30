@@ -102,6 +102,22 @@ class OSCMessageTests: XCTestCase {
         doTestOSCMessage(msg, expectedPacket)
     }
 
+    func testMessageHavingRGBAValue() {
+        let msg = OSCMessage(address: "/test", args: RGBA(red: 0x12, green: 0x34, blue: 0x56, alpha: 0x78))
+
+        let expectedPacket: [Byte] = [
+            // "/test"
+            0x2f, 0x74, 0x65, 0x73,
+            0x74, 0x00, 0x00, 0x00,
+            // ",r"
+            0x2c, 0x72, 0x00, 0x00,
+            // value in bytes
+            0x12, 0x34, 0x56, 0x78
+        ]
+
+        doTestOSCMessage(msg, expectedPacket)
+    }
+
     private func doTestOSCMessage(_ msg: OSCMessage, _ expectedPacket: [Byte]) {
         XCTAssertNotNil(msg.oscValue)
 
@@ -138,7 +154,8 @@ extension OSCMessageTests {
             ("testMultipleArgsMessage", testMultipleArgsMessage),
             ("testMessageHavingSymbolArgument", testMessageHavingSymbolArgument),
             ("testMessageHavingDoubleValue", testMessageHavingDoubleValue),
-            ("testMessageHavingInfinityValue", testMessageHavingInfinityValue)
+            ("testMessageHavingInfinityValue", testMessageHavingInfinityValue),
+            ("testMessageHavingRGBAValue"), testMessageHavingRGBAValue
         ]
     }
 }
