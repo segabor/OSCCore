@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Character: OSCType {
+extension Character: OSCMessageArgument {
     public var oscType: TypeTagValues {
         return TypeTagValues.CHAR_TYPE_TAG
     }

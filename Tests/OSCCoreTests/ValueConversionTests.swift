@@ -132,7 +132,7 @@ class ValueConversionTests: XCTestCase {
         assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.MIDI_MESSAGE_TYPE_TAG, testValue: value)
     }
 
-    private func assertValueConversion(expected expectedBytes: [Byte]?, expectedTypeTag: TypeTagValues, testValue: OSCType) {
+    private func assertValueConversion(expected expectedBytes: [Byte]?, expectedTypeTag: TypeTagValues, testValue: OSCMessageArgument) {
         XCTAssertEqual(expectedTypeTag, testValue.oscType, "Type tag mismatch")
 
         if let bytes = testValue.oscValue {

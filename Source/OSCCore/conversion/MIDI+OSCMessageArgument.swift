@@ -5,7 +5,7 @@
 //  Created by Sebestyén Gábor on 2017. 12. 30..
 //
 
-extension MIDI: OSCType {
+extension MIDI: OSCMessageArgument {
 
     public init?(data: ArraySlice<Byte>) {
         let binary: [Byte] = [Byte](data)

@@ -13,7 +13,7 @@ extension String {
     }
 }
 
-extension String: OSCType {
+extension String: OSCMessageArgument {
     public var oscValue: [Byte]? {
         var bytes = self.utf8.map {Byte($0)}
         let fullSize = alignedSize

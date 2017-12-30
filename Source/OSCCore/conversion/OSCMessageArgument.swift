@@ -9,8 +9,10 @@ import Foundation
 
 ///
 /// Types adopting this protocol
-/// can be converted to OSC value
+/// can be part of OSC message arguments
+/// All arguments are denoted with a distinct type tag
+/// defined in TypeTagValues enum
 ///
-public protocol OSCType: OSCConvertible {
+public protocol OSCMessageArgument: OSCConvertible {
     var oscType: TypeTagValues { get }
 }

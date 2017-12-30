@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Bool: OSCType {
+extension Bool: OSCMessageArgument {
     public var oscType: TypeTagValues {
         return self == true ? TypeTagValues.TRUE_TYPE_TAG : TypeTagValues.FALSE_TYPE_TAG
     }

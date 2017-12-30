@@ -14,7 +14,7 @@ extension OSCMessage: OSCConvertible {
         }
 
         var index = data.startIndex + address.alignedSize
-        var args = [OSCType?]()
+        var args = [OSCMessageArgument?]()
 
         // find type tags string starting with comma (',')
         if data[index] == 0x2C,

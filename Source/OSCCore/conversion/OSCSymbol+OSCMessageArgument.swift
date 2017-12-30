@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension OSCSymbol: OSCType {
+extension OSCSymbol: OSCMessageArgument {
     public var oscType: TypeTagValues {
         return TypeTagValues.SYMBOL_TYPE_TAG
     }

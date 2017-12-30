@@ -17,7 +17,7 @@ extension FixedWidthInteger {
     }
 }
 
-extension Int64: OSCType {
+extension Int64: OSCMessageArgument {
     public var oscValue: [Byte]? {
         let z = self.bigEndian
         return [Byte](typetobinary(z))
@@ -34,7 +34,7 @@ extension UInt64: OSCConvertible {
     }
 }
 
-extension Int32: OSCType {
+extension Int32: OSCMessageArgument {
     public var oscValue: [Byte]? {
         let z = self.bigEndian
         return [Byte](typetobinary(z))
@@ -51,7 +51,7 @@ extension UInt32: OSCConvertible {
 }
 
 // default Integers is converted to 32-bin integer for the sake of convenience
-extension Int: OSCType {
+extension Int: OSCMessageArgument {
     public var oscValue: [Byte]? {
         return Int32(self).oscValue
     }

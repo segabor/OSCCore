@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension RGBA: OSCType {
+extension RGBA: OSCMessageArgument {
 
     public init?(data: ArraySlice<Byte>) {
         let binary: [Byte] = [Byte](data)

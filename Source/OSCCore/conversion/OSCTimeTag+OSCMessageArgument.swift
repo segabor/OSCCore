@@ -25,7 +25,7 @@ internal extension Double {
 
 // MARK: TimeTag type
 
-extension OSCTimeTag: OSCType {
+extension OSCTimeTag: OSCMessageArgument {
 
     static let oscImmediateBytes: [Byte] = [0, 0, 0, 0, 0, 0, 0, 1]
 

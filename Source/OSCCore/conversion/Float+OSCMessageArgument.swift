@@ -10,7 +10,7 @@
 #endif
 import CoreFoundation
 
-extension Float32: OSCType {
+extension Float32: OSCMessageArgument {
     public var oscValue: [Byte]? {
         #if os(OSX) || os(iOS)
             let z = CFConvertFloat32HostToSwapped(self).v

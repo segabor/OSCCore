@@ -5,7 +5,7 @@
 //  Created by Sebestyén Gábor on 2017. 12. 29..
 //
 
-extension Double: OSCType {
+extension Double: OSCMessageArgument {
     public var oscValue: [Byte]? {
         guard self.isFinite else {
             return nil
