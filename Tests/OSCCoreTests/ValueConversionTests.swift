@@ -132,6 +132,39 @@ class ValueConversionTests: XCTestCase {
         assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.MIDI_MESSAGE_TYPE_TAG, testValue: value)
     }
 
+    func testEmptyBlobConversion() {
+        let bytes: [Byte] = []
+
+        let value: Data = bytes.withUnsafeBytes {
+            return Data(bytes: $0.baseAddress!, count: bytes.count)
+        }
+        let packet: [Byte] = [0x00, 0x00, 0x00, 0x00]
+
+        assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.BLOB_TYPE_TAG, testValue: value)
+    }
+
+    func testBlobConversion() {
+        let bytes: [Byte] = [0xde, 0xad, 0xba, 0xbe]
+
+        let value: Data = bytes.withUnsafeBytes {
+            return Data(bytes: $0.baseAddress!, count: bytes.count)
+        }
+        let packet: [Byte] = [0x00, 0x00, 0x00, 0x04, 0xde, 0xad, 0xba, 0xbe]
+
+        assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.BLOB_TYPE_TAG, testValue: value)
+    }
+
+    func testPaddedBlobConversion() {
+        let bytes: [Byte] = [0xde, 0xad, 0xba, 0xbe, 0xca, 0xfe, 0xba]
+
+        let value: Data = bytes.withUnsafeBytes {
+            return Data(bytes: $0.baseAddress!, count: bytes.count)
+        }
+        let packet: [Byte] = [0x00, 0x00, 0x00, 0x07, 0xde, 0xad, 0xba, 0xbe, 0xca, 0xfe, 0xba, 0x00]
+
+        assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.BLOB_TYPE_TAG, testValue: value)
+    }
+
     private func assertValueConversion(expected expectedBytes: [Byte]?, expectedTypeTag: TypeTagValues, testValue: OSCMessageArgument) {
         XCTAssertEqual(expectedTypeTag, testValue.oscType, "Type tag mismatch")
 
@@ -166,7 +199,10 @@ extension ValueConversionTests {
             ("testTimeTagConversion", testTimeTagConversion),
             ("testFixedPrecisionToDoubleConversion", testFixedPrecisionToDoubleConversion),
             ("testMIDIConversion", testMIDIConversion),
-            ("testRGBAConversion", testRGBAConversion)
+            ("testRGBAConversion", testRGBAConversion),
+            ("testEmptyBlobConversion", testEmptyBlobConversion),
+            ("testBlobConversion", testBlobConversion),
+            ("testPaddedBlobConversion", testPaddedBlobConversion)
         ]
     }
 }

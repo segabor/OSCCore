@@ -87,6 +87,12 @@ extension OSCMessage: OSCConvertible {
                         }
                         args.append(val)
                         index+=4
+                    case .BLOB_TYPE_TAG:
+                        guard let val = Data(data: data.suffix(from: index)) else {
+                            return nil
+                        }
+                        args.append(val)
+                        index += val.alignedSize
                     case .NIL_TYPE_TAG:
                         args.append(nil)
                     case .TRUE_TYPE_TAG:

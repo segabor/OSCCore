@@ -134,6 +134,74 @@ class OSCMessageTests: XCTestCase {
         doTestOSCMessage(msg, expectedPacket)
     }
 
+    func testMessageHavingEmptyBlob() {
+        let bytes: [Byte] = []
+
+        let blob: Data = bytes.withUnsafeBytes {
+            return Data(bytes: $0.baseAddress!, count: bytes.count)
+        }
+        let msg = OSCMessage(address: "/test", args: blob)
+
+        let expectedPacket: [Byte] = [
+            // "/test"
+            0x2f, 0x74, 0x65, 0x73,
+            0x74, 0x00, 0x00, 0x00,
+            // ",b"
+            0x2c, 0x62, 0x00, 0x00,
+            // value in bytes
+            0x00, 0x00, 0x00, 0x00
+        ]
+
+        doTestOSCMessage(msg, expectedPacket)
+    }
+
+    func testMessageHavingBlob() {
+        let bytes: [Byte] = [0xde, 0xad, 0xba, 0xbe]
+
+        let blob: Data = bytes.withUnsafeBytes {
+            return Data(bytes: $0.baseAddress!, count: bytes.count)
+        }
+
+        let msg = OSCMessage(address: "/test", args: blob)
+
+        let expectedPacket: [Byte] = [
+            // "/test"
+            0x2f, 0x74, 0x65, 0x73,
+            0x74, 0x00, 0x00, 0x00,
+            // ",b"
+            0x2c, 0x62, 0x00, 0x00,
+            // value in bytes
+            0x00, 0x00, 0x00, 0x04,
+            0xde, 0xad, 0xba, 0xbe
+        ]
+
+        doTestOSCMessage(msg, expectedPacket)
+    }
+
+    func testMessageHavingPaddedBlob() {
+        let bytes: [Byte] = [0xde, 0xad, 0xba, 0xbe, 0xca, 0xfe, 0xba]
+
+        let blob: Data = bytes.withUnsafeBytes {
+            return Data(bytes: $0.baseAddress!, count: bytes.count)
+        }
+
+        let msg = OSCMessage(address: "/test", args: blob)
+
+        let expectedPacket: [Byte] = [
+            // "/test"
+            0x2f, 0x74, 0x65, 0x73,
+            0x74, 0x00, 0x00, 0x00,
+            // ",b"
+            0x2c, 0x62, 0x00, 0x00,
+            // value in bytes
+            0x00, 0x00, 0x00, 0x07,
+            0xde, 0xad, 0xba, 0xbe,
+            0xca, 0xfe, 0xba, 0x00
+        ]
+
+        doTestOSCMessage(msg, expectedPacket)
+    }
+
     private func doTestOSCMessage(_ msg: OSCMessage, _ expectedPacket: [Byte]) {
         XCTAssertNotNil(msg.oscValue)
 
