@@ -19,6 +19,9 @@ public protocol OSCConvertible {
     /// return as byte sequence
     var oscValue: [Byte]? { get }
 
+    /// returns size of OSC packet in bytes
+    var packetSize: Int { get }
+
     /// construct OSC value from byte array
     init?(data: ArraySlice<Byte>)
 }

@@ -7,6 +7,10 @@
 
 /// Create integers from bytes
 extension FixedWidthInteger {
+    public var packetSize: Int {
+        return MemoryLayout<Self>.size
+    }
+
     public init?(data: ArraySlice<Byte>) {
         let binary: [Byte] = [Byte](data)
         if binary.count != MemoryLayout<Self>.size {
@@ -57,6 +61,10 @@ extension Int: OSCMessageArgument {
     }
 
     public var oscType: TypeTagValues { return .INT32_TYPE_TAG }
+
+    public var packetSize: Int {
+        return MemoryLayout<Int32>.size
+    }
 
     public init?(data: ArraySlice<Byte>) {
         let binary: [Byte] = [Byte](data)

@@ -19,4 +19,8 @@ extension Bool: OSCMessageArgument {
     public var oscValue: [Byte]? {
         return nil
     }
+
+    public var packetSize: Int {
+        return 0
+    }
 }

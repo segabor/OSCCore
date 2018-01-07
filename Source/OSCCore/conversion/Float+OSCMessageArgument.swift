@@ -22,6 +22,10 @@ extension Float32: OSCMessageArgument {
 
     public var oscType: TypeTagValues { return .FLOAT_TYPE_TAG }
 
+    public var packetSize: Int {
+        return MemoryLayout<Float32>.size
+    }
+
     // custom init
     public init?(data: ArraySlice<Byte>) {
         let binary: [Byte] = [Byte](data)

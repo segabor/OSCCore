@@ -31,4 +31,8 @@ extension RGBA: OSCMessageArgument {
 
         return flatValue.oscValue
     }
+
+    public var packetSize: Int {
+        return MemoryLayout<UInt32>.size
+    }
 }

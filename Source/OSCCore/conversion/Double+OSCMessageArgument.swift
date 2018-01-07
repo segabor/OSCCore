@@ -16,11 +16,7 @@ extension Double: OSCMessageArgument {
     }
 
     public var oscType: TypeTagValues {
-        if self.isInfinite {
-            return .INFINITUM_TYPE_TAG
-        } else {
-            return .DOUBLE_TYPE_TAG
-        }
+        return self.isInfinite ? .INFINITUM_TYPE_TAG : .DOUBLE_TYPE_TAG
     }
 
     // custom init
@@ -33,5 +29,9 @@ extension Double: OSCMessageArgument {
         }
 
         self.init(bitPattern: rawValue)
+    }
+
+    public var packetSize: Int {
+        return self.isInfinite ? 0 : MemoryLayout<UInt64>.size
     }
 }

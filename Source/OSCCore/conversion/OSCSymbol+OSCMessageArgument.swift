@@ -20,6 +20,10 @@ extension OSCSymbol: OSCMessageArgument {
         return label.alignedSize
     }
 
+    var packetSize: Int {
+        return label.packetSize
+    }
+
     public init?(data: ArraySlice<Byte>) {
         guard let label = String(data: data) else {
             return nil

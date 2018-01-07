@@ -29,6 +29,10 @@ extension Data: OSCMessageArgument {
         return .BLOB_TYPE_TAG
     }
 
+    public var packetSize: Int {
+        return MemoryLayout<Int32>.size + align(size: self.count)
+    }
+
     public var oscValue: [Byte]? {
         let dataSize = self.count
         var payload = [Byte]()

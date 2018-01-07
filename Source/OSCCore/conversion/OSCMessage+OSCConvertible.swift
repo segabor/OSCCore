@@ -139,7 +139,13 @@ extension OSCMessage: OSCConvertible {
         }
 
         // OSC Message := Address Pattern + Type Tag String + Arguments
-        return address.oscValue! + String(typeTags).oscValue! + argsBytes
+        return prefixOscValue + argsBytes
+    }
+
+    public var packetSize: Int {
+        return args
+            .map { $0?.packetSize ?? 0 }
+            .reduce(address.oscValue!.count + typeTags.oscValue!.count, { (acc: Int, size: Int) in acc + size })
     }
 
 }

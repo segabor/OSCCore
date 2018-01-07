@@ -18,6 +18,10 @@ extension String: OSCMessageArgument {
 
     public var oscType: TypeTagValues { return .STRING_TYPE_TAG }
 
+    public var packetSize: Int {
+        return self.alignedSize
+    }
+
     public init?(data: ArraySlice<Byte>) {
         guard let termIndex = data.index(of: 0) else {
             return nil

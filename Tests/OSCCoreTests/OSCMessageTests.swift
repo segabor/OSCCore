@@ -220,6 +220,7 @@ class OSCMessageTests: XCTestCase {
         XCTAssertEqual(expectedPacket, convertedPacket)
 
         if let otherMsg = OSCMessage(data: convertedPacket) {
+            XCTAssertEqual(msg.packetSize, convertedPacket.count, "OSC Packet size mismatch")
             XCTAssertEqual(msg.address, otherMsg.address, "Address field mismatch")
             XCTAssertEqual(msg.args.count, otherMsg.args.count, "Arguments size mismatch")
 

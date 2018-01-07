@@ -8,11 +8,14 @@
 import Foundation
 
 extension OSCBundle: OSCConvertible {
+
+    public static let prefix = "#bundle"
+
     public var oscValue: [Byte]? {
         var result = [Byte]()
 
         // write out head first
-        result += "#bundle".oscValue!
+        result += OSCBundle.prefix.oscValue!
         result += timetag.oscValue!
 
         /// asemble osc elements: size then content
@@ -23,6 +26,12 @@ extension OSCBundle: OSCConvertible {
             }
         }
         return result
+    }
+
+    public var packetSize: Int {
+        return content
+            .map { $0.packetSize }
+            .reduce(OSCBundle.prefix.alignedSize, { $0 + $1.packetSize })
     }
 
     public init?(data: ArraySlice<Byte>) {

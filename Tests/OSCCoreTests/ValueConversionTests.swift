@@ -170,6 +170,7 @@ class ValueConversionTests: XCTestCase {
 
         if let bytes = testValue.oscValue {
             XCTAssertTrue(expectedBytes != nil, "Test OSC value did not return serialized bytes")
+            XCTAssertEqual(expectedBytes!.count, testValue.packetSize, "OSC Packet size mismatch")
             XCTAssertEqual(expectedBytes!, bytes, "Incorrect OSC Packet")
 
             if TypeTagValues.STRING_TYPE_TAG == expectedTypeTag {

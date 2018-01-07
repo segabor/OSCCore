@@ -26,4 +26,8 @@ extension Character: OSCMessageArgument {
         let scalarArray = self.unicodeScalars
         return scalarArray[scalarArray.startIndex].value.oscValue
     }
+
+    public var packetSize: Int {
+        return MemoryLayout<UInt32>.size
+    }
 }
