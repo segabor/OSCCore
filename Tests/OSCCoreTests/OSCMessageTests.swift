@@ -308,7 +308,9 @@ extension OSCMessageTests {
             ("testMessageHavingMIDIArgument", testMessageHavingMIDIArgument),
             ("testMessageHavingEmptyBlob", testMessageHavingEmptyBlob),
             ("testMessageHavingBlob", testMessageHavingBlob),
-            ("testMessageHavingPaddedBlob", testMessageHavingPaddedBlob)
+            ("testMessageHavingPaddedBlob", testMessageHavingPaddedBlob),
+            ("testMessageHavingEmptyArray", testMessageHavingEmptyArray),
+            ("testMessageHavingArrayOfNoValueArgs", testMessageHavingArrayOfNoValueArgs)
         ]
     }
 }

@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 @inline(__always) func align(size: Int) -> Int {
     return (size + 3) & ~0x03
 }

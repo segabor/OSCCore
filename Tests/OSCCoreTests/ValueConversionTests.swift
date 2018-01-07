@@ -230,7 +230,8 @@ extension ValueConversionTests {
             ("testRGBAConversion", testRGBAConversion),
             ("testEmptyBlobConversion", testEmptyBlobConversion),
             ("testBlobConversion", testBlobConversion),
-            ("testPaddedBlobConversion", testPaddedBlobConversion)
+            ("testPaddedBlobConversion", testPaddedBlobConversion),
+            ("testArrayConversion", testArrayConversion)
         ]
     }
 }
