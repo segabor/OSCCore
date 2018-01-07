@@ -111,12 +111,25 @@ extension OSCMessage: OSCConvertible {
         self.init(address: address, args: args)
     }
 
-    public var oscValue: [Byte]? {
+    public var typeTags: String {
         var typeTags: [Character] = [","]
         args.forEach {
-            typeTags.append($0?.oscType.rawValue ?? TypeTagValues.NIL_TYPE_TAG.rawValue)
+            if let arg = $0 {
+                typeTags.append(arg.oscType.rawValue)
+            } else {
+                typeTags.append(TypeTagValues.NIL_TYPE_TAG.rawValue)
+            }
         }
 
+        return String(typeTags)
+    }
+
+    // OSC Message Prefix := Address Pattern + Type Tag String
+    public var prefixOscValue: [Byte] {
+        return address.oscValue! + typeTags.oscValue!
+    }
+
+    public var oscValue: [Byte]? {
         // convert values to packets and collect them into a byte array
         var argsBytes: [Byte] = [Byte]()
         args.forEach {
