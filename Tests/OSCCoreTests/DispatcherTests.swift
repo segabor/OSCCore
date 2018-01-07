@@ -16,21 +16,21 @@ import Foundation
 class DispatcherTests: XCTestCase {
 
     func testDispatchWithMatchingAddresses() {
-        doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: 1234)), expected: true)
+        doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: [1234])), expected: true)
 
-        doTestDispatch(pattern: "/test/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: 1234)), expected: true)
+        doTestDispatch(pattern: "/test/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: [1234])), expected: true)
 
-        doTestDispatch(pattern: "/test/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: 1234)), expected: true)
+        doTestDispatch(pattern: "/test/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: [1234])), expected: true)
     }
 
     func testDispatchWithNonMatchingAddresses() {
-        doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: 1234)), expected: false)
+        doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: [1234])), expected: false)
 
-        doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/tezt/1", args: 1234)), expected: false)
+        doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/tezt/1", args: [1234])), expected: false)
 
-        doTestDispatch(pattern: "/tezt/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: 1234)), expected: false)
+        doTestDispatch(pattern: "/tezt/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: [1234])), expected: false)
 
-        doTestDispatch(pattern: "/tezt/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: 1234)), expected: false)
+        doTestDispatch(pattern: "/tezt/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: [1234])), expected: false)
     }
 
     private func doTestDispatch(pattern ptn: String, event: MessageEvent, expected: Bool) {

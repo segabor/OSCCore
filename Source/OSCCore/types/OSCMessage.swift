@@ -10,13 +10,4 @@ import Foundation
 public struct OSCMessage {
     public let address: String
     public let args: [OSCMessageArgument?]
-
-    public init(address: String, args: [OSCMessageArgument?]) {
-        self.address = address
-        self.args = args
-    }
-
-    public init(address: String, args: OSCMessageArgument?...) {
-        self.init(address: address, args: args)
-    }
 }

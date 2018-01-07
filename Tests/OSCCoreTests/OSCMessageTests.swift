@@ -3,23 +3,23 @@ import XCTest
 
 class OSCMessageTests: XCTestCase {
     func testNoArgMessage() {
-        let msg = OSCMessage(address: "hello")
+        let msg = OSCMessage(address: "hello", args: [])
 
         let expectedPacket: [Byte] = [0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x00, 0x00, 0x00, 0x2c, 0x00, 0x00, 0x00]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",")
     }
 
     func testMessageHavingNilArgument() {
-        let msg = OSCMessage(address: "/nil", args: nil)
+        let msg = OSCMessage(address: "/nil", args: [nil])
 
         let expectedPacket: [Byte] = [0x2f, 0x6e, 0x69, 0x6c, 0x00, 0x00, 0x00, 0x00, 0x2c, 0x4e, 0x00, 0x00]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",N")
     }
 
     func testSingleArgMessage() {
-        let msg = OSCMessage(address: "/oscillator/4/frequency", args: Float32(440.0))
+        let msg = OSCMessage(address: "/oscillator/4/frequency", args: [Float32(440.0)])
 
         let expectedPacket: [Byte] = [
             0x2f, 0x6f, 0x73, 0x63,
@@ -32,30 +32,37 @@ class OSCMessageTests: XCTestCase {
             0x43, 0xdc, 0x00, 0x00
         ]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",f")
     }
 
     func testMultipleArgsMessage() {
-        let msg = OSCMessage(address: "/foo", args: Int32(1000), Int32(-1), "hello", Float32(1.234), Float32(5.678))
+        let msg = OSCMessage(address: "/foo", args: [Int32(1000), Int32(-1), "hello", Float32(1.234), Float32(5.678)])
 
         let expectedPacket: [Byte] = [
+            // "/foo"
             0x2f, 0x66, 0x6f, 0x6f,
             0x00, 0x00, 0x00, 0x00,
+            // ",iisff"
             0x2c, 0x69, 0x69, 0x73,
             0x66, 0x66, 0x00, 0x00,
+            // 1000
             0x00, 0x00, 0x03, 0xe8,
+            // -1
             0xff, 0xff, 0xff, 0xff,
+            // "hello"
             0x68, 0x65, 0x6c, 0x6c,
             0x6f, 0x00, 0x00, 0x00,
+            // 1.234
             0x3f, 0x9d, 0xf3, 0xb6,
+            // 5.678
             0x40, 0xb5, 0xb2, 0x2d
         ]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",iisff")
     }
 
     func testMessageHavingSymbolArgument() {
-        let msg = OSCMessage(address: "/test", args: OSCSymbol(label: "symbol1"))
+        let msg = OSCMessage(address: "/test", args: [OSCSymbol(label: "symbol1")])
 
         let expectedPacket: [Byte] = [
             // "/test"
@@ -68,11 +75,11 @@ class OSCMessageTests: XCTestCase {
             0x6f, 0x6c, 0x31, 0x00
         ]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",S")
     }
 
     func testMessageHavingDoubleArgument() {
-        let msg = OSCMessage(address: "/test", args: 1234.5678)
+        let msg = OSCMessage(address: "/test", args: [1234.5678])
 
         let expectedPacket: [Byte] = [
             // "/test"
@@ -85,11 +92,11 @@ class OSCMessageTests: XCTestCase {
             0x6d, 0x5c, 0xfa, 0xad
         ]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",d")
     }
 
     func testMessageHavingInfinityArgument() {
-        let msg = OSCMessage(address: "/test", args: Double.infinity)
+        let msg = OSCMessage(address: "/test", args: [Double.infinity])
 
         let expectedPacket: [Byte] = [
             // "/test"
@@ -99,11 +106,11 @@ class OSCMessageTests: XCTestCase {
             0x2c, 0x49, 0x00, 0x00
         ]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",I")
     }
 
     func testMessageHavingRGBAArgument() {
-        let msg = OSCMessage(address: "/test", args: RGBA(red: 0x12, green: 0x34, blue: 0x56, alpha: 0x78))
+        let msg = OSCMessage(address: "/test", args: [RGBA(red: 0x12, green: 0x34, blue: 0x56, alpha: 0x78)])
 
         let expectedPacket: [Byte] = [
             // "/test"
@@ -115,11 +122,11 @@ class OSCMessageTests: XCTestCase {
             0x12, 0x34, 0x56, 0x78
         ]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",r")
     }
 
     func testMessageHavingMIDIArgument() {
-        let msg = OSCMessage(address: "/test", args: MIDI(portId: 0x12, status: 0x34, data1: 0x56, data2: 0x78))
+        let msg = OSCMessage(address: "/test", args: [MIDI(portId: 0x12, status: 0x34, data1: 0x56, data2: 0x78)])
 
         let expectedPacket: [Byte] = [
             // "/test"
@@ -131,7 +138,7 @@ class OSCMessageTests: XCTestCase {
             0x12, 0x34, 0x56, 0x78
         ]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",m")
     }
 
     func testMessageHavingEmptyBlob() {
@@ -140,7 +147,7 @@ class OSCMessageTests: XCTestCase {
         let blob: Data = bytes.withUnsafeBytes {
             return Data(bytes: $0.baseAddress!, count: bytes.count)
         }
-        let msg = OSCMessage(address: "/test", args: blob)
+        let msg = OSCMessage(address: "/test", args: [blob])
 
         let expectedPacket: [Byte] = [
             // "/test"
@@ -152,7 +159,7 @@ class OSCMessageTests: XCTestCase {
             0x00, 0x00, 0x00, 0x00
         ]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",b")
     }
 
     func testMessageHavingBlob() {
@@ -162,7 +169,7 @@ class OSCMessageTests: XCTestCase {
             return Data(bytes: $0.baseAddress!, count: bytes.count)
         }
 
-        let msg = OSCMessage(address: "/test", args: blob)
+        let msg = OSCMessage(address: "/test", args: [blob])
 
         let expectedPacket: [Byte] = [
             // "/test"
@@ -175,7 +182,7 @@ class OSCMessageTests: XCTestCase {
             0xde, 0xad, 0xba, 0xbe
         ]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",b")
     }
 
     func testMessageHavingPaddedBlob() {
@@ -185,7 +192,7 @@ class OSCMessageTests: XCTestCase {
             return Data(bytes: $0.baseAddress!, count: bytes.count)
         }
 
-        let msg = OSCMessage(address: "/test", args: blob)
+        let msg = OSCMessage(address: "/test", args: [blob])
 
         let expectedPacket: [Byte] = [
             // "/test"
@@ -199,11 +206,13 @@ class OSCMessageTests: XCTestCase {
             0xca, 0xfe, 0xba, 0x00
         ]
 
-        doTestOSCMessage(msg, expectedPacket)
+        doTestOSCMessage(msg, expectedPacket, ",b")
     }
 
-    private func doTestOSCMessage(_ msg: OSCMessage, _ expectedPacket: [Byte]) {
+    private func doTestOSCMessage(_ msg: OSCMessage, _ expectedPacket: [Byte], _ expectedTags: String) {
         XCTAssertNotNil(msg.oscValue)
+
+        XCTAssertEqual(expectedTags, msg.typeTags, "Type tags mismatch")
 
         let convertedPacket = msg.oscValue!
 
@@ -235,12 +244,16 @@ extension OSCMessageTests {
         return [
             ("testNoArgMessage", testNoArgMessage),
             ("testSingleArgMessage", testSingleArgMessage),
+            ("testMessageHavingNilArgument", testMessageHavingNilArgument),
             ("testMultipleArgsMessage", testMultipleArgsMessage),
             ("testMessageHavingSymbolArgument", testMessageHavingSymbolArgument),
             ("testMessageHavingDoubleArgument", testMessageHavingDoubleArgument),
             ("testMessageHavingInfinityArgument", testMessageHavingInfinityArgument),
             ("testMessageHavingRGBAArgument", testMessageHavingRGBAArgument),
-            ("testMessageHavingMIDIArgument", testMessageHavingMIDIArgument)
+            ("testMessageHavingMIDIArgument", testMessageHavingMIDIArgument),
+            ("testMessageHavingEmptyBlob", testMessageHavingEmptyBlob),
+            ("testMessageHavingBlob", testMessageHavingBlob),
+            ("testMessageHavingPaddedBlob", testMessageHavingPaddedBlob)
         ]
     }
 }

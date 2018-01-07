@@ -59,7 +59,7 @@ class CommunicationTests: XCTestCase {
             }
 
             // test me here
-            let testMessage: OSCMessage = OSCMessage(address: "/s_new", args: "sine", Int32(100), Int32(1), Int32(1) )
+            let testMessage: OSCMessage = OSCMessage(address: "/s_new", args: ["sine", Int32(100), Int32(1), Int32(1)])
 
             let channel = UDPClient(host: hostname, port: port)
 
@@ -130,9 +130,9 @@ class CommunicationTests: XCTestCase {
             }
 
             // test message to send
-            let testMessage: OSCMessage = OSCMessage(address: "/s_get", args: Int32(4), "freq")
+            let testMessage: OSCMessage = OSCMessage(address: "/s_get", args: [Int32(4), "freq"])
             // and the correct response
-            let testResponse: OSCMessage = OSCMessage(address: "/n_set", args: Int32(4), "freq", Int32(440))
+            let testResponse: OSCMessage = OSCMessage(address: "/n_set", args: [Int32(4), "freq", Int32(440)])
 
             let channel = UDPClient(host: hostname, port: port)
 
