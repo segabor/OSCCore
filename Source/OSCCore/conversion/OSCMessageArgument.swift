@@ -16,3 +16,7 @@ import Foundation
 public protocol OSCMessageArgument: OSCConvertible {
     var oscType: TypeTagValues { get }
 }
+
+public protocol OSCMessageArgumentCollection {
+    var oscTypes: [TypeTagValues] { get }
+}

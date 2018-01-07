@@ -165,6 +165,33 @@ class ValueConversionTests: XCTestCase {
         assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.BLOB_TYPE_TAG, testValue: value)
     }
 
+    func testArrayConversion() {
+        let value0: [OSCMessageArgument?] = [OSCMessageArgument?]()
+        let packet0: [Byte] = [Byte]()
+
+        assertValueConversion(expected: packet0, expectedTypeTag: TypeTagValues.ARRAY_BEGIN_TYPE_TAG, testValue: value0)
+
+        let valueNil: [OSCMessageArgument?] = [nil]
+        let packetNil: [Byte] = [Byte]()
+
+        assertValueConversion(expected: packetNil, expectedTypeTag: TypeTagValues.ARRAY_BEGIN_TYPE_TAG, testValue: valueNil)
+
+        let value: [OSCMessageArgument?] = [Int32(0x12345678)]
+        let packet: [Byte] = [0x12, 0x34, 0x56, 0x78]
+
+        assertValueConversion(expected: packet, expectedTypeTag: TypeTagValues.ARRAY_BEGIN_TYPE_TAG, testValue: value)
+
+        let value2: [OSCMessageArgument?] = [Int32(0x12345678), Int32(0x12345678)]
+        let packet2: [Byte] = [0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78]
+
+        assertValueConversion(expected: packet2, expectedTypeTag: TypeTagValues.ARRAY_BEGIN_TYPE_TAG, testValue: value2)
+
+        let value3: [OSCMessageArgument?] = [nil, Int32(0x12345678)]
+        let packet3: [Byte] = [0x12, 0x34, 0x56, 0x78]
+
+        assertValueConversion(expected: packet3, expectedTypeTag: TypeTagValues.ARRAY_BEGIN_TYPE_TAG, testValue: value3)
+    }
+
     private func assertValueConversion(expected expectedBytes: [Byte]?, expectedTypeTag: TypeTagValues, testValue: OSCMessageArgument) {
         XCTAssertEqual(expectedTypeTag, testValue.oscType, "Type tag mismatch")
 

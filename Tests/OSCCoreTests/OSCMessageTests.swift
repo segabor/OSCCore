@@ -209,6 +209,60 @@ class OSCMessageTests: XCTestCase {
         doTestOSCMessage(msg, expectedPacket, ",b")
     }
 
+    func testMessageHavingEmptyArray() {
+        let emptyArray: [OSCMessageArgument?] = [[]]
+        let msg = OSCMessage(address: "/test", args: emptyArray)
+
+        let expectedPacket: [Byte] = [
+            // "/test"
+            0x2f, 0x74, 0x65, 0x73,
+            0x74, 0x00, 0x00, 0x00,
+            // ",[]"
+            0x2c, 0x5b, 0x5d, 0x00
+        ]
+
+        doTestOSCMessage(msg, expectedPacket, ",[]")
+    }
+
+    func testMessageHavingArrayOfNoValueArgs() {
+        let msg = OSCMessage(address: "/test", args: [[true, false, nil]])
+
+        let expectedPacket: [Byte] = [
+            // "/test"
+            0x2f, 0x74, 0x65, 0x73,
+            0x74, 0x00, 0x00, 0x00,
+            // ",[TFN]"
+            0x2c, 0x5b, 0x54, 0x46,
+            0x4e, 0x5d, 0x00, 0x00
+        ]
+
+        doTestOSCMessage(msg, expectedPacket, ",[TFN]")
+
+        let msg2 = OSCMessage(address: "/test", args: [true, [false], nil])
+        let expectedPacket2: [Byte] = [
+            // "/test"
+            0x2f, 0x74, 0x65, 0x73,
+            0x74, 0x00, 0x00, 0x00,
+            // ",T[F]N"
+            0x2c, 0x54, 0x5b, 0x46,
+            0x5d, 0x4e, 0x00, 0x00
+        ]
+
+        doTestOSCMessage(msg2, expectedPacket2, ",T[F]N")
+
+        let msg3 = OSCMessage(address: "/test", args: [true, [], false, nil])
+        let expectedPacket3: [Byte] = [
+            // "/test"
+            0x2f, 0x74, 0x65, 0x73,
+            0x74, 0x00, 0x00, 0x00,
+            // ",T[]FN"
+            0x2c, 0x54, 0x5b, 0x5d,
+            0x46, 0x4e, 0x00, 0x00
+        ]
+
+        doTestOSCMessage(msg3, expectedPacket3, ",T[]FN")
+    }
+
     private func doTestOSCMessage(_ msg: OSCMessage, _ expectedPacket: [Byte], _ expectedTags: String) {
         XCTAssertNotNil(msg.oscValue)
 
