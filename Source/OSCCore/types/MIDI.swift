@@ -6,8 +6,8 @@
 //
 
 public struct MIDI {
-    let portId: UInt8
-    let status: UInt8
-    let data1: UInt8
-    let data2: UInt8
+    public let portId: UInt8
+    public let status: UInt8
+    public let data1: UInt8
+    public let data2: UInt8
 }

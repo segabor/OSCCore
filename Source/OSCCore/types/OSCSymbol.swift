@@ -8,5 +8,5 @@
 import Foundation
 
 struct OSCSymbol {
-    let label: String
+    public let label: String
 }

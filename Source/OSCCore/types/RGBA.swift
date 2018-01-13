@@ -6,8 +6,8 @@
 //
 
 public struct RGBA {
-    let red: UInt8
-    let green: UInt8
-    let blue: UInt8
-    let alpha: UInt8
+    public let red: UInt8
+    public let green: UInt8
+    public let blue: UInt8
+    public let alpha: UInt8
 }
