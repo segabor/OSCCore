@@ -47,6 +47,7 @@ Other dependency managers like CocoaPods or Chartage is under consideration.
 
 ## Version history
 
+- 0.9 OSC Specification 1.0
 - 0.4 Important fixes: timestamp and OSC packet detection
   Switch to Swift 4.0.2
 - 0.3.1 iOS support
