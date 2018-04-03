@@ -7,7 +7,7 @@ import Darwin
 
 import OSCCore
 
-var port : Int = 57110
+var port: Int = 57110
 
 if CommandLine.arguments.count > 1 {
     if let parsedPort = Int(CommandLine.arguments[CommandLine.arguments.endIndex-1]) {

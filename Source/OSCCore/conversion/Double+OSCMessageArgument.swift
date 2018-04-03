@@ -11,8 +11,7 @@ extension Double: OSCMessageArgument {
             return nil
         }
 
-        let z = self.bitPattern.bigEndian
-        return [Byte](typetobinary(z))
+        return [Byte](typetobinary(self.bitPattern.bigEndian))
     }
 
     public var oscType: TypeTagValues {

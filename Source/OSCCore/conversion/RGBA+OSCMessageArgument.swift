@@ -23,11 +23,11 @@ extension RGBA: OSCMessageArgument {
     }
 
     public var oscValue: [Byte]? {
-        let r: UInt32 = UInt32(self.red)
-        let g: UInt32 = UInt32(self.green)
-        let b: UInt32 = UInt32(self.blue)
-        let a: UInt32 = UInt32(self.alpha)
-        let flatValue: UInt32 = r << 24 | g << 16 | b << 8 | a
+        let red: UInt32 = UInt32(self.red)
+        let green: UInt32 = UInt32(self.green)
+        let blue: UInt32 = UInt32(self.blue)
+        let alpha: UInt32 = UInt32(self.alpha)
+        let flatValue: UInt32 = red << 24 | green << 16 | blue << 8 | alpha
 
         return flatValue.oscValue
     }

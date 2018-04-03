@@ -11,10 +11,13 @@ import Foundation
 ///
 /// Function that matches address to a GLOB like pattern
 ///
-/// Borrowed from JavaOSC ( https://github.com/hoijui/JavaOSC/blob/master/modules/core/src/main/java/com/illposed/osc/utility/OSCPatternAddressSelector.java )
-/// Which originates from LibLo ( https://github.com/radarsat1/liblo/blob/master/src/pattern_match.c )
-///
-func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disable:this function_body_length swiftlint:disable:this cyclomatic_complexity swiftlint:disable:this line_length
+func matchComponents(address: String, pattern: String) -> Bool { //swiftlint:disable:this swiftlint:disable:this
+    let fullAddressRange = address.startIndex..<address.endIndex
+    let fullPatternRange = pattern.startIndex..<pattern.endIndex
+    return matchComponent(address: address[fullAddressRange], pattern: pattern[fullPatternRange])
+}
+
+func matchComponent(address: Substring, pattern: Substring) -> Bool { //swiftlint:disable:this function_body_length swiftlint:disable:this cyclomatic_complexity swiftlint:disable:this line_length
     var si = address.startIndex
     var pi = pattern.startIndex
 
@@ -48,7 +51,7 @@ func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disa
             }
 
             while si < address.endIndex {
-                if matchComponent(address: address.substring(from: si), pattern: pattern.substring(from: pi)) {
+                if matchComponent(address: address[si...], pattern: pattern[pi...]) {
                     return true
                 }
             }
@@ -81,12 +84,12 @@ func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disa
                 }
 
                 // pop next pattern character
-                let c = pattern[pi]
+                let patternChar = pattern[pi]
                 pi = pattern.index(after: pi)
 
                 // detect range
                 // case c-c
-                if c == "-" {
+                if patternChar == "-" {
                     // skip char
                     pi = pattern.index(after: pi)
                     if pi == pattern.endIndex {
@@ -94,19 +97,19 @@ func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disa
                     }
 
                     if pattern[pi] != "]" {
-                        if address[si] == c || address[si] == pattern[pi]
-                            || (address[si] > c && address[si] < pattern[pi]) {
+                        if address[si] == patternChar || address[si] == pattern[pi]
+                            || (address[si] > patternChar && address[si] < pattern[pi]) {
                             match = true
                         }
                     } else { // c-]
-                        if address[si] >= c {
+                        if address[si] >= patternChar {
                             match = true
                         }
                         break
                     }
                 } else {
                     // cc or c]
-                    if c == address[si] {
+                    if patternChar == address[si] {
                         match = true
                     }
                     if pattern[pi] != "]" {
@@ -145,7 +148,7 @@ func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disa
                 remainder = pattern.index(after: remainder)
             }
             if remainder == pattern.endIndex {
-                print("ERROR: unbalanced Choice")
+                // print("ERROR: unbalanced Choice")
                 return false
             }
 
@@ -159,7 +162,7 @@ func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disa
 
             while pi < pattern.endIndex {
                 if char == "," {
-                    if matchComponent(address: address.substring(from: si), pattern: pattern.substring(from: remainder)) {
+                    if matchComponent(address: address[si...], pattern: pattern[remainder...]) {
                         return true
                     } else {
                         // backtrack on test string
@@ -183,7 +186,7 @@ func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disa
                     // print("#3 choice: \(char) == \(address[si])")
                     si = address.index(after: si)
                     if si == address.endIndex && remainder < pattern.endIndex {
-                        print("ERROR: address == EOF, pattern != EOF")
+                        // print("ERROR: address == EOF, pattern != EOF")
                         return false
                     }
                 } else { // skip to next comma
@@ -195,7 +198,7 @@ func matchComponent(address: String, pattern: String) -> Bool { //swiftlint:disa
                     }
 
                     if pi == pattern.endIndex {
-                        print("ERR: UNBALANCED CHOICE")
+                        // print("ERR: UNBALANCED CHOICE")
                         return false
                     }
 
@@ -239,6 +242,6 @@ public func match(address: String, pattern: String) -> Bool {
     }
 
     return !zip(addrComponents, patternComponents)
-        .map { matchComponent(address: $0.0, pattern: $0.1) }
+        .map { matchComponents(address: $0.0, pattern: $0.1) }
         .contains(false)
 }

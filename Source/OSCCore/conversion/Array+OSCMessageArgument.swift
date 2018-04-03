@@ -50,8 +50,8 @@ extension Array: OSCMessageArgument, OSCMessageArgumentCollection {
     public var packetSize: Int {
         var total = 0
         self.forEach { (elem) -> Void in
-            if let z = elem as? OSCMessageArgument {
-                total += z.packetSize
+            if let messageArg = elem as? OSCMessageArgument {
+                total += messageArg.packetSize
             }
         }
         return total

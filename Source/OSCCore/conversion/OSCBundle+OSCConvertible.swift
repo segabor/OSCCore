@@ -20,9 +20,9 @@ extension OSCBundle: OSCConvertible {
 
         /// asemble osc elements: size then content
         content.forEach { msg in
-            if let v = msg.oscValue {
-                result += Int32(v.count).oscValue!
-                result += v
+            if let msgValue = msg.oscValue {
+                result += Int32(msgValue.count).oscValue!
+                result += msgValue
             }
         }
         return result
@@ -70,12 +70,13 @@ private struct OSCBundleElementIterator: IteratorProtocol {
     init(_ bytes: ArraySlice<Byte>) { self.bytes = bytes; index = bytes.startIndex }
 
     mutating func next() -> ArraySlice<Byte>? {
-        if index < bytes.endIndex, let len = Int(data: bytes[index..<(index+4)]) {
-            let d = bytes[index+4..<index+4+len]
-            index += 4+len
-            return d
-        } else {
+        guard index < bytes.endIndex, let len = Int(data: bytes[index..<(index+4)]) else {
             return nil
         }
+
+        let elemBytes = bytes[index+4..<index+4+len]
+        index += 4+len
+        return elemBytes
+
     }
 }

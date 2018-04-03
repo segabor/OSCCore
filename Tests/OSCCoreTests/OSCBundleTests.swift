@@ -6,7 +6,7 @@ class OSCBundleTests: XCTestCase {
         let ttag = OSCTimeTag.immediate
         let bundle = OSCBundle(timetag: ttag, content: [])
 
-        let expected_pkt: [Byte] = [
+        let expectedPacket: [Byte] = [
             0x23, 0x62, 0x75, 0x6e,
             0x64, 0x6c, 0x65, 0x00,
             0x00, 0x00, 0x00, 0x00,
@@ -14,7 +14,7 @@ class OSCBundleTests: XCTestCase {
         ]
 
         XCTAssertNotNil(bundle.oscValue)
-        XCTAssertEqual(expected_pkt, bundle.oscValue!)
+        XCTAssertEqual(expectedPacket, bundle.oscValue!)
     }
 }
 

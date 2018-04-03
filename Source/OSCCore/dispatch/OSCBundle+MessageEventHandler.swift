@@ -35,7 +35,7 @@ private func unimplemented<T>() -> T {
 }
 
 private func recursive<T, U>(f: (@escaping (((T) -> U), T) -> U)) -> ((T) -> U) { //swiftlint:disable:this identifier_name
-    var g: ((T) -> U) = { _ in unimplemented() }
+    var g: ((T) -> U) = { _ in unimplemented() } //swiftlint:disable:this identifier_name
 
     g = { f(g, $0) }
 
