@@ -22,7 +22,7 @@ public final class UDPListener: UDPChannel {
     public func listen(responder: (OSCConvertible) -> OSCConvertible?) {
         var receiveBuffer = UnsafeMutablePointer<CChar>.allocate(capacity: 1024)
         defer {
-            receiveBuffer.deallocate(capacity: 1024)
+            receiveBuffer.deallocate()
         }
 
         do {

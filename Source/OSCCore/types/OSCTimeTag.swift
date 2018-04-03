@@ -34,17 +34,6 @@ public enum OSCTimeTag: Equatable {
     case immediate
     case secondsSince1900(Double) // seconds since January 1, 1900
 
-    /// Equatable
-    public static func == (lhs: OSCTimeTag, rhs: OSCTimeTag) -> Bool {
-        if case .immediate = lhs, case .immediate = rhs {
-            return true
-        }
-        if case .secondsSince1900(let lval) = lhs, case .secondsSince1900(let rval) = rhs {
-            return lval == rval
-        }
-        return false
-    }
-
     public static func withDelay(_ delay: TimeInterval) -> OSCTimeTag {
         return OSCTimeTag.secondsSince1900( intervalToOSCSeconds(Date.timeIntervalSinceReferenceDate + delay) )
     }

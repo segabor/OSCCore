@@ -20,7 +20,7 @@ public class UDPChannel: OSCChannel {
     public func receive() -> OSCConvertible? {
         var receiveBuffer = UnsafeMutablePointer<CChar>.allocate(capacity: 1024)
         defer {
-            receiveBuffer.deallocate(capacity: 1024)
+            receiveBuffer.deallocate()
         }
 
         guard let readResult = try? socket.readDatagram(into: receiveBuffer, bufSize: 1024) else { return nil }
