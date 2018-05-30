@@ -12,11 +12,11 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(url: "https://github.com/IBM-Swift/BlueSocket", from: "0.12.0")
+        .package(url: "https://github.com/apple/swift-nio", from: "1.7.2")
     ],
 
     targets: [
-        .target(name: "OSCCore", dependencies: ["Socket"]),
+        .target(name: "OSCCore", dependencies: ["NIO"]),
         .target(name: "BasicListener", dependencies: ["OSCCore"]),
         .target(name: "SuperColliderExample", dependencies: ["OSCCore"]),
 
