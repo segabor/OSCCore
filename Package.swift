@@ -16,9 +16,9 @@ let package = Package(
     ],
 
     targets: [
-        .target(name: "OSCCore", dependencies: ["NIO"]),
-        .target(name: "BasicListener", dependencies: ["OSCCore"]),
-        .target(name: "SuperColliderExample", dependencies: ["OSCCore"]),
+        .target(name: "OSCCore", dependencies: []),
+        .target(name: "BasicListener", dependencies: ["OSCCore", "NIO"]),
+        .target(name: "SuperColliderExample", dependencies: ["OSCCore", "NIO"]),
 
         .testTarget(name: "OSCCoreTests", dependencies: ["OSCCore"])
     ]
