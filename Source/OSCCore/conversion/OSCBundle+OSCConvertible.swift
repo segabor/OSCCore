@@ -70,15 +70,16 @@ private struct OSCBundleElementIterator: IteratorProtocol {
     init(_ bytes: ArraySlice<Byte>) { self.bytes = bytes; index = bytes.startIndex }
 
     mutating func next() -> ArraySlice<Byte>? {
-        guard index < bytes.endIndex, let len = Int32(data: bytes[index..<(index+4)]) else {
+        guard
+            index < bytes.endIndex,
+            let len = Int(data: bytes[index..<(index+4)]),
+            len > 0
+        else {
             return nil
         }
 
-        // FIXME: TuioSimulator seems to send bundle element lenghts in little indian format
-        let fixedLength : Int = len > bytes.capacity ? Int(len.byteSwapped) : Int(len)
-
-        let elemBytes = bytes[index+4..<index+4+fixedLength]
-        index += 4+fixedLength
+        let elemBytes = bytes[index+4..<index+4+len]
+        index += 4+len
         return elemBytes
 
     }
