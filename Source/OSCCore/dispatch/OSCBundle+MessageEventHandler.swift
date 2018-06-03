@@ -5,7 +5,7 @@
 //  Created by Sebestyén Gábor on 2017. 11. 19..
 //
 
-    /// Decompose OSC Bundle content and pass each item to handler function
+/// Decompose OSC Bundle content and pass each item to handler function
 extension OSCBundle {
     func unwrap(_ handler: @escaping MessageEventHandler) {
         recursive { visit, parentBundle in
