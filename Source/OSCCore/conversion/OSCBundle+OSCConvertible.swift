@@ -72,8 +72,7 @@ private struct OSCBundleElementIterator: IteratorProtocol {
     mutating func next() -> ArraySlice<Byte>? {
         guard
             index < bytes.endIndex,
-            let len = Int(data: bytes[index..<(index+4)]),
-            len > 0
+            let len = Int(data: bytes[index..<(index+4)])
         else {
             return nil
         }
