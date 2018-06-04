@@ -8,44 +8,41 @@ import Darwin
 import OSCCore
 import NIO
 
-private final class OSCHandler: ChannelInboundHandler {
-  typealias InboundIn = AddressedEnvelope<ByteBuffer>
 
-  public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
-    let addressedEnvelope = self.unwrapInboundIn(data)
-    print("Recieved data from \(addressedEnvelope.remoteAddress)")
-
-    if let rawBytes : [Byte] = addressedEnvelope.data.getBytes(at: 0, length: addressedEnvelope.data.capacity),
-        let packet = decodeOSCPacket(from: rawBytes)
-    {
-        ctx.write(NIOAny(packet), promise: nil)
+func debugOSCPacket(_ packet: OSCConvertible) {
+    switch packet {
+    case let msg as OSCMessage:
+        let argsString: String = msg.args.map{
+            if let arg = $0 {
+                return String(describing: arg)
+            } else {
+                return "nil"
+            }
+            }.joined(separator: ", ")
+        print("[message] Address: \(msg.address); Arguments: [\(argsString)]")
+    case let bundle as OSCBundle:
+        print("[bundle] Timestamp: \(bundle.timetag); elements:")
+        bundle.content.forEach {
+            debugOSCPacket($0)
+        }
+    default:
+        ()
     }
-  }
-
-  public func channelReadComplete(ctx: ChannelHandlerContext) {
-    ctx.flush()
-  }
-
-  public func errorCaught(ctx: ChannelHandlerContext, error: Error) {
-    print("error :", error)
-
-    ctx.close(promise: nil)
-  }
 }
 
-private final class OSCDebugHandler: ChannelInboundHandler {
-    typealias InboundIn = OSCConvertible
+private final class OSCHandler: ChannelInboundHandler {
+    typealias InboundIn = AddressedEnvelope<ByteBuffer>
     
-    public func channelRead(ctx: ChannelHandlerContext, data: OSCConvertible) {
-        if let msg = data as? OSCMessage {
-            print("   \(msg.address): \(msg.args)")
-        } else if let bndl = data as? OSCBundle {
-            print("\(bndl.timetag.toDate())")
-            for oscItem in bndl.content {
-                if let msg = oscItem as? OSCMessage {
-                    print("    \(msg.address): \(msg.args)")
-                }
-            }
+    public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
+        let addressedEnvelope = self.unwrapInboundIn(data)
+        print("Recieved data from \(addressedEnvelope.remoteAddress)")
+
+        if let rawBytes : [Byte] = addressedEnvelope.data.getBytes(at: 0, length: addressedEnvelope.data.readableBytes),
+            let packet = decodeOSCPacket(from: rawBytes)
+        {
+            print("Received OSC packet ... ")
+            debugOSCPacket(packet)
+            // ctx.channel.write(NIOAny(packet), promise: nil)
         }
     }
 
@@ -69,10 +66,8 @@ let bootstrap = DatagramBootstrap(group: group)
     .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
     .channelInitializer { channel in
         let packet2osc = OSCHandler()
-        let oscSink = OSCDebugHandler()
-        
-        channel.pipeline.add(handler: packet2osc)
-        return channel.pipeline.add(handler: oscSink, after: packet2osc)
+
+        return channel.pipeline.add(handler: packet2osc)
 }
 defer {
     try! group.syncShutdownGracefully()
