@@ -1,10 +1,4 @@
 import Foundation
-#if os(Linux)
-import Glibc
-#else
-import Darwin
-#endif
-
 import OSCCore
 import NIO
 
@@ -30,51 +24,37 @@ func debugOSCPacket(_ packet: OSCConvertible) {
     }
 }
 
-private final class OSCHandler: ChannelInboundHandler {
-    typealias InboundIn = AddressedEnvelope<ByteBuffer>
+private final class OSCDebugHandler: ChannelInboundHandler {
+    typealias InboundIn = OSCConvertible
     
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
-        let addressedEnvelope = self.unwrapInboundIn(data)
-        print("Recieved data from \(addressedEnvelope.remoteAddress)")
-
-        if let rawBytes : [Byte] = addressedEnvelope.data.getBytes(at: 0, length: addressedEnvelope.data.readableBytes),
-            let packet = decodeOSCPacket(from: rawBytes)
-        {
-            print("Received OSC packet ... ")
-            debugOSCPacket(packet)
-            // ctx.channel.write(NIOAny(packet), promise: nil)
-        }
-    }
-
-    public func channelReadComplete(ctx: ChannelHandlerContext) {
-        ctx.flush()
-    }
-    
-    public func errorCaught(ctx: ChannelHandlerContext, error: Error) {
-        print("error :", error)
+        let oscValue = unwrapInboundIn(data)
         
-        ctx.close(promise: nil)
+        print("Captured OSC packet ... ")
+        debugOSCPacket(oscValue)
     }
 }
 
-let defaultPort: Int = 57110
+// MAIN CODE STARTS HERE //
 
-let group = MultiThreadedEventLoopGroup(numThreads: 1 /*System.coreCount*/)
+let threadGroup = MultiThreadedEventLoopGroup(numThreads: 1 /*System.coreCount*/)
+defer {
+    try! threadGroup.syncShutdownGracefully()
+}
 
-// Using DatagramBootstrap turns out to be the only significant change between TCP and UDP in this case
-let bootstrap = DatagramBootstrap(group: group)
+let bootstrap = DatagramBootstrap(group: threadGroup)
     .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
     .channelInitializer { channel in
-        let packet2osc = OSCHandler()
-
-        return channel.pipeline.add(handler: packet2osc)
-}
-defer {
-    try! group.syncShutdownGracefully()
-}
+        return channel.pipeline
+            .add(handler: OSCPacketReader())
+            .then({ _ in channel.pipeline.add(handler: OSCDebugHandler())})
+    }
 
 let arguments = CommandLine.arguments
-let port = arguments.dropFirst().flatMap {Int($0)}.first ?? defaultPort
+let port = arguments
+            .dropFirst()
+            .compactMap {Int($0)}
+            .first ?? 57110
 
 let channel = try! bootstrap.bind(host: "127.0.0.1", port: port).wait()
 
