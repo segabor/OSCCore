@@ -34,10 +34,10 @@ private func unimplemented<T>() -> T {
     fatalError()
 }
 
-private func recursive<T, U>(f: (@escaping (((T) -> U), T) -> U)) -> ((T) -> U) { //swiftlint:disable:this identifier_name
-    var g: ((T) -> U) = { _ in unimplemented() } //swiftlint:disable:this identifier_name
+private func recursive<T, U>(fun: (@escaping (((T) -> U), T) -> U)) -> ((T) -> U) {
+    var closure: ((T) -> U) = { _ in unimplemented() }
 
-    g = { f(g, $0) }
+    closure = { fun(closure, $0) }
 
-    return g
+    return closure
 }
