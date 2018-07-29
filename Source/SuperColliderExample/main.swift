@@ -11,7 +11,7 @@ enum SuperColliderExampleError: Error {
 func debugOSCPacket(_ packet: OSCConvertible) {
     switch packet {
     case let msg as OSCMessage:
-        let argsString: String = msg.args.map{
+        let argsString: String = msg.args.map {
             if let arg = $0 {
                 return String(describing: arg)
             } else {
@@ -59,7 +59,10 @@ extension Channel {
 
 let threadGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1 /*System.coreCount*/)
 defer {
-    try! threadGroup.syncShutdownGracefully()
+    do {
+        try threadGroup.syncShutdownGracefully()
+    } catch {
+    }
 }
 
 let bootstrap = DatagramBootstrap(group: threadGroup)
@@ -70,8 +73,8 @@ let bootstrap = DatagramBootstrap(group: threadGroup)
 
 let arguments = CommandLine.arguments
 
-let channel = try! bootstrap.bind(host: "127.0.0.1", port: 57150).wait()
-let remoteAddr = try! SocketAddress.newAddressResolving(host: "127.0.0.1", port: 57110)
+let channel = try bootstrap.bind(host: "127.0.0.1", port: 57150).wait()
+let remoteAddr = try SocketAddress.newAddressResolving(host: "127.0.0.1", port: 57110)
 
 /// assemble a synth
 

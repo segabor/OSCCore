@@ -2,11 +2,10 @@ import Foundation
 import OSCCore
 import NIO
 
-
 func debugOSCPacket(_ packet: OSCConvertible) {
     switch packet {
     case let msg as OSCMessage:
-        let argsString: String = msg.args.map{
+        let argsString: String = msg.args.map {
             if let arg = $0 {
                 return String(describing: arg)
             } else {
@@ -26,10 +25,10 @@ func debugOSCPacket(_ packet: OSCConvertible) {
 
 private final class OSCDebugHandler: ChannelInboundHandler {
     typealias InboundIn = OSCConvertible
-    
+
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         let oscValue = unwrapInboundIn(data)
-        
+
         print("Captured OSC packet ... ")
         debugOSCPacket(oscValue)
     }
@@ -39,7 +38,10 @@ private final class OSCDebugHandler: ChannelInboundHandler {
 
 let threadGroup = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
 defer {
-    try! threadGroup.syncShutdownGracefully()
+    do {
+        try threadGroup.syncShutdownGracefully()
+    } catch {
+    }
 }
 
 let bootstrap = DatagramBootstrap(group: threadGroup)
@@ -54,7 +56,7 @@ let port = arguments
             .compactMap {Int($0)}
             .first ?? 57110
 
-let channel = try! bootstrap.bind(host: "127.0.0.1", port: port).wait()
+let channel = try bootstrap.bind(host: "127.0.0.1", port: port).wait()
 
 print("Channel accepting connections on \(channel.localAddress!)")
 

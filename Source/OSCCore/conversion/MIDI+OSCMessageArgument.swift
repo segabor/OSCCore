@@ -13,7 +13,12 @@ extension MIDI: OSCMessageArgument {
             return nil
         }
 
-        self.init(portId: UInt8(flatValue >> 24), status: UInt8( (flatValue >> 16) & 0xFF), data1: UInt8( (flatValue >> 8) & 0xFF), data2: UInt8(flatValue & 0xFF))
+        let portId = UInt8(flatValue >> 24)
+        let status = UInt8( (flatValue >> 16) & 0xFF)
+        let data1 = UInt8( (flatValue >> 8) & 0xFF)
+        let data2 = UInt8(flatValue & 0xFF)
+
+        self.init(portId: portId, status: status, data1: data1, data2: data2)
     }
 
     public var oscType: TypeTagValues {

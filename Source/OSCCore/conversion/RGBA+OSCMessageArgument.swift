@@ -15,7 +15,12 @@ extension RGBA: OSCMessageArgument {
             return nil
         }
 
-        self.init(red: UInt8(flatValue >> 24), green: UInt8( (flatValue >> 16) & 0xFF), blue: UInt8( (flatValue >> 8) & 0xFF), alpha: UInt8(flatValue & 0xFF))
+        let red = UInt8(flatValue >> 24)
+        let green = UInt8( (flatValue >> 16) & 0xFF)
+        let blue = UInt8( (flatValue >> 8) & 0xFF)
+        let alpha = UInt8(flatValue & 0xFF)
+
+        self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
 
     public var oscType: TypeTagValues {

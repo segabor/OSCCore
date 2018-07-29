@@ -122,7 +122,6 @@ func matchComponent(address: Substring, pattern: Substring) -> Bool { //swiftlin
                 }
             }
 
-            // FIXME: negate result
             if negate == match {
                 match = false
             }

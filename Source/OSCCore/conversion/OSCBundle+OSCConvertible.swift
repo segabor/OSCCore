@@ -40,7 +40,7 @@ extension OSCBundle: OSCConvertible {
         guard
             data.count >= 16,
             data[data.startIndex] == 0x23,
-            let ts = OSCTimeTag(data: data[data.startIndex+8..<data.startIndex+16])
+            let timestamp = OSCTimeTag(data: data[data.startIndex+8..<data.startIndex+16])
         else {
             return nil
         }
@@ -48,8 +48,8 @@ extension OSCBundle: OSCConvertible {
         var msgs = [OSCConvertible]()
 
         // Read up content
-        var it = OSCBundleElementIterator(data[data.startIndex+16..<data.endIndex] )
-        while let chunk = it.next() {
+        var elemIterator = OSCBundleElementIterator(data[data.startIndex+16..<data.endIndex])
+        while let chunk = elemIterator.next() {
             if let bnd = OSCBundle(data: chunk) {
                 msgs.append(bnd)
             } else if let msg = OSCMessage(data: chunk ) {
@@ -58,7 +58,7 @@ extension OSCBundle: OSCConvertible {
         }
 
         // init object state
-        self.init(timetag: ts, content: msgs)
+        self.init(timetag: timestamp, content: msgs)
     }
 }
 

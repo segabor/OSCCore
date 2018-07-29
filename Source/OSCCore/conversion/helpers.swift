@@ -16,6 +16,6 @@ func binarytotype <T> (_ value: [Byte], _: T.Type) -> T {
 }
 
 func typetobinary <T> (_ value: T) -> [Byte] {
-    var mv = value
-    return withUnsafeBytes(of: &mv) { Array($0) }
+    var mutableValue = value
+    return withUnsafeBytes(of: &mutableValue) { Array($0) }
 }

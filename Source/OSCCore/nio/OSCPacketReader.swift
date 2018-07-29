@@ -17,9 +17,8 @@ public final class OSCPacketReader: ChannelInboundHandler {
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         let addressedEnvelope = self.unwrapInboundIn(data)
 
-        if let rawBytes : [Byte] = addressedEnvelope.data.getBytes(at: 0, length: addressedEnvelope.data.readableBytes),
-            let packet = decodeOSCPacket(from: rawBytes)
-        {
+        if let rawBytes: [Byte] = addressedEnvelope.data.getBytes(at: 0, length: addressedEnvelope.data.readableBytes),
+            let packet = decodeOSCPacket(from: rawBytes) {
             ctx.fireChannelRead(self.wrapInboundOut(packet))
         }
     }

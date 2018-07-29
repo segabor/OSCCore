@@ -15,22 +15,34 @@ import Foundation
 
 class DispatcherTests: XCTestCase {
 
+    func testDispatchWithMatchingAddress() {
+        let testEvent = MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: [1234]))
+
+        doTestDispatch(pattern: "/test/1", event: testEvent, expected: true)
+    }
+
     func testDispatchWithMatchingAddresses() {
-        doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: [1234])), expected: true)
+        let testEvent = MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: [1234]))
 
-        doTestDispatch(pattern: "/test/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: [1234])), expected: true)
+        doTestDispatch(pattern: "/test/*", event: testEvent, expected: true)
+    }
 
-        doTestDispatch(pattern: "/test/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: [1234])), expected: true)
+    func testDispatchWithNonMatchingSubComponents() {
+        let testEvent = MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: [1234]))
+
+        doTestDispatch(pattern: "/test/1", event: testEvent, expected: false)
+    }
+
+    func testDispatchWithNonMatchingRootComponents() {
+        let testEvent = MessageEvent(when: Date(), message: OSCMessage(address: "/tezt/1", args: [1234]))
+
+        doTestDispatch(pattern: "/test/1", event: testEvent, expected: false)
     }
 
     func testDispatchWithNonMatchingAddresses() {
-        doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: [1234])), expected: false)
+        let testEvent = MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: [1234]))
 
-        doTestDispatch(pattern: "/test/1", event: MessageEvent(when: Date(), message: OSCMessage(address: "/tezt/1", args: [1234])), expected: false)
-
-        doTestDispatch(pattern: "/tezt/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/1", args: [1234])), expected: false)
-
-        doTestDispatch(pattern: "/tezt/*", event: MessageEvent(when: Date(), message: OSCMessage(address: "/test/2", args: [1234])), expected: false)
+        doTestDispatch(pattern: "/tezt/*", event: testEvent, expected: false)
     }
 
     private func doTestDispatch(pattern ptn: String, event: MessageEvent, expected: Bool) {
@@ -45,17 +57,19 @@ class DispatcherTests: XCTestCase {
         mgr.fire(event: event)
 
         XCTAssertTrue(flag == expected)
-
     }
 }
 
 #if os(Linux)
-  extension DispatcherTests {
+extension DispatcherTests {
     static var allTests: [(String, (DispatcherTests) -> () throws -> Void)] {
-      return [
-        ("testDispatchWithMatchingAddresses", testDispatchWithMatchingAddresses),
-        ("testDispatchWithNonMatchingAddresses", testDispatchWithNonMatchingAddresses)
-      ]
+        return [
+            ("testDispatchWithMatchingAddress", testDispatchWithMatchingAddress),
+            ("testDispatchWithMatchingAddresses", testDispatchWithMatchingAddresses),
+            ("testDispatchWithNonMatchingSubComponents", testDispatchWithNonMatchingSubComponents),
+            ("testDispatchWithNonMatchingRootComponents", testDispatchWithNonMatchingRootComponents),
+            ("testDispatchWithNonMatchingAddresses", testDispatchWithNonMatchingAddresses)
+        ]
     }
-  }
+}
 #endif
