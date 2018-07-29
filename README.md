@@ -11,29 +11,49 @@ OSCCore is a [OpenSoundControl](http://opensoundcontrol.org/spec-1_0) implementa
 Using this module you can easily pass or receive OSC messages, communicate with SuperCollider or other great digital musical instruments.
 OSC is also great for implmenenting other protocols like TUIO.
 
-Passing messages is easy, just create an OSCMessage and send it. A message is composed of address and arguments.
-Address is like an URI, starting with slash character. Arguments tipically are simple strings and numbers.
+## Composing OSC Messages
+
+To create a message simply instantiate `OSCMessage` class, assign address and parameters to it.
 
 ```swift
-import OSCCore
-
 let msg = OSCMessage("/instr/osc1", ["frequency", 440.0])
 ```
 
+OSC parameters can be any of the following
+- null value: `nil`
+- boolean values: `true`, `false`
+- characters: `Character("a")`
+- strings
+- numerical values: integers, floats and doubles
+- MIDI and RGBA values
+- OSC symbols: `OSCSymbol(label: symbolName)`
+- Array of parameters: `[Int32(0x12345678), "hello"]`
+- Blobs: `[UInt8](0xde, 0xad, 0xfa, 0xce)`
 
-The next thing is to open channel.
+## OSC Bundles
+
+Bundles are mixed list of messages and other bundles. They also carry a time stamp or time tag.
+
+The following bundle when received by SuperCollider will create a new synth instance with the given frequency and amplitude in parameters.
 
 ```swift
-let channel: UDPClient? = UDPClient(host: "127.0.0.1", port: 57110)
+let synthID = Int32(4)
+
+let synthBundle = OSCBundle(timetag: OSCTimeTag.immediate, content: [
+    // "/s_new", name, node ID, pos, group ID
+    OSCMessage(address: "/s_new", args: ["sine", synthID, Int32(1), Int32(1)]),
+    // "/n_set", "amp", sine amplitude
+    OSCMessage(address: "/n_set", args: [synthID, "amp", Float32(0.5)]),
+    // "/n_set", "freq", sine frequency
+    OSCMessage(address: "/n_set", args: [synthID, "freq", Float32(440.0)])
+])
 ```
 
-Once you have an open channel, send your message.
+## Sending and receiving OSC messages
 
-```swift
-msg.send(over: channel)
-```
+OSCCore is built on top of [SwiftNIO](https://github.com/apple/swift-nio), a asynchronous event-driven network application framework developed by Apple.
 
-That's all! For more examples please see Sources folder.
+For examples please see BasicListener and SuperColliderExample projects in Source folder.
 
 ## Usage
 
