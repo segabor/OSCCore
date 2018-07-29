@@ -37,7 +37,7 @@ private final class OSCDebugHandler: ChannelInboundHandler {
 
 // MAIN CODE STARTS HERE //
 
-let threadGroup = MultiThreadedEventLoopGroup(numThreads: 1 /*System.coreCount*/)
+let threadGroup = MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)
 defer {
     try! threadGroup.syncShutdownGracefully()
 }
@@ -45,9 +45,7 @@ defer {
 let bootstrap = DatagramBootstrap(group: threadGroup)
     .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
     .channelInitializer { channel in
-        return channel.pipeline
-            .add(handler: OSCPacketReader())
-            .then({ _ in channel.pipeline.add(handler: OSCDebugHandler())})
+        channel.pipeline.addHandlers([OSCPacketReader(), OSCDebugHandler()], first: true)
     }
 
 let arguments = CommandLine.arguments
