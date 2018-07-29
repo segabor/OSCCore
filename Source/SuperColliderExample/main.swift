@@ -1,19 +1,11 @@
-#if os(Linux)
-    import Glibc
-#else
-    import Darwin
-#endif
-    
 import OSCCore
-
-// create UDP socket
-let myPort: Int = 57150
-let scPort: Int32 = 57110
-
-let channel = UDPClient(host: "127.0.0.1", port: scPort)
+import NIO
 
 // ---- //
 
+enum SuperColliderExampleError: Error {
+    case decodeOSCPacketFailed
+}
 
 /// simple function that dumps contents of OSCMessage / OSCBundle
 func debugOSCPacket(_ packet: OSCConvertible) {
@@ -37,7 +29,49 @@ func debugOSCPacket(_ packet: OSCConvertible) {
     }
 }
 
-// ---- //
+private final class OSCDebugHandler: ChannelInboundHandler {
+    typealias InboundIn = OSCConvertible
+
+    public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
+        let oscValue = unwrapInboundIn(data)
+
+        debugOSCPacket(oscValue)
+    }
+}
+
+extension Channel {
+    public func writeAndFlush(_ packet: OSCConvertible, target remoteAddr: SocketAddress) throws {
+        guard let bytes = packet.oscValue else {
+            throw SuperColliderExampleError.decodeOSCPacketFailed
+        }
+
+        var buffer = self.allocator.buffer(capacity: bytes.count)
+        buffer.write(bytes: bytes)
+
+        // create envelope
+        let envelope = AddressedEnvelope(remoteAddress: remoteAddr, data: buffer)
+
+        return self.writeAndFlush(envelope, promise: nil)
+    }
+}
+
+// MAIN CODE STARTS HERE //
+
+let threadGroup = MultiThreadedEventLoopGroup(numberOfThreads: 1 /*System.coreCount*/)
+defer {
+    try! threadGroup.syncShutdownGracefully()
+}
+
+let bootstrap = DatagramBootstrap(group: threadGroup)
+    .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
+    .channelInitializer { channel in
+        channel.pipeline.addHandlers([OSCPacketReader(), OSCDebugHandler()], first: true)
+}
+
+let arguments = CommandLine.arguments
+
+let channel = try! bootstrap.bind(host: "127.0.0.1", port: 57150).wait()
+let remoteAddr = try! SocketAddress.newAddressResolving(host: "127.0.0.1", port: 57110)
 
 /// assemble a synth
 
@@ -52,24 +86,17 @@ let bndl = OSCBundle(timetag: OSCTimeTag.immediate, content: [
     OSCMessage(address: "/n_set", args: [synthID, "freq", Float32(440.0)])
 ])
 
-bndl.send(over: channel)
-sleep(1)
+try channel.writeAndFlush(bndl, target: remoteAddr)
 
 // get and print out frequency number from SuperCollider
-OSCMessage(address: "/s_get", args: [synthID, "freq"])
-    .send(over: channel)
-
-if let pkt = channel.receive() {
-    debugOSCPacket(pkt)
-} else {
-    print("FATAL! Received no response!")
-}
+let getFrqMessage = OSCMessage(address: "/s_get", args: [synthID, "freq"])
+try channel.writeAndFlush(getFrqMessage, target: remoteAddr)
 
 // let synth beeping for two secs
 sleep(2)
 
 // free synth node
-OSCMessage(address: "/n_free", args: [synthID])
-    .send(over: channel)
+let freeNodeMessage = OSCMessage(address: "/n_free", args: [synthID])
+try channel.writeAndFlush(freeNodeMessage, target: remoteAddr)
 
-exit(0)
+try channel.close(mode: .all).wait()
