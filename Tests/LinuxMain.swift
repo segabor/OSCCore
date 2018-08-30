@@ -7,5 +7,6 @@ XCTMain([
     testCase(ValueConversionTests.allTests),
     testCase(AddressMatcherTests.allTests),
     testCase(DispatcherTests.allTests),
-    testCase(OSCBundleTests.allTests)
+    testCase(OSCBundleTests.allTests),
+    testCase(OSCTimeTagTests.allTests)
 ])
