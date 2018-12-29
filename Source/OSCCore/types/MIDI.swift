@@ -10,11 +10,4 @@ public struct MIDI {
     public let status: UInt8
     public let data1: UInt8
     public let data2: UInt8
-
-    public init(portId: UInt8, status: UInt8, data1: UInt8, data2: UInt8) {
-        self.portId = portId
-        self.status = status
-        self.data1 = data1
-        self.data2 = data2
-    }
 }

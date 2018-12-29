@@ -9,8 +9,4 @@ import Foundation
 
 struct OSCSymbol {
     public let label: String
-
-    public init(label: String) {
-        self.label = label
-    }
 }
