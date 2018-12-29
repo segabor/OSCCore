@@ -12,16 +12,15 @@ import Foundation
 }
 
 extension String {
+    // return size of UTF-8 string including terminator rounded up to 4
     public var alignedSize: Int {
-        // include \0 terminator character
-        let cStringSize = self.utf8.count+1
-        return align(size: cStringSize)
+        return align(size: self.utf8.count+1)
     }
 }
 
 extension Data {
+    // return size payload rounded up to 4
     public var alignedSize: Int {
-        let length = self.count
-        return (length + 3) & ~0x03
+        return align(size: self.count)
     }
 }

@@ -7,13 +7,13 @@
 
 extension String: OSCMessageArgument {
     public var oscValue: [Byte]? {
-        var bytes = self.utf8.map {Byte($0)}
-        let alignedSize = self.alignedSize
-        let padding = alignedSize - bytes.count
+        var oscBytes = self.utf8.map {Byte($0)}
+        let packetSize = self.alignedSize
+        let padding = packetSize - oscBytes.count
         if padding > 0 {
-            bytes += [Byte](repeating: 0, count: padding)
+            oscBytes += [Byte](repeating: 0, count: padding)
         }
-        return bytes
+        return oscBytes
     }
 
     public var oscType: TypeTagValues { return .STRING_TYPE_TAG }
