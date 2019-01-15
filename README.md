@@ -1,5 +1,5 @@
 <div align="center">
-    <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-4.0-orange.svg?style=flat" alt="Swift" /></a>
+    <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-4.2.1-orange.svg?style=flat" alt="Swift" /></a>
     <a href="https://swift.org"><img src="https://img.shields.io/badge/Platforms-macOS%20--%20iOS%20--%20Linux-lightgray.svg?style=flat" alt="Platform" /></a>
     <a href="https://travis-ci.org/segabor/OSCCore" alt="Travis"><img src="https://travis-ci.org/segabor/OSCCore.svg?branch=master"></a>
 </div>
@@ -64,6 +64,10 @@ OSCCore is currently provided as Swift PackageManager module. To include OSCCore
 ```
 
 Other dependency managers like CocoaPods or Chartage is under consideration.
+
+## Example Code
+
+- [SuperCollider Example Client](https://github.com/segabor/SCClient)
 
 ## Version history
 

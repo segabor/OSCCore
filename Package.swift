@@ -1,4 +1,4 @@
-// swift-tools-version:4.0
+// swift-tools-version:4.2
 
 import PackageDescription
 
@@ -8,7 +8,6 @@ let package = Package(
     products: [
         .library(name: "OSCCore", targets: ["OSCCore"]),
         .executable(name: "BasicListener", targets: ["BasicListener"]),
-        .executable(name: "SuperColliderExample", targets: ["SuperColliderExample"])
     ],
 
     dependencies: [
@@ -18,7 +17,6 @@ let package = Package(
     targets: [
         .target(name: "OSCCore", dependencies: ["NIO"]),
         .target(name: "BasicListener", dependencies: ["OSCCore", "NIO"]),
-        .target(name: "SuperColliderExample", dependencies: ["OSCCore", "NIO"]),
 
         .testTarget(name: "OSCCoreTests", dependencies: ["OSCCore"])
     ]
