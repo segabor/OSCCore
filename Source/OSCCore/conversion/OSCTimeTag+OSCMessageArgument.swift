@@ -10,14 +10,14 @@ import Foundation
 // MARK: Conversion between double and 64 bit fixed point values
 
 internal extension Double {
-    internal var fixPointValue: (integer: UInt32, fraction: UInt32) {
+    var fixPointValue: (integer: UInt32, fraction: UInt32) {
         let fraction: UInt32 = UInt32( (self-floor(self))*4_294_967_296 )
         let integer: UInt32 = UInt32(self)
 
         return (integer: integer, fraction: fraction)
     }
 
-    internal init(integer: UInt32, fraction: UInt32) {
+    init(integer: UInt32, fraction: UInt32) {
         self = Double(integer) + (Double(fraction)/4_294_967_296)
     }
 
