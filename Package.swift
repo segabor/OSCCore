@@ -7,11 +7,11 @@ let package = Package(
 
     products: [
         .library(name: "OSCCore", targets: ["OSCCore"]),
-        .executable(name: "BasicListener", targets: ["BasicListener"]),
+        .executable(name: "BasicListener", targets: ["BasicListener"])
     ],
 
     dependencies: [
-        .package(url: "https://github.com/apple/swift-nio", from: "1.7.2")
+        .package(url: "https://github.com/apple/swift-nio", from: "2.0.0")
     ],
 
     targets: [

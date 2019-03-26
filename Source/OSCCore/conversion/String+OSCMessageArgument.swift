@@ -23,7 +23,7 @@ extension String: OSCMessageArgument {
     }
 
     public init?(data: ArraySlice<Byte>) {
-        guard let termIndex = data.index(of: 0) else {
+        guard let termIndex = data.firstIndex(of: 0) else {
             return nil
         }
 

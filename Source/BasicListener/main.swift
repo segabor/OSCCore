@@ -47,7 +47,7 @@ defer {
 let bootstrap = DatagramBootstrap(group: threadGroup)
     .channelOption(ChannelOptions.socket(SocketOptionLevel(SOL_SOCKET), SO_REUSEADDR), value: 1)
     .channelInitializer { channel in
-        channel.pipeline.addHandlers([OSCPacketReader(), OSCDebugHandler()], first: true)
+        channel.pipeline.addHandlers([OSCPacketReader(), OSCDebugHandler()])
     }
 
 let arguments = CommandLine.arguments
