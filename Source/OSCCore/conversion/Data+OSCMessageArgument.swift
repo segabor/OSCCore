@@ -38,10 +38,8 @@ extension Data: OSCMessageArgument {
         var payload = [Byte]()
 
         payload += self.count.oscValue!
-
-        payload += self.withUnsafeBytes { (pointer: UnsafePointer<Byte>) -> [Byte] in
-            let buffer = UnsafeBufferPointer<Byte>(start: pointer, count: dataSize)
-            return [Byte](buffer)
+        payload += self.withUnsafeBytes { (pointer: UnsafeRawBufferPointer) -> [Byte] in
+            return [Byte](pointer[0..<dataSize])
         }
 
         // append zeroes to the end
