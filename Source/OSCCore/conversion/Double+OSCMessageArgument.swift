@@ -11,7 +11,7 @@ extension Double: OSCMessageArgument {
             return nil
         }
 
-        return [Byte](typetobinary(self.bitPattern.bigEndian))
+        return withUnsafeBytes(of: self.bitPattern.bigEndian) {[Byte]($0)}
     }
 
     public var oscType: TypeTagValues {

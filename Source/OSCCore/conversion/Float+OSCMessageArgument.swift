@@ -12,12 +12,8 @@ import CoreFoundation
 
 extension Float32: OSCMessageArgument {
     public var oscValue: [Byte]? {
-        #if os(OSX) || os(iOS)
-            let rawValue = CFConvertFloat32HostToSwapped(self).v
-        #elseif os(Linux)
-            let rawValue = htonl(self.bitPattern)
-        #endif
-        return [Byte](typetobinary(rawValue))
+        let rawValue = CFConvertFloat32HostToSwapped(self).v
+        return withUnsafeBytes(of: rawValue) {[Byte]($0)}
     }
 
     public var oscType: TypeTagValues { return .FLOAT_TYPE_TAG }

@@ -25,7 +25,7 @@ extension FixedWidthInteger {
 
 extension Int64: OSCMessageArgument {
     public var oscValue: [Byte]? {
-        return [Byte](typetobinary(self.bigEndian))
+        return withUnsafeBytes(of: self.bigEndian) {[Byte]($0)}
     }
 
     public var oscType: TypeTagValues { return .INT64_TYPE_TAG }
@@ -34,13 +34,13 @@ extension Int64: OSCMessageArgument {
 // for timestamps
 extension UInt64: OSCConvertible {
     public var oscValue: [Byte]? {
-        return [Byte](typetobinary(self.bigEndian))
+        return withUnsafeBytes(of: self.bigEndian) {[Byte]($0)}
     }
 }
 
 extension Int32: OSCMessageArgument {
     public var oscValue: [Byte]? {
-        return [Byte](typetobinary(self.bigEndian))
+        return withUnsafeBytes(of: self.bigEndian) {[Byte]($0)}
     }
 
     public var oscType: TypeTagValues { return .INT32_TYPE_TAG }
@@ -48,7 +48,7 @@ extension Int32: OSCMessageArgument {
 
 extension UInt32: OSCConvertible {
     public var oscValue: [Byte]? {
-        return [Byte](typetobinary(self.bigEndian))
+        return withUnsafeBytes(of: self.bigEndian) {[Byte]($0)}
     }
 }
 
