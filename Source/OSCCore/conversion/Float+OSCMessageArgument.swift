@@ -32,10 +32,9 @@ extension Float32: OSCMessageArgument {
         if binary.count != MemoryLayout<Float32>.size {
             return nil
         }
-        #if os(OSX) || os(iOS)
-            self = CFConvertFloatSwappedToHost(binarytotype(binary, CFSwappedFloat32.self))
-        #elseif os(Linux)
-            self = Float(bitPattern: ntohl(binarytotype(binary, UInt32.self)))
-        #endif
+
+        self = CFConvertFloatSwappedToHost(binary.withUnsafeBytes {
+            $0.load(fromByteOffset: 0, as: CFSwappedFloat32.self)
+        })
     }
 }

@@ -17,7 +17,9 @@ extension FixedWidthInteger {
             return nil
         }
 
-        self = binarytotype(binary, Self.self).byteSwapped
+        self = binary.withUnsafeBytes {
+            $0.load(fromByteOffset: 0, as: Self.self)
+        }.byteSwapped
     }
 }
 
@@ -68,6 +70,8 @@ extension Int: OSCMessageArgument {
             return nil
         }
 
-        self = Int( binarytotype(binary, Int32.self).byteSwapped )
+        self = Int(binary.withUnsafeBytes {
+            $0.load(fromByteOffset: 0, as: Int32.self)
+        }.byteSwapped)
     }
 }
