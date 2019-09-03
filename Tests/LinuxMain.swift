@@ -1,12 +1,8 @@
 import XCTest
 
-@testable import OSCCoreTests
+import OSCCoreTests
 
-XCTMain([
-    testCase(OSCMessageTests.allTests),
-    testCase(ValueConversionTests.allTests),
-    testCase(AddressMatcherTests.allTests),
-    testCase(DispatcherTests.allTests),
-    testCase(OSCBundleTests.allTests),
-    testCase(OSCTimeTagTests.allTests)
-])
+var tests = [XCTestCaseEntry]()
+tests += OSCCoreTests.__allTests()
+
+XCTMain(tests)
