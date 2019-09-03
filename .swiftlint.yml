@@ -3,3 +3,6 @@ included:
   - Tests
 opt_in_rules:
   - empty_count
+excluded:
+  - Tests/LinuxMain.swift
+  - Tests/*/XCTestManifests.swift
