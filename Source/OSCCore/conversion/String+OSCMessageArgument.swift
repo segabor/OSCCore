@@ -13,14 +13,13 @@ extension String: OSCMessageArgument {
         if padding > 0 {
             oscBytes += [Byte](repeating: 0, count: padding)
         }
+
         return oscBytes
     }
 
     public var oscType: TypeTagValues { return .STRING_TYPE_TAG }
 
-    public var packetSize: Int {
-        return self.alignedSize
-    }
+    public var packetSize: Int { self.alignedSize }
 
     public init?(data: ArraySlice<Byte>) {
         guard let termIndex = data.firstIndex(of: 0) else {

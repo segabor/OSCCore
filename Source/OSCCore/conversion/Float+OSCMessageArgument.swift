@@ -16,11 +16,9 @@ extension Float32: OSCMessageArgument {
         return withUnsafeBytes(of: rawValue) {[Byte]($0)}
     }
 
-    public var oscType: TypeTagValues { return .FLOAT_TYPE_TAG }
+    public var oscType: TypeTagValues { .FLOAT_TYPE_TAG }
 
-    public var packetSize: Int {
-        return MemoryLayout<Float32>.size
-    }
+    public var packetSize: Int { MemoryLayout<Float32>.size }
 
     // custom init
     public init?(data: ArraySlice<Byte>) {

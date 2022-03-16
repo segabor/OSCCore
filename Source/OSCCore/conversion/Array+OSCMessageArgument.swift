@@ -9,17 +9,15 @@ import Foundation
 
 // add default conformance
 extension Array: OSCMessageArgument, OSCMessageArgumentCollection {
+    // DON'T CALL THIS METHOD!!
     public init?(data: ArraySlice<Byte>) {
-        // DO NOT USE THIS METHOD!!
         return nil
     }
 
-    public var oscType: TypeTagValues {
-        return .ARRAY_BEGIN_TYPE_TAG
-    }
+    public var oscType: TypeTagValues { .ARRAY_BEGIN_TYPE_TAG }
 
     public var oscTypes: [TypeTagValues] {
-        var typeTags: [TypeTagValues] = [TypeTagValues.ARRAY_BEGIN_TYPE_TAG]
+        var typeTags: [TypeTagValues] = [.ARRAY_BEGIN_TYPE_TAG]
         self.forEach { (elem) -> Void in
             switch elem {
             case let argCollection as OSCMessageArgumentCollection:
@@ -27,7 +25,7 @@ extension Array: OSCMessageArgument, OSCMessageArgumentCollection {
             case let arg as OSCMessageArgument:
                 typeTags.append(arg.oscType)
             default:
-                typeTags.append(TypeTagValues.NIL_TYPE_TAG)
+                typeTags.append(.NIL_TYPE_TAG)
             }
         }
         typeTags.append(.ARRAY_END_TYPE_TAG)

@@ -29,7 +29,7 @@ internal func OSCSecondsToInterval(_ seconds: Double) -> TimeInterval {
 
 public enum OSCTimeTag: Equatable {
     /// seconds between 1900 and 1970
-    static internal let SecondsSince1900: Double = 2208988800
+    static internal let SecondsSince1900: Double = 2_208_988_800
 
     case immediate
     case secondsSince1900(Double) // seconds since January 1, 1900

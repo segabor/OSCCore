@@ -25,9 +25,7 @@ extension Data: OSCMessageArgument {
         }
     }
 
-    public var oscType: TypeTagValues {
-        return .BLOB_TYPE_TAG
-    }
+    public var oscType: TypeTagValues { .BLOB_TYPE_TAG }
 
     public var packetSize: Int {
         return MemoryLayout<Int32>.size + align(size: self.count)

@@ -9,18 +9,14 @@ import Foundation
 
 extension Bool: OSCMessageArgument {
     public var oscType: TypeTagValues {
-        return self == true ? TypeTagValues.TRUE_TYPE_TAG : TypeTagValues.FALSE_TYPE_TAG
+        return self == true ? .TRUE_TYPE_TAG : .FALSE_TYPE_TAG
     }
 
     public init?(data: ArraySlice<Byte>) {
         fatalError("Unsupported initializer")
     }
 
-    public var oscValue: [Byte]? {
-        return nil
-    }
+    public var oscValue: [Byte]? { nil }
 
-    public var packetSize: Int {
-        return 0
-    }
+    public var packetSize: Int { 0 }
 }

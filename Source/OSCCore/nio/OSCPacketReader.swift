@@ -7,12 +7,12 @@
 
 import NIO
 
+
 public final class OSCPacketReader: ChannelInboundHandler {
     public typealias InboundIn = AddressedEnvelope<ByteBuffer>
     public typealias InboundOut = OSCConvertible
 
-    public init() {
-    }
+    public init() {}
 
     public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
         let addressedEnvelope = self.unwrapInboundIn(data)

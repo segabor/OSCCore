@@ -21,9 +21,7 @@ extension MIDI: OSCMessageArgument {
         self.init(portId: portId, status: status, data1: data1, data2: data2)
     }
 
-    public var oscType: TypeTagValues {
-        return .MIDI_MESSAGE_TYPE_TAG
-    }
+    public var oscType: TypeTagValues { .MIDI_MESSAGE_TYPE_TAG }
 
     public var oscValue: [Byte]? {
         let portId: UInt32 = UInt32(self.portId)
@@ -35,7 +33,5 @@ extension MIDI: OSCMessageArgument {
         return flatValue.oscValue
     }
 
-    public var packetSize: Int {
-        return MemoryLayout<UInt32>.size
-    }
+    public var packetSize: Int { MemoryLayout<UInt32>.size }
 }

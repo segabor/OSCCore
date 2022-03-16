@@ -18,7 +18,6 @@ extension Double: OSCMessageArgument {
         return self.isInfinite ? .INFINITUM_TYPE_TAG : .DOUBLE_TYPE_TAG
     }
 
-    // custom init
     public init?(data: ArraySlice<Byte>) {
         let binary: [Byte] = [Byte](data)
         guard binary.count == MemoryLayout<Double>.size,

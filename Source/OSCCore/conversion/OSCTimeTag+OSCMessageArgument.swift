@@ -45,11 +45,9 @@ extension OSCTimeTag: OSCMessageArgument {
         }
     }
 
-    public var oscType: TypeTagValues { return .TIME_TAG_TYPE_TAG }
+    public var oscType: TypeTagValues { .TIME_TAG_TYPE_TAG }
 
-    public var packetSize: Int {
-        return MemoryLayout<UInt64>.size
-    }
+    public var packetSize: Int { MemoryLayout<UInt64>.size }
 
     public init?<S: Collection>(data: S) where S.Iterator.Element == Byte {
 

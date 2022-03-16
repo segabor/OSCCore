@@ -23,9 +23,7 @@ extension RGBA: OSCMessageArgument {
         self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
 
-    public var oscType: TypeTagValues {
-        return .RGBA_COLOR_TYPE_TAG
-    }
+    public var oscType: TypeTagValues { .RGBA_COLOR_TYPE_TAG }
 
     public var oscValue: [Byte]? {
         let red: UInt32 = UInt32(self.red)
@@ -37,7 +35,5 @@ extension RGBA: OSCMessageArgument {
         return flatValue.oscValue
     }
 
-    public var packetSize: Int {
-        return MemoryLayout<UInt32>.size
-    }
+    public var packetSize: Int { MemoryLayout<UInt32>.size }
 }

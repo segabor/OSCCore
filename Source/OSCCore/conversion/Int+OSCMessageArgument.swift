@@ -7,9 +7,7 @@
 
 /// Create integers from bytes
 extension FixedWidthInteger {
-    public var packetSize: Int {
-        return MemoryLayout<Self>.size
-    }
+    public var packetSize: Int { MemoryLayout<Self>.size }
 
     public init?(data: ArraySlice<Byte>) {
         let binary: [Byte] = [Byte](data)
@@ -43,7 +41,7 @@ extension Int32: OSCMessageArgument {
         return withUnsafeBytes(of: self.bigEndian) {[Byte]($0)}
     }
 
-    public var oscType: TypeTagValues { return .INT32_TYPE_TAG }
+    public var oscType: TypeTagValues { .INT32_TYPE_TAG }
 }
 
 extension UInt32: OSCConvertible {
@@ -58,11 +56,9 @@ extension Int: OSCMessageArgument {
         return Int32(self).oscValue
     }
 
-    public var oscType: TypeTagValues { return .INT32_TYPE_TAG }
+    public var oscType: TypeTagValues { .INT32_TYPE_TAG }
 
-    public var packetSize: Int {
-        return MemoryLayout<Int32>.size
-    }
+    public var packetSize: Int { MemoryLayout<Int32>.size }
 
     public init?(data: ArraySlice<Byte>) {
         let binary: [Byte] = [Byte](data)
