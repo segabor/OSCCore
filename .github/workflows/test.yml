@@ -13,5 +13,16 @@ jobs:
     steps:
      - name: Check out code
        uses: actions/checkout@v2
-     - name: perform tests
+     - name: Build code
+       run: swift build
+     - name: Perform Tests
        run: swift test
+  test-on-macos:
+    runs-on: macos-11
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Build code
+        run: swift build
+      - name: Perform Tests
+        run: swift test
