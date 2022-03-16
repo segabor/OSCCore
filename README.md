@@ -1,7 +1,13 @@
 <div align="center">
-    <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-5.2-orange.svg?style=flat" alt="Swift" /></a>
-    <a href="https://swift.org"><img src="https://img.shields.io/badge/Platforms-macOS%20--%20iOS%20--%20Linux-lightgray.svg?style=flat" alt="Platform" /></a>
-    <a href="https://travis-ci.org/segabor/OSCCore" alt="Travis"><img src="https://travis-ci.org/segabor/OSCCore.svg?branch=master"></a>
+    <a href="https://swift.org">
+        <img src="https://img.shields.io/badge/Swift-5.4-orange.svg" alt="Swift" />
+    </a>
+    <a href="https://swift.org">
+        <img src="https://img.shields.io/badge/Platforms-macOS%20--%20iOS%20--%20Linux-lightgray.svg" alt="Platform" />
+    </a>
+    <a href="https://github.com/vapor/vapor/actions">
+        <img src="https://github.com/segabor/OSCCore/workflows/test/badge.svg" alt="Continuous Integration">
+    </a>
 </div>
 
 # OSCCore

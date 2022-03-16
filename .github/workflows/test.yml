@@ -1,0 +1,17 @@
+name: test OSCCore
+on: [push]
+
+jobs:
+  test-on-linux:
+    strategy:
+      matrix:
+        image:
+          - swift:5.4-focal
+          - swift:5.5-focal
+    runs-on: ubuntu-latest
+    container: ${{ matrix.image }}
+    steps:
+     - name: Check out code
+       uses: actions/checkout@v2
+     - name: perform tests
+       run: swift test

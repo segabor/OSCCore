@@ -1,4 +1,4 @@
-// swift-tools-version:5.2
+// swift-tools-version:5.4
 
 import PackageDescription
 
@@ -18,8 +18,8 @@ let package = Package(
         .target(name: "OSCCore", dependencies: [
             .product(name: "NIO", package: "swift-nio")
         ]),
-        .target(name: "BasicListener", dependencies: ["OSCCore"], path: "Examples/BasicListener"),
-        .target(name: "SoundColliderClient", dependencies: ["OSCCore"], path: "Examples/SoundColliderClient"),
+        .executableTarget(name: "BasicListener", dependencies: ["OSCCore"], path: "Examples/BasicListener", exclude: ["README.md"]),
+        .executableTarget(name: "SoundColliderClient", dependencies: ["OSCCore"], path: "Examples/SoundColliderClient"),
 
         .testTarget(name: "OSCCoreTests", dependencies: ["OSCCore"])
     ]
