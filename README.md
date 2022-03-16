@@ -6,7 +6,7 @@
         <img src="https://img.shields.io/badge/Platforms-macOS%20--%20iOS%20--%20Linux-lightgray.svg" alt="Platform" />
     </a>
     <a href="https://github.com/segabor/OSCCore/actions">
-        <img src="https://github.com/segabor/OSCCore/workflows/test/badge.svg" alt="Continuous Integration">
+        <img src="https://github.com/segabor/OSCCore/workflows/test.yml/badge.svg" alt="Continuous Integration">
     </a>
 </div>
 
