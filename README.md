@@ -77,17 +77,3 @@ OSC examples are located under `Examples` folder
 
 - BasicListener
 - SuperCollider Example Client
-
-## Version history
-
-- 0.9 OSC Specification 1.0
-- 0.4 Important fixes: timestamp and OSC packet detection
-  Switch to Swift 4.0.2
-- 0.3.1 iOS support
-  Note: this is last Swift 3 supported version
-- 0.3 Replace socket implementation to IBM's BlueSocket
-- 0.2.3 Bugfix release (see issue #5).
-- 0.2.2 Improved timetag support
-- 0.2.1 Bugfix: UDP Client now accepts bundles too
-- 0.2 Dispatch bundle messages
-
