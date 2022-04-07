@@ -11,15 +11,15 @@ import Foundation
 ///
 /// Function that matches address to a GLOB like pattern
 ///
-func matchComponents(address: String, pattern: String) -> Bool { //swiftlint:disable:this swiftlint:disable:this
+func matchComponents(address: String, pattern: String) -> Bool {
     let fullAddressRange = address.startIndex..<address.endIndex
     let fullPatternRange = pattern.startIndex..<pattern.endIndex
     return matchComponent(address: address[fullAddressRange], pattern: pattern[fullPatternRange])
 }
 
-func matchComponent(address: Substring, pattern: Substring) -> Bool { //swiftlint:disable:this function_body_length swiftlint:disable:this cyclomatic_complexity swiftlint:disable:this line_length
-    var si = address.startIndex
-    var pi = pattern.startIndex
+func matchComponent(address: Substring, pattern: Substring) -> Bool { // swiftlint:disable:this function_body_length cyclomatic_complexity line_length
+    var si = address.startIndex // swiftlint:disable:this identifier_name
+    var pi = pattern.startIndex // swiftlint:disable:this identifier_name
 
     while pi < pattern.endIndex {
         guard si < address.endIndex || pattern[pi] == "*" else {

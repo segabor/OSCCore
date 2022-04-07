@@ -82,7 +82,7 @@ extension OSCMessage: OSCConvertible {
             .reduce(address.oscValue!.count + typeTags.oscValue!.count, { (acc: Int, size: Int) in acc + size })
     }
 
-    public static func parseArguments( _ tagIterator: inout IndexingIterator<[TypeTagValues?]>, _ index: inout ArraySlice<Byte>.Index, _ data: ArraySlice<Byte>) -> [OSCMessageArgument?]? { //swiftlint:disable:this cyclomatic_complexity swiftlint:disable:this line_length swiftlint:disable:this function_body_length
+    public static func parseArguments( _ tagIterator: inout IndexingIterator<[TypeTagValues?]>, _ index: inout ArraySlice<Byte>.Index, _ data: ArraySlice<Byte>) -> [OSCMessageArgument?]? { // swiftlint:disable:this cyclomatic_complexity line_length function_body_length
         var args: [OSCMessageArgument?] = [OSCMessageArgument?]()
 
         while let possibleTag = tagIterator.next() {
@@ -138,7 +138,7 @@ extension OSCMessage: OSCConvertible {
                 args.append(val)
                 index += val.packetSize
             case .TIME_TAG_TYPE_TAG:
-                /// process the same way as Int64 but yield different Swift type
+                // process the same way as Int64 but yield different Swift type
                 guard let val = OSCTimeTag(data: data[index..<index+8]) else {
                     return nil
                 }
