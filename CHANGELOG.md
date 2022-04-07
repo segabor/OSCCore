@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.11] - 2022-05-07
+## [0.12] - 2022-05-07
 ### Changed
 - Fixed a bug prevented receiving packets (issues #24 and #25)
   Thanks @mron
