@@ -2,6 +2,7 @@ import Foundation
 import OSCCore
 import NIO
 
+
 func debugOSCPacket(_ packet: OSCConvertible) {
     switch packet {
     case let msg as OSCMessage:
@@ -23,16 +24,18 @@ func debugOSCPacket(_ packet: OSCConvertible) {
     }
 }
 
+
 private final class OSCDebugHandler: ChannelInboundHandler {
     typealias InboundIn = OSCConvertible
 
-    public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
+    func channelRead(context: ChannelHandlerContext, data: NIOAny) {
         let oscValue = unwrapInboundIn(data)
 
         print("Captured OSC packet ... ")
         debugOSCPacket(oscValue)
     }
 }
+
 
 // MAIN CODE STARTS HERE //
 

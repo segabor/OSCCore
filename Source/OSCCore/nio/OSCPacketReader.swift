@@ -12,22 +12,26 @@ public final class OSCPacketReader: ChannelInboundHandler {
     public typealias InboundIn = AddressedEnvelope<ByteBuffer>
     public typealias InboundOut = OSCConvertible
 
+
     public init() {}
 
-    public func channelRead(ctx: ChannelHandlerContext, data: NIOAny) {
+
+    public func channelRead(context: ChannelHandlerContext, data: NIOAny) {
         let addressedEnvelope = self.unwrapInboundIn(data)
 
         if let rawBytes: [Byte] = addressedEnvelope.data.getBytes(at: 0, length: addressedEnvelope.data.readableBytes),
             let packet = decodeOSCPacket(from: rawBytes) {
-            ctx.fireChannelRead(self.wrapInboundOut(packet))
+            context.fireChannelRead(self.wrapInboundOut(packet))
         }
     }
 
-    public func channelReadComplete(ctx: ChannelHandlerContext) {
-        ctx.flush()
+
+    public func channelReadComplete(context: ChannelHandlerContext) {
+        context.flush()
     }
 
-    public func errorCaught(ctx: ChannelHandlerContext, error: Error) {
-        ctx.close(promise: nil)
+
+    public func errorCaught(context: ChannelHandlerContext, error: Error) {
+        context.close(promise: nil)
     }
 }
